@@ -14,6 +14,10 @@ config/name="TDD-test-game"
 config/features=PackedStringArray("4.6", "Forward Plus")
 config/icon="res://icon.svg"
 
+[autoload]
+
+GameScore="*res://scripts/score_system.gd"
+
 [display]
 
 window/size/viewport_width=1920

@@ -1,18 +1,19 @@
-extends RefCounted
-## 分数系统 - 管理游戏分数
+extends Node
+## 分数系统 - 管理游戏分数（自动加载单例）
 class_name ScoreSystem
 
-var _score: int = 0
+## 分数变化信号 - 参数: 旧分数, 新分数
+signal score_changed(old_score: int, new_score: int)
 
+var _score: int = 0:
+	set(v):
+		var old_socre : int = _score
+		_score = v
+		if _score < 0: _score = 0
+		score_changed.emit(old_socre, _score)
 
 func get_score() -> int:
 	return _score
 
-
-func on_button_pressed() -> void:
-	_score += 1
-
-
 func add_score(amount: int) -> void:
-	if amount > 0:
-		_score += amount
+	_score += amount

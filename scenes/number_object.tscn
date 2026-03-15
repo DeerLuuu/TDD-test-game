@@ -1,0 +1,33 @@
+[gd_scene format=3 uid="uid://dnfx8lcw5jmcc"]
+
+[ext_resource type="Script" uid="uid://bqxe0naxh5ojl" path="res://scripts/number_object.gd" id="1_script"]
+
+[node name="NumberObject" type="Control" unique_id=1783975333]
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 3
+anchors_preset = 0
+offset_right = 50.0
+offset_bottom = 50.0
+script = ExtResource("1_script")
+
+[node name="Label" type="Label" parent="." unique_id=1970979412]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "1"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Background" type="ColorRect" parent="." unique_id=1434249910]
+z_index = -1
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.2, 0.2, 0.3, 1)

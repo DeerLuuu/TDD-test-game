@@ -1,0 +1,54 @@
+[gd_scene format=3 uid="uid://kfdatkn3bubi"]
+
+[ext_resource type="Script" uid="uid://mycnijmbyid" path="res://scripts/score_drop_zone.gd" id="1_script"]
+
+[node name="ScoreDropZone" type="Control" unique_id=1705446057]
+custom_minimum_size = Vector2(200, 200)
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -100.0
+offset_top = -101.0
+offset_right = 100.0
+offset_bottom = 99.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_script")
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=1593868959]
+z_index = -1
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.1, 0.15, 0.1, 0.8)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=742781783]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -32.0
+offset_top = -25.0
+offset_right = 32.0
+offset_bottom = 25.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="TitleLabel" type="Label" parent="VBoxContainer" unique_id=1628131000]
+layout_mode = 2
+text = "加分面板"
+horizontal_alignment = 1
+
+[node name="ScoreLabel" type="Label" parent="VBoxContainer" unique_id=1358256471]
+layout_mode = 2
+text = "分数: 0"
+horizontal_alignment = 1

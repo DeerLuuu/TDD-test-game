@@ -1,0 +1,23 @@
+[gd_scene format=3 uid="uid://3ututu3p8y5q"]
+
+[ext_resource type="PackedScene" uid="uid://kfdatkn3bubi" path="res://scenes/score_drop_zone.tscn" id="1_nnsk1"]
+[ext_resource type="PackedScene" uid="uid://bxq0ehg2kv2ec" path="res://scenes/score_button.tscn" id="2_button"]
+[ext_resource type="PackedScene" path="res://scenes/shop.tscn" id="2_rwgxs"]
+
+[node name="World" type="Node2D" unique_id=1037587713]
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1452719723]
+
+[node name="Shop" parent="CanvasLayer" unique_id=760560970 instance=ExtResource("2_rwgxs")]
+
+[node name="ScoreButton" parent="." unique_id=1361982315 instance=ExtResource("2_button")]
+offset_left = 886.0
+offset_top = 668.0
+offset_right = 986.0
+offset_bottom = 768.0
+
+[node name="ScoreDropZone" parent="." unique_id=1705446057 instance=ExtResource("1_nnsk1")]
+offset_left = 838.0
+offset_top = 445.0
+offset_right = 1038.0
+offset_bottom = 645.0

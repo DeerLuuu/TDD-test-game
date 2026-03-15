@@ -2,8 +2,8 @@
 
 ## 一、游戏概述
 
-**游戏名称**：数字工厂 (Number Factory)  
-**游戏类型**：增量放置游戏 (Incremental / Idle Game)  
+**游戏名称**：数字工厂 (Number Factory)
+**游戏类型**：增量放置游戏 (Incremental / Idle Game)
 **核心玩法**：点击生成数字 → 加工数字 → 收集分数 → 自动化生产
 
 ---
@@ -43,9 +43,9 @@
 **传送带配置**
 ```
 传送带等级 | 吸附范围 | 移动速度 | 每秒处理量
-    1     |  100px  |  0.5s   |    1个
-    2     |  150px  |  0.3s   |    2个
-    3     |  200px  |  0.2s   |    3个
+	1     |  100px  |  0.5s   |    1个
+	2     |  150px  |  0.3s   |    2个
+	3     |  200px  |  0.2s   |    3个
 ```
 
 ---
@@ -87,11 +87,11 @@
 **自动点击配置**
 ```
 面板等级 | 点击间隔 | 范围大小 | 解锁费用
-    1   |   2.0s   |  1个按钮 |   50分
-    2   |   1.5s   |  2个按钮 |  200分
-    3   |   1.0s   |  3个按钮 |  500分
-    4   |   0.5s   |  5个按钮 | 1500分
-    5   |   0.2s   |  全屏    | 5000分
+	1   |   2.0s   |  1个按钮 |   50分
+	2   |   1.5s   |  2个按钮 |  200分
+	3   |   1.0s   |  3个按钮 |  500分
+	4   |   0.5s   |  5个按钮 | 1500分
+	5   |   0.2s   |  全屏    | 5000分
 ```
 
 ---
@@ -135,54 +135,54 @@ NumberObject (数字对象)
 ├── processed_level: int          # 加工等级
 ├── is_dragging: bool             # 是否被拖动
 └── methods:
-    ├── get_final_value()         # 获取最终分数值
-    ├── process()                 # 执行加工
-    └── tween_to(target)          # 移动动画
+	├── get_final_value()         # 获取最终分数值
+	├── process()                 # 执行加工
+	└── tween_to(target)          # 移动动画
 
 BaseButton (基础按钮)
 ├── number_prefab: PackedScene    # 数字预制体
 ├── spawn_position: Vector2       # 生成位置
 └── methods:
-    ├── on_click()                # 点击生成数字
-    └── spawn_number()            # 实例化数字
+	├── on_click()                # 点击生成数字
+	└── spawn_number()            # 实例化数字
 
 ProcessingFactory (加工厂按钮)
 ├── numbers_inside: Array         # 内部数字列表
 ├── clicks_needed: int            # 所需点击次数
 ├── current_clicks: int           # 当前点击次数
 └── methods:
-    ├── insert_number(num)        # 放入数字
-    ├── on_click()                # 点击加工
-    └── complete_process()        # 完成加工弹出
+	├── insert_number(num)        # 放入数字
+	├── on_click()                # 点击加工
+	└── complete_process()        # 完成加工弹出
 
 ConveyorBelt (传送带面板)
 ├── range: float                  # 吸附范围
 ├── speed: float                  # 移动速度
 ├── target_panel: ScorePanel      # 目标分数面板
 └── methods:
-    ├── scan_numbers()            # 扫描范围内数字
-    ├── absorb_number(num)        # 吸附数字
-    └── transport_number(num)     # 传送数字
+	├── scan_numbers()            # 扫描范围内数字
+	├── absorb_number(num)        # 吸附数字
+	└── transport_number(num)     # 传送数字
 
 AutoClicker (自动点击面板)
 ├── interval: float               # 点击间隔
 ├── range: Rect2                  # 范围区域
 ├── target_buttons: Array         # 范围内按钮
 └── methods:
-    ├── scan_buttons()            # 扫描范围内按钮
-    └── auto_click()              # 执行自动点击
+	├── scan_buttons()            # 扫描范围内按钮
+	└── auto_click()              # 执行自动点击
 
 ScorePanel (分数面板)
 ├── score: int                    # 当前分数
 └── methods:
-    ├── add_score(value)          # 加分
-    └── check_unlockables()       # 检查解锁项
+	├── add_score(value)          # 加分
+	└── check_unlockables()       # 检查解锁项
 
 UpgradeShop (升级商店)
 ├── upgrades: Dictionary          # 升级项列表
 └── methods:
-    ├── purchase(upgrade_id)      # 购买升级
-    └── apply_upgrade()           # 应用升级效果
+	├── purchase(upgrade_id)      # 购买升级
+	└── apply_upgrade()           # 应用升级效果
 ```
 
 ---
@@ -237,31 +237,31 @@ price = base_price × (level ^ 1.5)
 ### 7.1 拖动实现
 ```gdscript
 func _gui_input(event):
-    if event is InputEventMouseButton and event.pressed:
-        _dragging = true
-    elif event is InputEventMouseButton and not event.pressed:
-        _dragging = false
-        _check_drop_zone()
-    elif event is InputEventMouseMotion and _dragging:
-        global_position = get_global_mouse_position()
+	if event is InputEventMouseButton and event.pressed:
+		_dragging = true
+	elif event is InputEventMouseButton and not event.pressed:
+		_dragging = false
+		_check_drop_zone()
+	elif event is InputEventMouseMotion and _dragging:
+		global_position = get_global_mouse_position()
 ```
 
 ### 7.2 Tween动画
 ```gdscript
 func tween_to(target_pos: Vector2, duration: float):
-    var tween = create_tween()
-    tween.tween_property(self, "global_position", target_pos, duration)
-    tween.tween_callback(func(): _on_tween_complete())
+	var tween = create_tween()
+	tween.tween_property(self, "global_position", target_pos, duration)
+	tween.tween_callback(func(): _on_tween_complete())
 ```
 
 ### 7.3 范围检测
 ```gdscript
 func scan_numbers() -> Array:
-    var numbers = []
-    for num in get_tree().get_nodes_in_group("numbers"):
-        if global_position.distance_to(num.global_position) <= range:
-            numbers.append(num)
-    return numbers
+	var numbers = []
+	for num in get_tree().get_nodes_in_group("numbers"):
+		if global_position.distance_to(num.global_position) <= range:
+			numbers.append(num)
+	return numbers
 ```
 
 ---
