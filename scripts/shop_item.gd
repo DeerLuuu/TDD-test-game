@@ -2,6 +2,9 @@ extends Control
 ## 商店物品 - 可拖动的商店物品
 class_name ShopItem
 
+## 网格大小
+const GRID_SIZE: int = 25
+
 signal dragged_out(item: ShopItem, global_pos: Vector2)
 
 @export var item_name: String = "物品"
@@ -26,7 +29,17 @@ func _ready() -> void:
 
 func _process(_delta: float) -> void:
 	if _is_dragging and _preview:
-		_preview.global_position = get_global_mouse_position() - _preview.size / 2
+		var target_pos = get_global_mouse_position() - _preview.size / 2
+		var snapped_pos = _calculate_snapped_position(target_pos)
+		_preview.global_position = snapped_pos
+
+
+func _calculate_snapped_position(pos: Vector2) -> Vector2:
+	## 计算网格对齐后的位置
+	return Vector2(
+		roundi(pos.x / GRID_SIZE) * GRID_SIZE,
+		roundi(pos.y / GRID_SIZE) * GRID_SIZE
+	)
 
 
 func _gui_input(event: InputEvent) -> void:
@@ -97,7 +110,19 @@ func _create_drag_preview() -> void:
 
 
 func _create_preview_control() -> Control:
-	## 创建预览控件
+	## 创建预览控件 - 优先使用对应场景
+	if scene_path != "" and ResourceLoader.exists(scene_path):
+		var scene_resource = load(scene_path)
+		if scene_resource is PackedScene:
+			var instance = scene_resource.instantiate()
+			if instance is Control:
+				# 标记为预览，禁用功能
+				instance.set_meta("is_preview", true)
+				instance.set_process(false)
+				instance.set_physics_process(false)
+				return instance
+
+	# Fallback: 创建默认样式预览
 	var preview = PanelContainer.new()
 	preview.custom_minimum_size = Vector2(120, 60)
 

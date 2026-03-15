@@ -1,0 +1,39 @@
+[gd_scene format=3 uid="uid://hwhx05cfw0vi"]
+
+[ext_resource type="Script" uid="uid://cltedx01dckam" path="res://scripts/conveyor_belt.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://bricornlfq21h" path="res://assets/arrows/arrow_right.svg" id="2_arrow"]
+
+[node name="ConveyorBelt" type="Control" unique_id=1705446058]
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -75.0
+offset_top = -75.0
+offset_right = -25.0
+offset_bottom = -25.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_script")
+
+[node name="Panel" type="Panel" parent="." unique_id=1593868960]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TextureRect" type="TextureRect" parent="." unique_id=1593868961]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_arrow")
+expand_mode = 1
+stretch_mode = 5

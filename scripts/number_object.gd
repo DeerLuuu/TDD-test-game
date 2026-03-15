@@ -8,7 +8,7 @@ class_name NumberObject
 var _is_dragging: bool = false
 var _drag_offset: Vector2 = Vector2.ZERO
 
-@onready var label: Label = $Label
+@onready var label: Label = get_node_or_null("Label")
 
 
 func _ready() -> void:

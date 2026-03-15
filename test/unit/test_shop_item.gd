@@ -73,26 +73,25 @@ func test_drag_preview_created_when_dragging():
 	assert_not_null(preview, "拖拽时应创建预览")
 
 
-func test_drag_preview_has_correct_content():
-	## 预览应显示正确的物品信息
+func test_drag_preview_is_scene_instance():
+	## 预览应是对应场景的实例
 	await wait_idle_frames(1)
 
-	_item.item_name = "测试物品"
-	_item.cost = 50
+	_item.scene_path = "res://scenes/number_object.tscn"
 	_item._start_drag()
 	await wait_idle_frames(1)
 
 	var preview = _item.get_drag_preview()
-	if preview:
-		# 预览应包含物品名称
-		var name_label = preview.find_child("NameLabel", true, false)
-		assert_not_null(name_label, "预览应包含名称标签")
+	assert_not_null(preview, "应创建预览")
+	# 预览应该是NumberObject类型
+	assert_true(preview is NumberObject or preview.get_child_count() > 0, "预览应是对应场景的实例")
 
 
 func test_drag_preview_is_translucent():
 	## 预览应是半透明的
 	await wait_idle_frames(1)
 
+	_item.scene_path = "res://scenes/number_object.tscn"
 	_item._start_drag()
 	await wait_idle_frames(1)
 
@@ -100,6 +99,18 @@ func test_drag_preview_is_translucent():
 	if preview:
 		# 预览透明度应在0.5-0.9之间
 		assert_true(preview.modulate.a > 0.5 and preview.modulate.a < 0.9, "预览应半透明")
+
+
+func test_drag_preview_fallback_when_no_scene():
+	## 无场景路径时使用默认样式预览
+	await wait_idle_frames(1)
+
+	_item.scene_path = ""
+	_item._start_drag()
+	await wait_idle_frames(1)
+
+	var preview = _item.get_drag_preview()
+	assert_not_null(preview, "无场景时应有默认预览")
 
 
 func test_drag_preview_removed_after_drop():

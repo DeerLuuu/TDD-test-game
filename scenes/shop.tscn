@@ -24,6 +24,22 @@ layout_mode = 2
 text = "商店"
 horizontal_alignment = 1
 
+[node name="ModeContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="ModeLabel" type="Label" parent="MarginContainer/VBoxContainer/ModeContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "模式: 点击 (Z/X切换)"
+horizontal_alignment = 1
+
+[node name="DirectionButton" type="Button" parent="MarginContainer/VBoxContainer/ModeContainer"]
+layout_mode = 2
+text = "方向: →"
+
+[node name="HSeparator" type="HSeparator" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
 [node name="ScrollContainer" type="ScrollContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3

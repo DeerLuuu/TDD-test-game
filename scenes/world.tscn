@@ -2,22 +2,29 @@
 
 [ext_resource type="PackedScene" uid="uid://kfdatkn3bubi" path="res://scenes/score_drop_zone.tscn" id="1_nnsk1"]
 [ext_resource type="PackedScene" uid="uid://bxq0ehg2kv2ec" path="res://scenes/score_button.tscn" id="2_button"]
-[ext_resource type="PackedScene" path="res://scenes/shop.tscn" id="2_rwgxs"]
+[ext_resource type="PackedScene" uid="uid://shopscene" path="res://scenes/shop.tscn" id="2_rwgxs"]
 
 [node name="World" type="Node2D" unique_id=1037587713]
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1452719723]
 
-[node name="Shop" parent="CanvasLayer" unique_id=760560970 instance=ExtResource("2_rwgxs")]
+[node name="Shop" parent="CanvasLayer" unique_id=760560970 node_paths=PackedStringArray("level_node_arr") instance=ExtResource("2_rwgxs")]
+level_node_arr = [NodePath("../../Level1"), NodePath("../../Level2"), NodePath("../../Level3")]
 
 [node name="ScoreButton" parent="." unique_id=1361982315 instance=ExtResource("2_button")]
-offset_left = 886.0
-offset_top = 668.0
-offset_right = 986.0
-offset_bottom = 768.0
+offset_left = 620.0
+offset_top = 508.0
+offset_right = 720.0
+offset_bottom = 608.0
 
 [node name="ScoreDropZone" parent="." unique_id=1705446057 instance=ExtResource("1_nnsk1")]
 offset_left = 838.0
 offset_top = 445.0
 offset_right = 1038.0
 offset_bottom = 645.0
+
+[node name="Level1" type="Node2D" parent="." unique_id=977147793]
+
+[node name="Level2" type="Node2D" parent="." unique_id=1290706514]
+
+[node name="Level3" type="Node2D" parent="." unique_id=382584652]

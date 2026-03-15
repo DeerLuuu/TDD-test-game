@@ -17,6 +17,7 @@ config/icon="res://icon.svg"
 [autoload]
 
 GameScore="*res://scripts/score_system.gd"
+Global="*res://scripts/global.gd"
 
 [display]
 

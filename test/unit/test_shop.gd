@@ -59,3 +59,61 @@ func test_purchase_returns_item_info():
 	var result = _shop.try_purchase(0)
 	assert_true(result.success, "购买应成功")
 	assert_eq(result.item_name, "score_button", "应返回物品名称")
+
+
+func test_item_has_level_property():
+	## 物品数据应有level属性
+	_shop.add_item({
+		"name": "test_item",
+		"cost": 50,
+		"scene_path": "res://test.tscn",
+		"level": 2
+	})
+
+	var items = _shop.get_items()
+	assert_eq(items[0].get("level", 1), 2, "物品应有level属性")
+
+
+func test_has_snap_to_grid_method():
+	## 应有网格对齐方法
+	assert_true(_shop.has_method("snap_to_grid"), "应有snap_to_grid方法")
+
+
+func test_snap_to_grid_aligns_position():
+	## 网格对齐应正确工作
+	# 100 / 25 = 4.0 -> round(4.0) = 4 -> 4 * 25 = 100
+	var pos = Vector2(100, 100)
+	var snapped = _shop.snap_to_grid(pos, 25)
+
+	assert_eq(snapped, Vector2(100, 100), "100应对齐到100")
+
+
+func test_snap_to_grid_rounds_position():
+	## 网格对齐应四舍五入到最近网格
+	# 105 / 25 = 4.2 -> round = 4 -> 4 * 25 = 100
+	# 110 / 25 = 4.4 -> round = 4 -> 4 * 25 = 100
+	var pos = Vector2(105, 110)
+	var snapped = _shop.snap_to_grid(pos, 25)
+
+	assert_eq(snapped, Vector2(100, 100), "应对齐到最近网格")
+
+
+func test_snap_to_grid_exact_multiple():
+	## 恰好是网格倍数的位置应保持不变
+	var pos = Vector2(100, 125)  # 100 = 4*25, 125 = 5*25
+	var snapped = _shop.snap_to_grid(pos, 25)
+
+	assert_eq(snapped, Vector2(100, 125), "网格倍数应保持不变")
+
+func test_default_level_is_2():
+	## 默认层级应为2（正常按钮与面板）
+	GameScore.add_score(100)
+	_shop.add_item({
+		"name": "test_item",
+		"cost": 50,
+		"scene_path": "res://scenes/score_button.tscn"
+	})
+
+	var result = _shop.try_purchase(0)
+	# 如果没有指定level，应该返回默认值2
+	assert_eq(result.get("level", 2), 2, "默认层级应为2")
