@@ -1,7 +1,6 @@
 extends GutTest
 ## ConveyorBelt 传送带面板单元测试
 
-var ConveyorBelt = load('res://scripts/conveyor_belt.gd')
 var _conveyor
 
 
@@ -46,7 +45,7 @@ func test_has_speed_property():
 
 func test_default_speed():
 	## 默认速度应为合理值
-	assert_gt(_conveyor.speed, 0, "速度应大于0")
+	assert_gt(_conveyor.speed, 0.0, "速度应大于0")
 
 
 func test_has_numbers_array():
@@ -93,10 +92,9 @@ func test_has_arrow_texture():
 	assert_true("arrow_textures" in _conveyor, "应有arrow_textures属性")
 
 
-func test_updates_arrow_on_rotate():
-	## 旋转时应更新箭头
-	# 此测试需要场景实例
-	await wait_idle_frames(1)
+func test_has_update_arrow_method():
+	## 应有更新箭头方法
+	assert_true(_conveyor.has_method("_update_arrow_texture"), "应有_update_arrow_texture方法")
 
 
 func test_has_rotate_on_scroll_method():

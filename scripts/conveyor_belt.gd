@@ -4,9 +4,6 @@ class_name ConveyorBelt
 ## 可旋转面板，上方数字按当前方向移动
 ## 支持点击模式和拖动模式
 
-## 网格大小
-const GRID_SIZE: int = 25
-
 ## 四个方向的箭头纹理
 @export var arrow_textures: Dictionary = {}
 
@@ -18,22 +15,26 @@ var direction: Vector2 = Vector2.RIGHT:
 	set(value):
 		direction = value
 		_update_arrow_texture()
+		_sync_output_direction()
 
 ## 当前传送带上的数字
 var numbers: Array[NumberObject] = []
 
-## 拖动状态
-var _is_dragging: bool = false
-var _drag_offset: Vector2 = Vector2.ZERO
-var _drag_preview: Control = null
-var _original_position: Vector2 = Vector2.ZERO
-
 ## 箭头显示节点
 var _arrow_display: TextureRect = null
+
+## 输出组件引用
+var _output_component: OutputComponent = null
+var output_component: OutputComponent:
+	get:
+		if _output_component == null:
+			_output_component = get_node_or_null("OutputComponent")
+		return _output_component
 
 
 func _ready() -> void:
 	add_to_group("placeable_items")
+	add_to_group("selectable_items")
 	# 检查是否为预览状态
 	if has_meta("is_preview") and get_meta("is_preview"):
 		return
@@ -60,19 +61,6 @@ func _process(delta: float) -> void:
 
 	_move_numbers(delta)
 	_detect_numbers()
-	# 拖动时更新预览位置
-	if _is_dragging and _drag_preview:
-		var target_pos = get_global_mouse_position() - _drag_offset
-		var snapped_pos = _calculate_snapped_position(target_pos)
-		_drag_preview.global_position = snapped_pos
-
-
-func _calculate_snapped_position(pos: Vector2) -> Vector2:
-	## 计算网格对齐后的位置
-	return Vector2(
-		roundi(pos.x / GRID_SIZE) * GRID_SIZE,
-		roundi(pos.y / GRID_SIZE) * GRID_SIZE
-	)
 
 
 func _detect_numbers() -> void:
@@ -102,86 +90,26 @@ func _detect_numbers() -> void:
 			remove_number(number)
 
 
-func _gui_input(event: InputEvent) -> void:
-	## 点击模式下不处理拖动，只让事件传递
-	# 点击模式下传送带不可拖动，只有拖动模式可以
-	pass
-
-
 func _input(event: InputEvent) -> void:
-	## 处理拖动模式下的拖动
-	if Global.is_drag_mode():
-		if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
-			if event.pressed:
-				# 检查鼠标是否在本节点内
-				var rect = Rect2(global_position, size)
-				if rect.has_point(get_global_mouse_position()):
-					_start_drag()
-			else:
-				if _is_dragging:
-					_end_drag()
-
-	## 处理滚轮输入（两种模式下都可旋转）
-	if _is_dragging and event is InputEventMouseButton:
+	## 处理滚轮输入（旋转传送带方向）
+	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_WHEEL_UP and event.pressed:
-			rotate_on_scroll(1.0)
-			get_viewport().set_input_as_handled()
+			# 检查鼠标是否在本节点内
+			@warning_ignore("static_called_on_instance")
+			var global_mouse = Global.get_scaled_global_mouse_position(get_viewport())
+			var rect = Rect2(global_position, size)
+			if rect.has_point(global_mouse):
+				rotate_on_scroll(1.0)
+				get_viewport().set_input_as_handled()
 		elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN and event.pressed:
-			rotate_on_scroll(-1.0)
-			get_viewport().set_input_as_handled()
+			# 检查鼠标是否在本节点内
+			@warning_ignore("static_called_on_instance")
+			var global_mouse = Global.get_scaled_global_mouse_position(get_viewport())
+			var rect = Rect2(global_position, size)
+			if rect.has_point(global_mouse):
+				rotate_on_scroll(-1.0)
+				get_viewport().set_input_as_handled()
 
-
-func _start_drag() -> void:
-	## 开始拖动
-	_is_dragging = true
-	_drag_offset = get_local_mouse_position()
-	_original_position = global_position
-	_create_drag_preview()
-
-
-func _end_drag() -> void:
-	## 结束拖动
-	if _drag_preview:
-		# 检测目标位置是否被占用
-		var target_pos = _drag_preview.global_position
-		if Global.check_position_occupied(target_pos, size, self):
-			# 位置被占用，回到原位置
-			global_position = _original_position
-		else:
-			# 移动到预览位置
-			global_position = target_pos
-		_remove_drag_preview()
-	_is_dragging = false
-
-
-func _create_drag_preview() -> void:
-	## 创建拖动预览
-	_drag_preview = Control.new()
-	_drag_preview.size = size
-
-	# 创建背景
-	var bg = Panel.new()
-	bg.anchor_right = 1.0
-	bg.anchor_bottom = 1.0
-	_drag_preview.add_child(bg)
-
-	# 设置半透明
-	_drag_preview.modulate.a = 0.5
-	_drag_preview.modulate = Color(0.5, 1.0, 0.5, 0.5)  # 绿色半透明
-
-	# 设置初始位置
-	var target_pos = get_global_mouse_position() - _drag_offset
-	_drag_preview.global_position = _calculate_snapped_position(target_pos)
-
-	# 添加到场景
-	get_tree().current_scene.add_child(_drag_preview)
-
-
-func _remove_drag_preview() -> void:
-	## 移除拖动预览
-	if _drag_preview:
-		_drag_preview.queue_free()
-		_drag_preview = null
 
 ## 旋转方向（顺时针：右 -> 下 -> 左 -> 上 -> 右）
 func rotate_direction() -> void:
@@ -240,3 +168,9 @@ func _move_numbers(delta: float) -> void:
 func _update_arrow_texture() -> void:
 	if _arrow_display and arrow_textures.has(direction):
 		_arrow_display.texture = arrow_textures[direction]
+
+
+func _sync_output_direction() -> void:
+	## 同步输出方向
+	if output_component:
+		output_component.set_output_direction(direction)

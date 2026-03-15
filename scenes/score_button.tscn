@@ -1,14 +1,41 @@
 [gd_scene format=3 uid="uid://bxq0ehg2kv2ec"]
 
 [ext_resource type="Script" uid="uid://xpfdwuorhxh2" path="res://scenes/score_button.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://rdgvr1ygufbm" path="res://scripts/output_component.gd" id="2_output"]
+[ext_resource type="Script" path="res://scripts/selectable_component.gd" id="3_selectable"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_normal"]
+bg_color = Color(0.2, 0.5, 0.3, 0.95)
+border_color = Color(0.35, 0.7, 0.45, 1)
+shadow_size = 3
+shadow_offset = Vector2(2, 2)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pressed"]
+bg_color = Color(0.15, 0.4, 0.25, 0.95)
+border_color = Color(0.3, 0.6, 0.4, 1)
+shadow_size = 2
+shadow_offset = Vector2(1, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hover"]
+bg_color = Color(0.25, 0.6, 0.35, 0.95)
+border_color = Color(0.4, 0.8, 0.5, 1)
+shadow_size = 4
+shadow_offset = Vector2(2, 2)
 
 [node name="ScoreButton" type="Control" unique_id=1361982315]
-custom_minimum_size = Vector2(100, 100)
+custom_minimum_size = Vector2(100, 50)
 layout_mode = 3
 anchors_preset = 0
 offset_right = 100.0
-offset_bottom = 60.0
+offset_bottom = 50.0
 script = ExtResource("1_script")
+
+[node name="OutputComponent" type="Node" parent="." unique_id=123456790]
+script = ExtResource("2_output")
+output_distance = 80
+
+[node name="SelectableComponent" type="Node" parent="." unique_id=123456794]
+script = ExtResource("3_selectable")
 
 [node name="AddButton" type="Button" parent="." unique_id=92367634]
 layout_mode = 1
@@ -18,4 +45,9 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 3
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBoxFlat_normal")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_pressed")
+theme_override_styles/hover = SubResource("StyleBoxFlat_hover")
 text = "生成数字"

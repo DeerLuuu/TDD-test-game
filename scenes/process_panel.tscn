@@ -1,0 +1,64 @@
+[gd_scene format=3 uid="uid://o63brrdleur"]
+
+[ext_resource type="Script" path="res://scripts/process_panel.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://rdgvr1ygufbm" path="res://scripts/output_component.gd" id="2_output"]
+[ext_resource type="Script" path="res://scripts/selectable_component.gd" id="3_selectable"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1dxli"]
+bg_color = Color(0.29803923, 0.47843137, 0.7490196, 0.65882355)
+border_color = Color(0.2, 0.5, 0.3, 1)
+shadow_size = 5
+shadow_offset = Vector2(3, 3)
+
+[node name="ProcessPanel" type="Control" unique_id=2001984046]
+custom_minimum_size = Vector2(150, 150)
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_script")
+
+[node name="OutputComponent" type="Node" parent="." unique_id=299213881]
+script = ExtResource("2_output")
+
+[node name="SelectableComponent" type="Node" parent="." unique_id=866048598]
+script = ExtResource("3_selectable")
+
+[node name="Panel" type="Panel" parent="." unique_id=97790531]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_1dxli")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=1322071972]
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -60.0
+offset_top = -40.0
+offset_right = 60.0
+offset_bottom = 40.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+alignment = 1
+
+[node name="Label" type="Label" parent="VBoxContainer" unique_id=394728354]
+layout_mode = 2
+text = "加工面板"
+horizontal_alignment = 1
+
+[node name="ClickLabel" type="Label" parent="VBoxContainer" unique_id=1868544405]
+layout_mode = 2
+text = "点击加工"
+horizontal_alignment = 1
+
+[node name="ProgressBar" type="ProgressBar" parent="VBoxContainer" unique_id=1424164327]
+visible = false
+custom_minimum_size = Vector2(100, 10)
+layout_mode = 2
+mouse_filter = 2
+show_percentage = false

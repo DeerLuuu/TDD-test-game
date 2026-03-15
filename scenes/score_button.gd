@@ -2,9 +2,6 @@ extends Control
 ## 分数按钮场景 - 点击生成可拖动数字
 ## 拖动模式下可拖动按钮本身
 
-## 网格大小
-const GRID_SIZE: int = 25
-
 ## 层级节点数组（由外部设置）
 @export var level_node_arr: Array[Node2D] = []
 
@@ -18,9 +15,18 @@ var _original_position: Vector2 = Vector2.ZERO
 
 @onready var add_button: Button = $AddButton
 
+## 输出组件引用
+var _output_component: OutputComponent = null
+var output_component: OutputComponent:
+	get:
+		if _output_component == null:
+			_output_component = get_node_or_null("OutputComponent")
+		return _output_component
+
 
 func _ready() -> void:
 	add_to_group("placeable_items")
+	add_to_group("selectable_items")
 	if number_scene == null:
 		number_scene = preload("res://scenes/number_object.tscn")
 	add_button.pressed.connect(_on_add_button_pressed)
@@ -30,22 +36,12 @@ func _ready() -> void:
 func _process(_delta: float) -> void:
 	# 拖动时更新预览位置
 	if _is_dragging and _drag_preview:
-		var target_pos = get_global_mouse_position() - _drag_offset
-		var snapped_pos = _calculate_snapped_position(target_pos)
+		@warning_ignore("static_called_on_instance")
+		var global_mouse = Global.get_scaled_global_mouse_position(get_viewport())
+		var target_pos = global_mouse - _drag_offset
+		@warning_ignore("static_called_on_instance")
+		var snapped_pos = Global.snap_position_to_grid(target_pos)
 		_drag_preview.global_position = snapped_pos
-
-
-func _calculate_snapped_position(pos: Vector2) -> Vector2:
-	## 计算网格对齐后的位置
-	return Vector2(
-		roundi(pos.x / GRID_SIZE) * GRID_SIZE,
-		roundi(pos.y / GRID_SIZE) * GRID_SIZE
-	)
-
-
-func _gui_input(event: InputEvent) -> void:
-	## 点击模式下不拦截按钮点击事件
-	pass
 
 
 func _input(event: InputEvent) -> void:
@@ -54,8 +50,10 @@ func _input(event: InputEvent) -> void:
 		if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 			if event.pressed:
 				# 检查鼠标是否在本节点内
+				@warning_ignore("static_called_on_instance")
+				var global_mouse = Global.get_scaled_global_mouse_position(get_viewport())
 				var rect = Rect2(global_position, size)
-				if rect.has_point(get_global_mouse_position()):
+				if rect.has_point(global_mouse):
 					_start_drag()
 			else:
 				if _is_dragging:
@@ -67,7 +65,6 @@ func _start_drag() -> void:
 	_is_dragging = true
 	_drag_offset = get_local_mouse_position()
 	_original_position = global_position
-	_create_drag_preview()
 
 
 func _end_drag() -> void:
@@ -81,39 +78,7 @@ func _end_drag() -> void:
 		else:
 			# 移动到预览位置
 			global_position = target_pos
-		_remove_drag_preview()
 	_is_dragging = false
-
-
-func _create_drag_preview() -> void:
-	## 创建拖动预览
-	_drag_preview = Control.new()
-	_drag_preview.size = size
-
-	# 创建背景
-	var bg = Panel.new()
-	bg.anchor_right = 1.0
-	bg.anchor_bottom = 1.0
-	_drag_preview.add_child(bg)
-
-	# 设置半透明
-	_drag_preview.modulate.a = 0.5
-	_drag_preview.modulate = Color(0.5, 1.0, 0.5, 0.5)  # 绿色半透明
-
-	# 设置初始位置
-	var target_pos = get_global_mouse_position() - _drag_offset
-	_drag_preview.global_position = _calculate_snapped_position(target_pos)
-
-	# 添加到场景
-	get_tree().current_scene.add_child(_drag_preview)
-
-
-func _remove_drag_preview() -> void:
-	## 移除拖动预览
-	if _drag_preview:
-		_drag_preview.queue_free()
-		_drag_preview = null
-
 
 func _on_add_button_pressed() -> void:
 	## 只在点击模式下生成数字
@@ -122,7 +87,7 @@ func _on_add_button_pressed() -> void:
 
 
 func _spawn_number() -> void:
-	## 生成一个数字对象在按钮正上方
+	## 生成一个数字对象在输出方向
 	var number = number_scene.instantiate()
 
 	# 获取Level3父节点（层级3）
@@ -132,25 +97,27 @@ func _spawn_number() -> void:
 	else:
 		get_tree().current_scene.add_child(number)
 
-	# 设置位置：在按钮正上方（不重叠）
-	var button_center = add_button.global_position + add_button.size / 2
-	var spawn_y_offset = -add_button.size.y - number.size.y / 2 - 10  # 按钮高度 + 数字高度 + 间距
+	# 获取生成位置
+	var spawn_pos: Vector2
+	if output_component:
+		# 使用输出组件的位置
+		spawn_pos = output_component.get_output_position() - number.size / 2
+	else:
+		# 默认在按钮正上方
+		var button_center = global_position + size / 2
+		var spawn_y_offset = -size.y - number.size.y / 2 - 10
+		spawn_pos = Vector2(
+			button_center.x - number.size.x / 2 + randf_range(-30, 30),
+			button_center.y + spawn_y_offset
+		)
 
-	# 轻微随机X偏移，避免数字完全重叠
-	var random_x_offset = randf_range(-30, 30)
-
-	number.global_position = Vector2(
-		button_center.x - number.size.x / 2 + random_x_offset,
-		button_center.y + spawn_y_offset
-	)
+	number.global_position = spawn_pos
 
 	# 应用弹出动画
 	_apply_pop_animation(number)
 
 
 func _get_level_parent(level: int) -> Node:
-	## 获取对应层级的父节点
-	# level_node_arr[0] = Level1, level_node_arr[1] = Level2, level_node_arr[2] = Level3
 	var index = level - 1
 	if level_node_arr.size() > index and level_node_arr[index]:
 		return level_node_arr[index]

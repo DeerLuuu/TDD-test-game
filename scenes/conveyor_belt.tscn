@@ -2,6 +2,14 @@
 
 [ext_resource type="Script" uid="uid://cltedx01dckam" path="res://scripts/conveyor_belt.gd" id="1_script"]
 [ext_resource type="Texture2D" uid="uid://bricornlfq21h" path="res://assets/arrows/arrow_right.svg" id="2_arrow"]
+[ext_resource type="Script" uid="uid://rdgvr1ygufbm" path="res://scripts/output_component.gd" id="3_output"]
+[ext_resource type="Script" path="res://scripts/selectable_component.gd" id="4_selectable"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_03uyg"]
+bg_color = Color(1, 1, 1, 0.6392157)
+border_color = Color(0.2, 0.5, 0.3, 1)
+shadow_size = 5
+shadow_offset = Vector2(3, 3)
 
 [node name="ConveyorBelt" type="Control" unique_id=1705446058]
 custom_minimum_size = Vector2(50, 50)
@@ -19,6 +27,13 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_script")
 
+[node name="SelectableComponent" type="Node" parent="." unique_id=1970331797]
+script = ExtResource("4_selectable")
+
+[node name="OutputComponent" type="Node" parent="." unique_id=1602891572]
+script = ExtResource("3_output")
+output_distance = 40
+
 [node name="Panel" type="Panel" parent="." unique_id=1593868960]
 layout_mode = 1
 anchors_preset = 15
@@ -26,6 +41,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_03uyg")
 
 [node name="TextureRect" type="TextureRect" parent="." unique_id=1593868961]
 layout_mode = 1

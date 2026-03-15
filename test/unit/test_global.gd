@@ -121,3 +121,86 @@ func test_check_position_occupied_respects_grid():
 	# 检测相近位置（网格范围内）
 	var result = Global.check_position_occupied(Vector2(110, 110), Vector2(50, 50))
 	assert_true(result, "相近网格位置应被检测为占用")
+
+
+## === 删除模式测试 ===
+
+func test_has_delete_mode():
+	## 应有删除模式
+	assert_eq(Global.OperationMode.DELETE, 2, "DELETE模式应为2")
+
+
+func test_set_delete_mode():
+	## 设置删除模式
+	Global.set_delete_mode()
+	assert_eq(Global.current_mode, Global.OperationMode.DELETE, "应为删除模式")
+
+
+func test_is_delete_mode():
+	## 检查是否为删除模式
+	Global.set_delete_mode()
+	assert_true(Global.is_delete_mode(), "应为删除模式")
+
+
+func test_has_calculate_drop_values_method():
+	## 应有计算掉落价值方法
+	assert_true(Global.has_method("calculate_drop_values"), "应有calculate_drop_values方法")
+
+
+func test_calculate_drop_values_returns_array():
+	## 计算掉落价值应返回数组
+	var result = Global.calculate_drop_values(100)
+	assert_true(result is Array, "应返回数组")
+
+
+func test_calculate_drop_values_total_not_exceed_60_percent():
+	## 掉落总价值不应超过60%
+	var result = Global.calculate_drop_values(100)
+	var total = 0
+	for val in result:
+		total += val
+	assert_lte(total, 60, "总价值不应超过60")
+
+	# 测试其他值
+	result = Global.calculate_drop_values(50)
+	total = 0
+	for val in result:
+		total += val
+	assert_lte(total, 30, "50的60%是30，不应超过")
+
+
+func test_calculate_drop_values_only_contains_1_to_10():
+	## 掉落价值只能包含1-10之间的数值
+	var result = Global.calculate_drop_values(100)
+	for val in result:
+		assert_gte(val, 1, "掉落价值应大于等于1")
+		assert_lte(val, 10, "掉落价值应小于等于10")
+
+
+## === 调试模式测试 ===
+
+func test_has_debug_mode():
+	## 应有调试模式
+	assert_eq(Global.OperationMode.DEBUG, 3, "DEBUG模式应为3")
+
+
+func test_has_set_debug_mode_method():
+	## 应有设置调试模式方法
+	assert_true(Global.has_method("set_debug_mode"), "应有set_debug_mode方法")
+
+
+func test_set_debug_mode():
+	## 设置调试模式
+	Global.set_debug_mode()
+	assert_eq(Global.current_mode, Global.OperationMode.DEBUG, "应为调试模式")
+
+
+func test_has_is_debug_mode_method():
+	## 应有检查调试模式方法
+	assert_true(Global.has_method("is_debug_mode"), "应有is_debug_mode方法")
+
+
+func test_is_debug_mode():
+	## 检查是否为调试模式
+	Global.set_debug_mode()
+	assert_true(Global.is_debug_mode(), "应为调试模式")

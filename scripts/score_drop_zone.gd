@@ -3,7 +3,6 @@ extends Control
 class_name ScoreDropZone
 
 @onready var score_label: Label = $VBoxContainer/ScoreLabel
-const GRID_SIZE: int = 25
 
 func _ready() -> void:
 	add_to_group("score_drop_zone")
@@ -11,7 +10,8 @@ func _ready() -> void:
 	# 连接分数变化信号
 	if not GameScore.score_changed.is_connected(_on_score_changed):
 		GameScore.score_changed.connect(_on_score_changed)
-	_snap_to_grid()
+	@warning_ignore("static_called_on_instance")
+	Global.snap_node_to_grid(self)
 	_update_display()
 
 
@@ -57,17 +57,9 @@ func on_number_dropped(number: NumberObject) -> void:
 		number.queue_free()
 
 
-func _on_score_changed(_old_score: int, new_score: int) -> void:
+func _on_score_changed(_old_score: int, _new_score: int) -> void:
 	## 分数变化时更新显示
 	_update_display()
-
-func _snap_to_grid() -> void:
-	## 对齐网格
-	var snapped_pos = Vector2(
-		roundi(global_position.x / GRID_SIZE) * GRID_SIZE,
-		roundi(global_position.y / GRID_SIZE) * GRID_SIZE
-	)
-	global_position = snapped_pos
 
 func _update_display() -> void:
 	## 更新分数显示

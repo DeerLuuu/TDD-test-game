@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://deletecursor"]
+
+[ext_resource type="Script" uid="uid://dww8e2y2rw20y" path="res://scripts/delete_cursor.gd" id="1_script"]
+
+[node name="DeleteCursor" type="Control"]
+script = ExtResource("1_script")

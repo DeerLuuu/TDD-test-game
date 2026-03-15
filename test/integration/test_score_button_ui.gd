@@ -11,6 +11,8 @@ var _drop_zone
 func before_each():
 	# 重置 GameScore
 	GameScore.add_score(-GameScore.get_score())
+	# 设置为点击模式
+	Global.set_click_mode()
 
 	_button = add_child_autofree(ScoreButtonScene.instantiate())
 	_drop_zone = add_child_autofree(ScoreDropZoneScene.instantiate())
@@ -24,7 +26,14 @@ func test_scene_has_add_button():
 
 func test_clicking_button_spawns_number():
 	## 点击按钮应生成数字
-	var initial_child_count = get_tree().current_scene.get_child_count()
+	# 设置为点击模式
+	Global.set_click_mode()
+
+	# 等待一帧确保场景稳定
+	await wait_idle_frames(1)
+
+	# 统计初始数字数量
+	var initial_numbers = get_tree().get_nodes_in_group("number_objects").size()
 
 	_button.find_child('AddButton', true, false).emit_signal('pressed')
 
@@ -32,8 +41,8 @@ func test_clicking_button_spawns_number():
 	await wait_idle_frames(1)
 
 	# 检查是否有新的数字节点生成
-	var new_child_count = get_tree().current_scene.get_child_count()
-	assert_gt(new_child_count, initial_child_count, "点击后应生成新数字")
+	var new_numbers = get_tree().get_nodes_in_group("number_objects").size()
+	assert_eq(new_numbers, initial_numbers + 1, "点击后应生成新数字")
 
 
 func test_drop_zone_receives_number():

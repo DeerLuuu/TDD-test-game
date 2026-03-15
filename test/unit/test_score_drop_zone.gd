@@ -73,13 +73,13 @@ func test_listens_to_score_changed_signal():
 
 	# 检查信号是否连接
 	var connections = GameScore.score_changed.get_connections()
-	var is_connected = false
+	var _is_connected = false
 	for conn in connections:
 		if conn.callable.get_object() == _drop_zone:
-			is_connected = true
+			_is_connected = true
 			break
 
-	assert_true(is_connected, "应连接到score_changed信号")
+	assert_true(_is_connected, "应连接到score_changed信号")
 
 
 func test_external_score_change_updates_display():

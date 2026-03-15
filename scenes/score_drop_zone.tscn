@@ -2,6 +2,15 @@
 
 [ext_resource type="Script" uid="uid://mycnijmbyid" path="res://scripts/score_drop_zone.gd" id="1_script"]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1"]
+bg_color = Color(0.08, 0.18, 0.12, 0.95)
+border_color = Color(0.2, 0.5, 0.3, 1)
+set_border_width_all(3)
+set_corner_radius_all(10)
+shadow_color = Color(0, 0, 0, 0.3)
+shadow_size = 5
+shadow_offset = Vector2(3, 3)
+
 [node name="ScoreDropZone" type="Control" unique_id=1705446057]
 custom_minimum_size = Vector2(200, 200)
 layout_mode = 3
@@ -11,14 +20,14 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -100.0
-offset_top = -101.0
+offset_top = -100.0
 offset_right = 100.0
-offset_bottom = 99.0
+offset_bottom = 100.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_script")
 
-[node name="ColorRect" type="ColorRect" parent="." unique_id=1593868959]
+[node name="Panel" type="PanelContainer" parent="." unique_id=1593868959]
 z_index = -1
 layout_mode = 1
 anchors_preset = 15
@@ -26,7 +35,8 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.1, 0.15, 0.1, 0.8)
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_1")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=742781783]
 layout_mode = 1
@@ -35,20 +45,24 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -32.0
-offset_top = -25.0
-offset_right = 32.0
-offset_bottom = 25.0
+offset_left = -50.0
+offset_top = -35.0
+offset_right = 50.0
+offset_bottom = 35.0
 grow_horizontal = 2
 grow_vertical = 2
 alignment = 1
 
 [node name="TitleLabel" type="Label" parent="VBoxContainer" unique_id=1628131000]
 layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.9, 0.7, 1)
+theme_override_font_sizes/font_size = 14
 text = "加分面板"
 horizontal_alignment = 1
 
 [node name="ScoreLabel" type="Label" parent="VBoxContainer" unique_id=1358256471]
 layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.95, 0.5, 1)
+theme_override_font_sizes/font_size = 20
 text = "分数: 0"
 horizontal_alignment = 1

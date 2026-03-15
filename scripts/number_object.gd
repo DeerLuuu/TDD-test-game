@@ -19,14 +19,24 @@ func _ready() -> void:
 
 func _process(_delta: float) -> void:
 	if _is_dragging:
-		global_position = get_global_mouse_position() - _drag_offset
+		# 使用考虑相机缩放的全局鼠标位置
+		@warning_ignore("static_called_on_instance")
+		global_position = Global.get_scaled_global_mouse_position(get_viewport()) - _drag_offset
 
 func _gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		if event.is_pressed():
+			# 检查是否在加工面板中，如果是则取出
+			_check_and_remove_from_process_panel()
 			_is_dragging = true
 			_drag_offset = get_local_mouse_position()
-		elif event.is_released():
+			accept_event()
+
+
+func _input(event: InputEvent) -> void:
+	## 确保释放事件被捕获
+	if _is_dragging and event is InputEventMouseButton:
+		if event.button_index == MOUSE_BUTTON_LEFT and not event.pressed:
 			_is_dragging = false
 			_check_drop_zone()
 
@@ -58,10 +68,28 @@ func _update_display() -> void:
 
 
 func _check_drop_zone() -> void:
-	## 检查是否放入加分面板
+	## 检查是否放入加分面板或加工面板
+	# 先检查加工面板
+	var process_panels = get_tree().get_nodes_in_group("process_panel")
+	for panel in process_panels:
+		var rect = Rect2(panel.global_position, panel.size)
+		if rect.has_point(global_position + size / 2):
+			panel.accept_number(self)
+			return
+
+	# 再检查加分面板
 	var drop_zones = get_tree().get_nodes_in_group("score_drop_zone")
 	for zone in drop_zones:
 		var rect = Rect2(zone.global_position, zone.size)
 		if rect.has_point(global_position + size / 2):
 			zone.on_number_dropped(self)
+			return
+
+
+func _check_and_remove_from_process_panel() -> void:
+	## 检查是否在加工面板中，如果是则取出
+	var process_panels = get_tree().get_nodes_in_group("process_panel")
+	for panel in process_panels:
+		if panel.current_number == self:
+			panel.remove_number(self)
 			return

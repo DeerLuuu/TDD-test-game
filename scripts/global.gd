@@ -3,8 +3,10 @@ extends Node
 
 ## 操作模式枚举
 enum OperationMode {
-	CLICK,  ## 点击模式
-	DRAG    ## 拖动模式
+	CLICK,   ## 点击模式
+	DRAG,    ## 拖动模式
+	DELETE,  ## 删除模式
+	DEBUG    ## 调试模式
 }
 
 ## 模式变化信号
@@ -65,8 +67,70 @@ func is_drag_mode() -> bool:
 	return current_mode == OperationMode.DRAG
 
 
+## 切换到删除模式
+func set_delete_mode() -> void:
+	current_mode = OperationMode.DELETE
+
+
+## 是否为删除模式
+func is_delete_mode() -> bool:
+	return current_mode == OperationMode.DELETE
+
+
+## 切换到调试模式
+func set_debug_mode() -> void:
+	current_mode = OperationMode.DEBUG
+
+
+## 是否为调试模式
+func is_debug_mode() -> bool:
+	return current_mode == OperationMode.DEBUG
+
+
 ## 网格大小
 const GRID_SIZE: int = 25
+
+
+## 将节点对齐到网格
+static func snap_node_to_grid(node: Node) -> void:
+	## 将节点位置对齐到网格
+	if not node:
+		return
+
+	var pos: Vector2
+	if node is Control:
+		pos = node.global_position
+	elif node is Node2D:
+		pos = node.global_position
+	else:
+		return
+
+	var snapped_pos = Vector2(
+		roundi(pos.x / GRID_SIZE) * GRID_SIZE,
+		roundi(pos.y / GRID_SIZE) * GRID_SIZE
+	)
+
+	if node is Control:
+		node.global_position = snapped_pos
+	elif node is Node2D:
+		node.global_position = snapped_pos
+
+
+## 将位置对齐到网格并返回
+static func snap_position_to_grid(pos: Vector2) -> Vector2:
+	## 将位置对齐到网格并返回
+	return Vector2(
+		roundi(pos.x / GRID_SIZE) * GRID_SIZE,
+		roundi(pos.y / GRID_SIZE) * GRID_SIZE
+	)
+
+
+## 获取正确的全局鼠标位置（考虑相机缩放）
+static func get_scaled_global_mouse_position(viewport: Viewport) -> Vector2:
+	## 考虑相机缩放的全局鼠标位置
+	var mouse_pos = viewport.get_mouse_position()
+	var canvas_transform = viewport.get_canvas_transform()
+	return canvas_transform.affine_inverse() * mouse_pos
 
 
 ## 检测位置是否被占用
@@ -95,3 +159,25 @@ func check_position_occupied(position: Vector2, size: Vector2, exclude: Control 
 			return true
 
 	return false
+
+
+## 计算删除物品后掉落的数值（总和不超过60%）
+## 返回1-10之间的随机数值组合
+func calculate_drop_values(total_value: int) -> Array:
+	var max_drop = int(total_value * randf_range(0.3, 0.6))
+
+	if max_drop < 1:
+		return []
+
+	var result = []
+	var remaining = max_drop
+
+	# 随机生成1-10之间的数值，直到用完
+	while remaining >= 1:
+		# 随机选择1-10之间的值，但不能超过剩余值
+		var max_val = mini(10, remaining)
+		var val = randi_range(1, max_val)
+		result.append(val)
+		remaining -= val
+
+	return result

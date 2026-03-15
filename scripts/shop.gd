@@ -4,12 +4,9 @@ class_name Shop
 
 signal item_purchased(item_data: Dictionary)
 
-## 网格大小
-const GRID_SIZE: int = 25
-
 var _items: Array = []
 
-@onready var item_container: VBoxContainer = $MarginContainer/VBoxContainer/ScrollContainer/ItemContainer
+@onready var item_container: GridContainer = $MarginContainer/VBoxContainer/ScrollContainer/ItemContainer
 @onready var mode_label: Label = $MarginContainer/VBoxContainer/ModeContainer/ModeLabel
 @onready var direction_btn: Button = $MarginContainer/VBoxContainer/ModeContainer/DirectionButton
 
@@ -44,6 +41,12 @@ func _unhandled_input(event: InputEvent) -> void:
 			KEY_X:
 				Global.set_drag_mode()
 				get_viewport().set_input_as_handled()
+			KEY_C:
+				Global.set_delete_mode()
+				get_viewport().set_input_as_handled()
+			KEY_V:
+				Global.set_debug_mode()
+				get_viewport().set_input_as_handled()
 
 
 func _on_mode_changed(_old_mode: int, _new_mode: int) -> void:
@@ -58,9 +61,13 @@ func _update_mode_ui() -> void:
 	## 更新模式显示
 	if mode_label:
 		if Global.is_click_mode():
-			mode_label.text = "模式: 点击 (Z/X切换)"
+			mode_label.text = "模式: 点击 (Z/X/C/V切换)"
+		elif Global.is_drag_mode():
+			mode_label.text = "模式: 拖动 (Z/X/C/V切换)"
+		elif Global.is_delete_mode():
+			mode_label.text = "模式: 删除 (Z/X/C/V切换)"
 		else:
-			mode_label.text = "模式: 拖动 (Z/X切换)"
+			mode_label.text = "模式: 调试 (Z/X/C/V切换)"
 
 
 func _update_direction_ui() -> void:
@@ -85,15 +92,21 @@ func _setup_default_items() -> void:
 			"level": 2
 		},
 		{
-			"name": "加分按钮+",
-			"cost": 150,
-			"scene_path": "res://scenes/score_button.tscn",
-			"level": 2
-		},
-		{
 			"name": "传送带",
 			"cost": 100,
 			"scene_path": "res://scenes/conveyor_belt.tscn",
+			"level": 2
+		},
+		{
+			"name": "收集面板",
+			"cost": 80,
+			"scene_path": "res://scenes/collect_panel.tscn",
+			"level": 2
+		},
+		{
+			"name": "加工面板",
+			"cost": 150,
+			"scene_path": "res://scenes/process_panel.tscn",
 			"level": 2
 		}
 	]
@@ -167,7 +180,7 @@ func try_purchase(index: int) -> Dictionary:
 	return result
 
 
-func _on_item_dragged_out(item: ShopItem, global_pos: Vector2, index: int) -> void:
+func _on_item_dragged_out(_item: ShopItem, global_pos: Vector2, index: int) -> void:
 	## 物品拖出商店时的处理
 	var result = try_purchase(index)
 
@@ -191,7 +204,8 @@ func _spawn_purchased_item(scene_path: String, global_pos: Vector2, level: int =
 	var instance = scene.instantiate()
 
 	# 对齐网格
-	var snapped_pos = snap_to_grid(global_pos, GRID_SIZE)
+	@warning_ignore("static_called_on_instance")
+	var snapped_pos = Global.snap_position_to_grid(global_pos)
 
 	# 根据层级选择父节点
 	var parent = _get_level_parent(level)
@@ -237,20 +251,10 @@ func rotate_drag_direction() -> void:
 
 
 func _get_level_parent(level: int) -> Node:
-	## 获取对应层级的父节点
-	# level_node_arr[0] = Level1, level_node_arr[1] = Level2, ...
 	var index = level - 1
 	if level_node_arr.size() > index and level_node_arr[index]:
 		return level_node_arr[index]
 	return null
-
-
-func snap_to_grid(pos: Vector2, grid_size: int) -> Vector2:
-	## 将位置对齐到网格
-	return Vector2(
-		roundi(pos.x / grid_size) * grid_size,
-		roundi(pos.y / grid_size) * grid_size
-	)
 
 
 func _show_purchase_failed(result: Dictionary) -> void:

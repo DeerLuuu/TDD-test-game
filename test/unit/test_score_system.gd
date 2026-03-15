@@ -1,7 +1,6 @@
 extends GutTest
 ## 分数系统测试 - TDD Red阶段
 
-var ScoreSystem = load('res://scripts/score_system.gd')
 var _score_system
 
 

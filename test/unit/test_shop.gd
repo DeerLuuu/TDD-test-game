@@ -1,7 +1,6 @@
 extends GutTest
 ## Shop 商店面板单元测试
 
-var Shop = load('res://scripts/shop.gd')
 var _shop
 
 
@@ -74,16 +73,17 @@ func test_item_has_level_property():
 	assert_eq(items[0].get("level", 1), 2, "物品应有level属性")
 
 
-func test_has_snap_to_grid_method():
-	## 应有网格对齐方法
-	assert_true(_shop.has_method("snap_to_grid"), "应有snap_to_grid方法")
+func test_global_has_snap_position_to_grid():
+	## Global应有网格对齐方法
+	assert_true(Global.has_method("snap_position_to_grid"), "Global应有snap_position_to_grid方法")
 
 
 func test_snap_to_grid_aligns_position():
 	## 网格对齐应正确工作
 	# 100 / 25 = 4.0 -> round(4.0) = 4 -> 4 * 25 = 100
 	var pos = Vector2(100, 100)
-	var snapped = _shop.snap_to_grid(pos, 25)
+	@warning_ignore("static_called_on_instance", "shadowed_global_identifier")
+	var snapped = Global.snap_position_to_grid(pos)
 
 	assert_eq(snapped, Vector2(100, 100), "100应对齐到100")
 
@@ -93,7 +93,8 @@ func test_snap_to_grid_rounds_position():
 	# 105 / 25 = 4.2 -> round = 4 -> 4 * 25 = 100
 	# 110 / 25 = 4.4 -> round = 4 -> 4 * 25 = 100
 	var pos = Vector2(105, 110)
-	var snapped = _shop.snap_to_grid(pos, 25)
+	@warning_ignore("static_called_on_instance", "shadowed_global_identifier")
+	var snapped = Global.snap_position_to_grid(pos)
 
 	assert_eq(snapped, Vector2(100, 100), "应对齐到最近网格")
 
@@ -101,7 +102,8 @@ func test_snap_to_grid_rounds_position():
 func test_snap_to_grid_exact_multiple():
 	## 恰好是网格倍数的位置应保持不变
 	var pos = Vector2(100, 125)  # 100 = 4*25, 125 = 5*25
-	var snapped = _shop.snap_to_grid(pos, 25)
+	@warning_ignore("static_called_on_instance", "shadowed_global_identifier")
+	var snapped = Global.snap_position_to_grid(pos)
 
 	assert_eq(snapped, Vector2(100, 125), "网格倍数应保持不变")
 

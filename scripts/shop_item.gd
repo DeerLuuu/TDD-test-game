@@ -2,9 +2,6 @@ extends Control
 ## 商店物品 - 可拖动的商店物品
 class_name ShopItem
 
-## 网格大小
-const GRID_SIZE: int = 25
-
 signal dragged_out(item: ShopItem, global_pos: Vector2)
 
 @export var item_name: String = "物品"
@@ -29,17 +26,12 @@ func _ready() -> void:
 
 func _process(_delta: float) -> void:
 	if _is_dragging and _preview:
-		var target_pos = get_global_mouse_position() - _preview.size / 2
-		var snapped_pos = _calculate_snapped_position(target_pos)
+		@warning_ignore("static_called_on_instance")
+		var global_mouse = Global.get_scaled_global_mouse_position(get_viewport())
+		var target_pos = global_mouse - _preview.size / 2
+		@warning_ignore("static_called_on_instance")
+		var snapped_pos = Global.snap_position_to_grid(target_pos)
 		_preview.global_position = snapped_pos
-
-
-func _calculate_snapped_position(pos: Vector2) -> Vector2:
-	## 计算网格对齐后的位置
-	return Vector2(
-		roundi(pos.x / GRID_SIZE) * GRID_SIZE,
-		roundi(pos.y / GRID_SIZE) * GRID_SIZE
-	)
 
 
 func _gui_input(event: InputEvent) -> void:
@@ -105,7 +97,9 @@ func _create_drag_preview() -> void:
 	_preview = _create_preview_control()
 	if _preview:
 		_preview.modulate.a = 0.7  # 半透明
-		_preview.global_position = get_global_mouse_position() - _preview.size / 2
+		@warning_ignore("static_called_on_instance")
+		var global_mouse = Global.get_scaled_global_mouse_position(get_viewport())
+		_preview.global_position = global_mouse - _preview.size / 2
 		get_tree().current_scene.add_child(_preview)
 
 
@@ -169,11 +163,17 @@ func _check_drag_out() -> void:
 	var shops = get_tree().get_nodes_in_group("shop_panel")
 	var is_outside = true
 
+	# 使用屏幕坐标检测是否在商店内（CanvasLayer坐标不受相机缩放影响）
+	var screen_mouse = get_viewport().get_mouse_position()
+
 	for shop in shops:
 		var rect = Rect2(shop.global_position, shop.size)
-		if rect.has_point(get_global_mouse_position()):
+		if rect.has_point(screen_mouse):
 			is_outside = false
 			break
 
 	if is_outside:
-		dragged_out.emit(self, get_global_mouse_position())
+		# 放置物品时使用缩放后的世界坐标
+		@warning_ignore("static_called_on_instance")
+		var global_mouse = Global.get_scaled_global_mouse_position(get_viewport())
+		dragged_out.emit(self, global_mouse)

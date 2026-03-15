@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://selectionbox"]
+
+[ext_resource type="Script" uid="uid://selectionbox123" path="res://scripts/selection_box.gd" id="1_script"]
+
+[node name="SelectionBox" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_script")

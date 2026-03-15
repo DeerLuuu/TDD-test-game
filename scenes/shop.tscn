@@ -1,50 +1,57 @@
 [gd_scene format=3 uid="uid://shopscene"]
 
-[ext_resource type="Script" path="res://scripts/shop.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://d4ks1p5l32y7q" path="res://scripts/shop.gd" id="1_script"]
 
-[node name="Shop" type="PanelContainer"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_lx5au"]
+bg_color = Color(0.14164537, 0.38895956, 0.34082708, 0.9490196)
+border_color = Color(0.2, 0.5, 0.3, 1)
+shadow_size = 5
+shadow_offset = Vector2(3, 3)
+
+[node name="Shop" type="PanelContainer" unique_id=1639847809]
 anchors_preset = 9
 anchor_bottom = 1.0
 offset_right = 180.0
 grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_lx5au")
 script = ExtResource("1_script")
 
-[node name="MarginContainer" type="MarginContainer" parent="."]
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=1971651918]
 layout_mode = 2
 theme_override_constants/margin_left = 10
 theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 10
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer" unique_id=1786407118]
 layout_mode = 2
 
-[node name="TitleLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+[node name="TitleLabel" type="Label" parent="MarginContainer/VBoxContainer" unique_id=2010888225]
 layout_mode = 2
 text = "商店"
 horizontal_alignment = 1
 
-[node name="ModeContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+[node name="ModeContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer" unique_id=773077396]
 layout_mode = 2
 
-[node name="ModeLabel" type="Label" parent="MarginContainer/VBoxContainer/ModeContainer"]
+[node name="ModeLabel" type="Label" parent="MarginContainer/VBoxContainer/ModeContainer" unique_id=1621462245]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "模式: 点击 (Z/X切换)"
 horizontal_alignment = 1
 
-[node name="DirectionButton" type="Button" parent="MarginContainer/VBoxContainer/ModeContainer"]
+[node name="DirectionButton" type="Button" parent="MarginContainer/VBoxContainer/ModeContainer" unique_id=976046262]
 layout_mode = 2
 text = "方向: →"
 
-[node name="HSeparator" type="HSeparator" parent="MarginContainer/VBoxContainer"]
+[node name="HSeparator" type="HSeparator" parent="MarginContainer/VBoxContainer" unique_id=287018949]
 layout_mode = 2
 
-[node name="ScrollContainer" type="ScrollContainer" parent="MarginContainer/VBoxContainer"]
+[node name="ScrollContainer" type="ScrollContainer" parent="MarginContainer/VBoxContainer" unique_id=260927911]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="ItemContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ScrollContainer"]
+[node name="ItemContainer" type="GridContainer" parent="MarginContainer/VBoxContainer/ScrollContainer" unique_id=1962517865]
 layout_mode = 2
-size_flags_horizontal = 3
-theme_override_constants/separation = 5
+size_flags_horizontal = 6
+columns = 2
