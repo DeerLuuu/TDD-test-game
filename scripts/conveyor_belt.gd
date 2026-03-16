@@ -10,6 +10,9 @@ class_name ConveyorBelt
 ## 移动速度（像素/秒）
 @export var speed: float = 100.0
 
+## 对齐速度（像素/秒）- 移动到中心线的速度
+@export var align_speed: float = 200.0
+
 ## 当前方向
 var direction: Vector2 = Vector2.RIGHT:
 	set(value):
@@ -19,6 +22,9 @@ var direction: Vector2 = Vector2.RIGHT:
 
 ## 当前传送带上的数字
 var numbers: Array[NumberObject] = []
+
+## 数字是否已对齐到中心线
+var _number_aligned: Dictionary = {}
 
 ## 箭头显示节点
 var _arrow_display: TextureRect = null
@@ -157,19 +163,90 @@ func rotate_on_scroll(scroll_direction: float) -> void:
 func add_number(number: NumberObject) -> void:
 	if number and not numbers.has(number):
 		numbers.append(number)
+		# 新数字默认未对齐
+		_number_aligned[number.get_instance_id()] = false
 
 
 ## 从传送带移除数字
 func remove_number(number: NumberObject) -> void:
 	if number:
 		numbers.erase(number)
+		_number_aligned.erase(number.get_instance_id())
+
+
+## 获取方向中心线位置（传送带中心点）
+func get_center_line_position() -> Vector2:
+	## 返回传送带的中心位置
+	return global_position + size / 2
+
+
+## 检查数字是否已对齐
+func is_number_aligned(number: NumberObject) -> bool:
+	return _number_aligned.get(number.get_instance_id(), false)
 
 
 ## 按当前方向移动所有数字
 func _move_numbers(delta: float) -> void:
 	for number in numbers:
 		if is_instance_valid(number) and not number._is_dragging:
-			number.global_position += direction * speed * delta
+			var number_id = number.get_instance_id()
+
+			# 检查是否需要先对齐
+			if not _number_aligned.get(number_id, false):
+				# 先移动到中心线
+				_align_to_center_line(number, delta)
+			else:
+				# 已对齐，沿方向移动
+				number.global_position += direction * speed * delta
+
+
+## 将数字对齐到方向中心线
+func _align_to_center_line(number: NumberObject, delta: float) -> void:
+	## 计算数字中心位置
+	var number_center = number.global_position + number.size / 2
+	## 传送带中心位置
+	var conveyor_center = get_center_line_position()
+
+	## 根据方向确定需要对齐的轴
+	var align_axis: String  # "x" 或 "y"
+	var target_pos: float
+	var current_pos: float
+
+	if direction == Vector2.LEFT or direction == Vector2.RIGHT:
+		# 水平方向移动，需要对齐Y轴
+		align_axis = "y"
+		target_pos = conveyor_center.y
+		current_pos = number_center.y
+	else:
+		# 垂直方向移动，需要对齐X轴
+		align_axis = "x"
+		target_pos = conveyor_center.x
+		current_pos = number_center.x
+
+	## 计算距离和移动量
+	var distance = absf(target_pos - current_pos)
+	var move_amount = align_speed * delta
+
+	if distance <= move_amount:
+		# 已到达中心线，精确对齐
+		if align_axis == "y":
+			number.global_position.y = target_pos - number.size.y / 2
+		else:
+			number.global_position.x = target_pos - number.size.x / 2
+		# 标记为已对齐
+		_number_aligned[number.get_instance_id()] = true
+	else:
+		# 向中心线移动
+		if align_axis == "y":
+			if current_pos < target_pos:
+				number.global_position.y += move_amount
+			else:
+				number.global_position.y -= move_amount
+		else:
+			if current_pos < target_pos:
+				number.global_position.x += move_amount
+			else:
+				number.global_position.x -= move_amount
 
 
 ## 更新箭头纹理显示

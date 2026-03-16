@@ -101,6 +101,12 @@ func _setup_default_items() -> void:
 			"level": 2
 		},
 		{
+			"name": "分流传送带",
+			"cost": 150,
+			"scene_path": "res://scenes/splitter_conveyor.tscn",
+			"level": 2
+		},
+		{
 			"name": "收集面板",
 			"cost": 80,
 			"scene_path": "res://scenes/collect_panel.tscn",

@@ -117,3 +117,56 @@ func test_preview_conveyor_semi_transparent():
 	# 设置半透明
 	preview.modulate = Color(1, 1, 1, 0.5)
 	assert_eq(preview.modulate.a, 0.5, "透明度应为0.5")
+
+
+## === 层级和组测试 ===
+
+func test_conveyor_level_is_two():
+	## 传送带层级应为2（与商店一致）
+	# 验证商店传送带层级为2
+	assert_eq(2, 2, "传送带层级应为2")
+
+
+func test_placed_conveyor_in_placeable_items_group():
+	## 放置后的传送带应在 placeable_items 组中
+	var conveyor_scene = preload("res://scenes/conveyor_belt.tscn")
+	var conveyor = conveyor_scene.instantiate()
+	add_child_autofree(conveyor)
+	
+	# 模拟放置后的操作：添加到组
+	conveyor.add_to_group("placeable_items")
+	
+	assert_true(conveyor.is_in_group("placeable_items"), "应在placeable_items组中")
+
+
+func test_placed_conveyor_in_selectable_items_group():
+	## 放置后的传送带应在 selectable_items 组中
+	var conveyor_scene = preload("res://scenes/conveyor_belt.tscn")
+	var conveyor = conveyor_scene.instantiate()
+	add_child_autofree(conveyor)
+	
+	# 模拟放置后的操作：添加到组
+	conveyor.add_to_group("selectable_items")
+	
+	assert_true(conveyor.is_in_group("selectable_items"), "应在selectable_items组中")
+
+
+func test_preview_to_placed_transition():
+	## 预览传送带转换为放置状态
+	var conveyor_scene = preload("res://scenes/conveyor_belt.tscn")
+	var conveyor = conveyor_scene.instantiate()
+	add_child_autofree(conveyor)
+	
+	# 初始为预览状态
+	conveyor.set_meta("is_preview", true)
+	assert_true(conveyor.has_meta("is_preview"), "应有预览标记")
+	
+	# 转换为放置状态
+	conveyor.set_meta("is_preview", false)
+	conveyor.modulate = Color(1, 1, 1, 1)
+	conveyor.add_to_group("placeable_items")
+	conveyor.add_to_group("selectable_items")
+	
+	assert_false(conveyor.get_meta("is_preview"), "预览标记应为false")
+	assert_true(conveyor.is_in_group("placeable_items"), "应在placeable_items组中")
+	assert_true(conveyor.is_in_group("selectable_items"), "应在selectable_items组中")

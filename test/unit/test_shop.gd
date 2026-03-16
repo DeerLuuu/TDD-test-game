@@ -6,8 +6,8 @@ var _shop
 
 func before_each():
 	_shop = autofree(Shop.new())
-	# 重置 GameScore
-	GameScore.add_score(-GameScore.get_score())
+	# 重置 GameScore 到初始状态
+	GameScore.add_score(-GameScore.get_score() + 100)
 
 
 func test_get_items_returns_array():
@@ -26,7 +26,7 @@ func test_can_add_item():
 
 func test_can_purchase_item_by_index():
 	## 可以通过索引购买物品
-	GameScore.add_score(100)
+	# 初始分数已经是100
 	_shop.add_item({"name": "test_item", "cost": 50, "scene_path": "res://test.tscn"})
 
 	var result = _shop.try_purchase(0)
@@ -37,7 +37,8 @@ func test_can_purchase_item_by_index():
 
 func test_cannot_purchase_when_not_enough_score():
 	## 分数不足时无法购买
-	GameScore.add_score(30)
+	# 先把分数减到30
+	GameScore.add_score(-70)
 	_shop.add_item({"name": "expensive_item", "cost": 100, "scene_path": "res://test.tscn"})
 
 	var result = _shop.try_purchase(0)
@@ -48,7 +49,7 @@ func test_cannot_purchase_when_not_enough_score():
 
 func test_purchase_returns_item_info():
 	## 购买成功返回物品信息
-	GameScore.add_score(100)
+	# 初始分数已经是100
 	_shop.add_item({
 		"name": "score_button",
 		"cost": 50,
@@ -80,7 +81,7 @@ func test_global_has_snap_position_to_grid():
 
 func test_snap_to_grid_aligns_position():
 	## 网格对齐应正确工作
-	# 100 / 25 = 4.0 -> round(4.0) = 4 -> 4 * 25 = 100
+	# 100 / 50 = 2.0 -> round(2.0) = 2 -> 2 * 50 = 100
 	var pos = Vector2(100, 100)
 	@warning_ignore("static_called_on_instance", "shadowed_global_identifier")
 	var snapped = Global.snap_position_to_grid(pos)
@@ -90,22 +91,22 @@ func test_snap_to_grid_aligns_position():
 
 func test_snap_to_grid_rounds_position():
 	## 网格对齐应四舍五入到最近网格
-	# 105 / 25 = 4.2 -> round = 4 -> 4 * 25 = 100
-	# 110 / 25 = 4.4 -> round = 4 -> 4 * 25 = 100
-	var pos = Vector2(105, 110)
+	# 120 / 50 = 2.4 -> round = 2 -> 2 * 50 = 100
+	# 130 / 50 = 2.6 -> round = 3 -> 3 * 50 = 150
+	var pos = Vector2(120, 130)
 	@warning_ignore("static_called_on_instance", "shadowed_global_identifier")
 	var snapped = Global.snap_position_to_grid(pos)
 
-	assert_eq(snapped, Vector2(100, 100), "应对齐到最近网格")
+	assert_eq(snapped, Vector2(100, 150), "应对齐到最近网格")
 
 
 func test_snap_to_grid_exact_multiple():
 	## 恰好是网格倍数的位置应保持不变
-	var pos = Vector2(100, 125)  # 100 = 4*25, 125 = 5*25
+	var pos = Vector2(100, 150)  # 100 = 2*50, 150 = 3*50
 	@warning_ignore("static_called_on_instance", "shadowed_global_identifier")
 	var snapped = Global.snap_position_to_grid(pos)
 
-	assert_eq(snapped, Vector2(100, 125), "网格倍数应保持不变")
+	assert_eq(snapped, Vector2(100, 150), "网格倍数应保持不变")
 
 func test_default_level_is_2():
 	## 默认层级应为2（正常按钮与面板）

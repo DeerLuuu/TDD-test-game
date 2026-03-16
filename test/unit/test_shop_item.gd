@@ -7,8 +7,8 @@ var _item
 
 func before_each():
 	_item = add_child_autofree(ShopItemScene.instantiate())
-	# 重置 GameScore
-	GameScore.add_score(-GameScore.get_score())
+	# 重置 GameScore 到初始状态
+	GameScore.add_score(-GameScore.get_score() + 100)
 
 
 func test_initial_name_is_set():
@@ -31,14 +31,15 @@ func test_initial_scene_is_set():
 
 func test_can_afford_returns_true_when_enough_score():
 	## 分数足够时can_afford返回true
-	GameScore.add_score(100)
+	# 初始分数已经是100
 
 	assert_true(_item.can_afford(GameScore.get_score()), "分数足够应返回true")
 
 
 func test_can_afford_returns_false_when_not_enough_score():
 	## 分数不足时can_afford返回false
-	GameScore.add_score(50)
+	# 先把分数减到50
+	GameScore.add_score(-50)
 	_item.cost = 100
 
 	assert_false(_item.can_afford(GameScore.get_score()), "分数不足应返回false")
@@ -46,7 +47,7 @@ func test_can_afford_returns_false_when_not_enough_score():
 
 func test_purchase_deducts_score():
 	## 购买扣除分数
-	GameScore.add_score(100)
+	# 初始分数已经是100
 	_item.cost = 50
 
 	var result = _item.purchase(GameScore.get_score())

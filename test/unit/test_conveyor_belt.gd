@@ -72,19 +72,29 @@ func test_remove_number():
 
 func test_move_numbers_in_direction():
 	## 数字应按方向移动
-	var number = partial_double(NumberObject).new()
-	add_child_autofree(number)
-	number.global_position = Vector2(100, 100)
-	_conveyor.add_number(number)
-
-	var initial_pos = number.global_position
+	# 设置传送带位置和大小
+	_conveyor.size = Vector2(50, 50)
+	_conveyor.global_position = Vector2(100, 100)
 	_conveyor.direction = Vector2.RIGHT
 	_conveyor.speed = 50
+	_conveyor.align_speed = 1000  # 快速对齐
+
+	var number = partial_double(NumberObject).new()
+	add_child_autofree(number)
+	# 数字已在中心线上（Y对齐）
+	number.global_position = Vector2(110, 100)
+	number.size = Vector2(50, 50)
+	_conveyor.add_number(number)
+
+	# 手动标记为已对齐
+	_conveyor._number_aligned[number.get_instance_id()] = true
+
+	var initial_pos = number.global_position.x
 
 	# 模拟一帧移动 (delta = 0.016)
 	_conveyor._move_numbers(0.016)
 
-	assert_gt(number.global_position.x, initial_pos.x, "数字应向右移动")
+	assert_gt(number.global_position.x, initial_pos, "数字应向右移动")
 
 
 func test_has_arrow_texture():
@@ -151,3 +161,97 @@ func test_can_rotate_in_click_mode():
 	_conveyor.direction = Vector2.RIGHT
 	_conveyor.rotate_direction()
 	assert_eq(_conveyor.direction, Vector2.DOWN, "点击模式下应能旋转")
+
+
+## === 方向中心线对齐测试 ===
+
+func test_has_get_center_line_position_method():
+	## 应有获取方向中心线位置的方法
+	assert_true(_conveyor.has_method("get_center_line_position"), "应有get_center_line_position方法")
+
+
+func test_center_line_position_for_right_direction():
+	## 向右方向时，中心线在水平中心
+	_conveyor.size = Vector2(50, 50)
+	_conveyor.global_position = Vector2(100, 100)
+	_conveyor.direction = Vector2.RIGHT
+
+	var center_pos = _conveyor.get_center_line_position()
+	# 中心线Y应在传送带的垂直中心
+	assert_eq(center_pos.y, _conveyor.global_position.y + _conveyor.size.y / 2, "中心线Y应在垂直中心")
+
+
+func test_center_line_position_for_down_direction():
+	## 向下方向时，中心线在垂直中心
+	_conveyor.size = Vector2(50, 50)
+	_conveyor.global_position = Vector2(100, 100)
+	_conveyor.direction = Vector2.DOWN
+
+	var center_pos = _conveyor.get_center_line_position()
+	# 中心线X应在传送带的水平中心
+	assert_eq(center_pos.x, _conveyor.global_position.x + _conveyor.size.x / 2, "中心线X应在水平中心")
+
+
+func test_has_number_alignment_tracking():
+	## 应有数字对齐状态跟踪
+	assert_true("number_aligned" in _conveyor or _conveyor.has_method("is_number_aligned"), "应有数字对齐状态跟踪")
+
+
+func test_number_moves_to_center_line_first():
+	## 数字应先移动到中心线
+	_conveyor.size = Vector2(50, 50)
+	_conveyor.global_position = Vector2(100, 100)
+	_conveyor.direction = Vector2.RIGHT
+	_conveyor.speed = 100
+	_conveyor.align_speed = 200
+
+	var number = partial_double(NumberObject).new()
+	add_child_autofree(number)
+	# 数字中心在传送带中心下方，需要向上移动到中心线
+	# 数字位置(105, 120)，中心在(130, 145)
+	# 传送带中心在(125, 125)，所以Y需要减小
+	number.global_position = Vector2(105, 120)
+	number.size = Vector2(50, 50)
+	_conveyor.add_number(number)
+
+	var initial_y = number.global_position.y
+	# 移动一帧
+	_conveyor._move_numbers(0.1)
+
+	# 数字Y应该向中心线移动（减小）
+	assert_lt(number.global_position.y, initial_y, "数字Y应向中心线移动（减小）")
+
+
+func test_number_moves_along_direction_after_aligned():
+	## 数字对齐后沿方向移动
+	_conveyor.size = Vector2(50, 50)
+	_conveyor.global_position = Vector2(100, 100)
+	_conveyor.direction = Vector2.RIGHT
+	_conveyor.speed = 100
+
+	var number = partial_double(NumberObject).new()
+	add_child_autofree(number)
+	# 数字已在中心线上（Y对齐）
+	number.global_position = Vector2(110, 100)
+	number.size = Vector2(50, 50)
+	_conveyor.add_number(number)
+
+	# 手动标记为已对齐
+	_conveyor._number_aligned[number.get_instance_id()] = true
+
+	var initial_x = number.global_position.x
+	_conveyor._move_numbers(0.1)
+
+	# 数字应该向右移动
+	assert_gt(number.global_position.x, initial_x, "对齐后数字应向右移动")
+
+
+func test_has_align_speed_property():
+	## 应有对齐速度属性
+	assert_true("align_speed" in _conveyor, "应有align_speed属性")
+
+
+func test_align_speed_greater_than_zero():
+	## 对齐速度应大于0
+	_conveyor.align_speed = 150
+	assert_gt(_conveyor.align_speed, 0, "对齐速度应大于0")

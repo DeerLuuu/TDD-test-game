@@ -198,12 +198,12 @@ func _create_fallback_preview() -> Control:
 	# AutoClicker特殊样式
 	if _is_auto_clicker():
 		preview.custom_minimum_size = Vector2(50, 50)
-		var style = StyleBoxFlat.new()
-		style.bg_color = Color(0.0, 0.0, 0.0, 0.3)
-		style.border_color = Color(1.0, 0.8, 0.2, 0.8)
-		style.set_border_width_all(2)
-		style.set_corner_radius_all(4)
-		preview.add_theme_stylebox_override("panel", style)
+		var _style = StyleBoxFlat.new()
+		_style.bg_color = Color(0.0, 0.0, 0.0, 0.3)
+		_style.border_color = Color(1.0, 0.8, 0.2, 0.8)
+		_style.set_border_width_all(2)
+		_style.set_corner_radius_all(4)
+		preview.add_theme_stylebox_override("panel", _style)
 
 		# 添加图标
 		var icon = Label.new()

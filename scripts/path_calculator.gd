@@ -13,7 +13,9 @@ func calculate_path(start: Vector2, end: Vector2) -> Array[Vector2]:
 	var path: Array[Vector2] = []
 
 	# 对齐到网格（25x25）
+	@warning_ignore("static_called_on_instance")
 	var snapped_start = Global.snap_position_to_grid(start)
+	@warning_ignore("static_called_on_instance")
 	var snapped_end = Global.snap_position_to_grid(end)
 
 	# 起点终点相同，返回空路径
@@ -88,17 +90,21 @@ func _calculate_l_path_with_direction(start: Vector2, end: Vector2, horizontal_f
 		# 先水平后垂直
 		for i in range(steps_x + 1):
 			var pos = Vector2(start.x + i * step * dir_x, start.y)
+			@warning_ignore("static_called_on_instance")
 			path.append(Global.snap_position_to_grid(pos))
 		for i in range(1, steps_y + 1):
 			var pos = Vector2(end.x, start.y + i * step * dir_y)
+			@warning_ignore("static_called_on_instance")
 			path.append(Global.snap_position_to_grid(pos))
 	else:
 		# 先垂直后水平
 		for i in range(steps_y + 1):
 			var pos = Vector2(start.x, start.y + i * step * dir_y)
+			@warning_ignore("static_called_on_instance")
 			path.append(Global.snap_position_to_grid(pos))
 		for i in range(1, steps_x + 1):
 			var pos = Vector2(start.x + i * step * dir_x, end.y)
+			@warning_ignore("static_called_on_instance")
 			path.append(Global.snap_position_to_grid(pos))
 
 	return path
@@ -138,7 +144,9 @@ func calculate_path_between_panels(
 	var end_pos = _get_edge_position(center2, center1, panel2_size)
 
 	# 对齐到网格
+	@warning_ignore("static_called_on_instance")
 	start_pos = Global.snap_position_to_grid(start_pos)
+	@warning_ignore("static_called_on_instance")
 	end_pos = Global.snap_position_to_grid(end_pos)
 
 	# 判断是直线还是L型
@@ -190,15 +198,20 @@ func _get_edge_position(from_center: Vector2, to_center: Vector2, panel_size: Ve
 
 	if absf(delta.x) >= absf(delta.y):
 		if delta.x > 0:
+			@warning_ignore("integer_division")
 			edge_pos = Vector2(from_center.x + half_size.x + conveyor_offset / 2, from_center.y)
 		else:
+			@warning_ignore("integer_division")
 			edge_pos = Vector2(from_center.x - half_size.x - conveyor_offset / 2, from_center.y)
 	else:
 		if delta.y > 0:
+			@warning_ignore("integer_division")
 			edge_pos = Vector2(from_center.x, from_center.y + half_size.y + conveyor_offset / 2)
 		else:
+			@warning_ignore("integer_division")
 			edge_pos = Vector2(from_center.x, from_center.y - half_size.y - conveyor_offset / 2)
 
+	@warning_ignore("static_called_on_instance")
 	return Global.snap_position_to_grid(edge_pos)
 
 
@@ -229,6 +242,7 @@ func _calculate_direction(delta: Vector2) -> Vector2:
 			return Vector2.DOWN
 		else:
 			return Vector2.UP
+	@warning_ignore("unreachable_code")
 	return Vector2.RIGHT
 
 

@@ -176,8 +176,8 @@ func test_can_process_with_two_same_level_numbers():
 	_panel.accept_number(number1)
 	_panel.accept_number(number2)
 
-	var can_process = _panel.can_add_numbers()
-	assert_true(can_process, "两个同等级数字应可加工")
+	var _can_process = _panel.can_add_numbers()
+	assert_true(_can_process, "两个同等级数字应可加工")
 
 
 func test_cannot_process_with_different_level_numbers():
@@ -190,8 +190,8 @@ func test_cannot_process_with_different_level_numbers():
 	_panel.accept_number(number1)
 	_panel.accept_number(number2)  # 这个会被拒绝
 
-	var can_process = _panel.can_add_numbers()
-	assert_false(can_process, "只有一个数字时不能加工")
+	var _can_process = _panel.can_add_numbers()
+	assert_false(_can_process, "只有一个数字时不能加工")
 
 
 ## === 移除数字测试 ===

@@ -9,9 +9,9 @@ func before_each():
 	_score_system = add_child_autofree(ScoreSystem.new())
 
 
-func test_initial_score_should_be_zero():
-	## 初始分数应该为0
-	assert_eq(_score_system.get_score(), 0, "初始分数应该为0")
+func test_initial_score_should_be_100():
+	## 初始分数应该为100
+	assert_eq(_score_system.get_score(), 100, "初始分数应该为100")
 
 
 func test_score_should_accumulate_on_multiple_adds():
@@ -19,24 +19,23 @@ func test_score_should_accumulate_on_multiple_adds():
 	_score_system.add_score(1)
 	_score_system.add_score(1)
 	_score_system.add_score(1)
-	assert_eq(_score_system.get_score(), 3, "添加三次后分数应该为3")
+	assert_eq(_score_system.get_score(), 103, "添加三次后分数应该为103")
 
 
 func test_score_should_increase_by_custom_amount():
 	## 点击按钮应该可以增加指定分数
 	_score_system.add_score(10)
-	assert_eq(_score_system.get_score(), 10, "增加10分后分数应该为10")
+	assert_eq(_score_system.get_score(), 110, "增加10分后分数应该为110")
 
 
 func test_score_should_not_be_negative():
 	## 分数不应该为负数
-	_score_system.add_score(-50)
+	_score_system.add_score(-200)
 	assert_eq(_score_system.get_score(), 0, "分数不应该为负数")
 
 
 func test_score_can_be_deducted():
 	## 分数可以被扣除
-	_score_system.add_score(100)
 	_score_system.add_score(-30)
 	assert_eq(_score_system.get_score(), 70, "扣除后分数应为70")
 
@@ -62,25 +61,22 @@ func test_score_changed_signal_has_correct_parameters():
 	var params = get_signal_parameters(_score_system, "score_changed", 0)
 	assert_not_null(params, "应有信号参数")
 	assert_eq(params.size(), 2, "应有2个参数")
-	assert_eq(params[0], 0, "第一个参数应为旧分数0")
-	assert_eq(params[1], 30, "第二个参数应为新分数30")
+	assert_eq(params[0], 100, "第一个参数应为旧分数100")
+	assert_eq(params[1], 130, "第二个参数应为新分数130")
 
 
 func test_signal_emitted_on_deduction():
 	## 扣除分数时也应发出信号
 	watch_signals(_score_system)
-	_score_system.add_score(100)
 	_score_system.add_score(-30)
 
-	assert_signal_emit_count(_score_system, "score_changed", 2, "两次分数变化应发出两次信号")
+	assert_signal_emit_count(_score_system, "score_changed", 1, "分数变化应发出一次信号")
 
 
 func test_signal_not_emitted_when_score_unchanged():
 	## 分数不变时不应发出信号
-	_score_system.add_score(100)
-
 	watch_signals(_score_system)
-	# 扣除超过当前分数，分数会被限制为0，但实际从100变为0
+	# 扣除不超过当前分数
 	_score_system.add_score(-50)  # 100 -> 50
 
 	assert_signal_emit_count(_score_system, "score_changed", 1, "分数变化应发出一次信号")

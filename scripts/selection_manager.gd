@@ -115,10 +115,37 @@ func apply_debug_direction_to_selected(direction: Vector2) -> void:
 			conveyor.direction = direction
 			continue
 
+		# 分流传送带特殊处理：根据方向旋转
+		var splitter = _get_splitter_conveyor(item)
+		if splitter:
+			_calculate_splitter_rotation(splitter, direction)
+			continue
+
 		# 普通物品使用 OutputComponent
 		var output_comp = _get_output_component(item)
 		if output_comp:
 			output_comp.set_output_direction(direction)
+
+
+func _calculate_splitter_rotation(splitter: SplitterConveyor, target_direction: Vector2) -> void:
+	## 根据目标方向计算分流器需要的旋转
+	# 目标方向 = 分流后数字要去的方向之一
+	match target_direction:
+		Vector2.LEFT:
+			splitter.rotation_angle = 0
+		Vector2.UP:
+			splitter.rotation_angle = 90
+		Vector2.RIGHT:
+			splitter.rotation_angle = 180
+		Vector2.DOWN:
+			splitter.rotation_angle = 270
+		_:
+			return
+
+	# 更新方向和箭头
+	splitter._update_directions()
+	splitter._update_arrow_layout()
+	splitter._update_arrow_textures()
 
 
 func stop_debug_selected_items() -> void:
@@ -219,5 +246,14 @@ func _get_conveyor_belt(item: Control) -> ConveyorBelt:
 	if not is_instance_valid(item):
 		return null
 	if item is ConveyorBelt:
+		return item
+	return null
+
+
+func _get_splitter_conveyor(item: Control) -> SplitterConveyor:
+	## 获取物品作为分流传送带（如果是分流器的话）
+	if not is_instance_valid(item):
+		return null
+	if item is SplitterConveyor:
 		return item
 	return null

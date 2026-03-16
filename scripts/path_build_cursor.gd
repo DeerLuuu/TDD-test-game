@@ -28,6 +28,9 @@ var _conveyor_scene: PackedScene = preload("res://scenes/conveyor_belt.tscn")
 ## 传送带价格（与商店一致）
 const CONVEYOR_COST: int = 100
 
+## 传送带层级（与商店一致）
+const CONVEYOR_LEVEL: int = 2
+
 ## 当前传送带方向（用于单击放置）
 var _current_direction: Vector2 = Vector2.RIGHT
 
@@ -274,6 +277,7 @@ func _generate_path_preview(start_pos: Vector2, end_pos: Vector2) -> void:
 	var is_horizontal_dominant = absf(delta.x) >= absf(delta.y)
 
 	# 判断是否需要L型路径
+	@warning_ignore("integer_division")
 	var need_l_shape = absf(delta.x) > CONVEYOR_SIZE / 2 and absf(delta.y) > CONVEYOR_SIZE / 2
 
 	if need_l_shape:
@@ -402,7 +406,7 @@ func _create_preview_conveyors(path: Array[Vector2]) -> void:
 		preview.global_position = pos
 		preview.direction = direction
 
-		var parent = Global.get_level_parent(3)
+		var parent = Global.get_level_parent(CONVEYOR_LEVEL)
 		if parent:
 			parent.add_child(preview)
 		else:
@@ -469,11 +473,15 @@ func _place_single_conveyor() -> void:
 	conveyor.global_position = pos
 	conveyor.direction = _current_direction
 
-	var parent = Global.get_level_parent(3)
+	var parent = Global.get_level_parent(CONVEYOR_LEVEL)
 	if parent:
 		parent.add_child(conveyor)
 	else:
 		get_tree().current_scene.add_child(conveyor)
+
+	# 添加到交互组（与商店一致）
+	conveyor.add_to_group("placeable_items")
+	conveyor.add_to_group("selectable_items")
 
 	# 扣除分数
 	GameScore.add_score(-CONVEYOR_COST)
@@ -491,14 +499,19 @@ func _clear_previews() -> void:
 func _place_all_previews() -> void:
 	## 放置所有预览传送带
 	var current_score = GameScore.get_score()
+	@warning_ignore("integer_division")
 	var max_placeable = current_score / CONVEYOR_COST
 
 	var placed_count = 0
 	for i in range(mini(_preview_conveyors.size(), max_placeable)):
 		var preview = _preview_conveyors[i]
 		if is_instance_valid(preview):
+			# 移除预览标记
 			preview.set_meta("is_preview", false)
 			preview.modulate = Color(1, 1, 1, 1)
+			# 添加到交互组（与商店一致）
+			preview.add_to_group("placeable_items")
+			preview.add_to_group("selectable_items")
 			placed_count += 1
 
 	if placed_count > 0:

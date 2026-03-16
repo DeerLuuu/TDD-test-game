@@ -1,0 +1,1033 @@
+﻿Godot Engine v4.6.1.stable.mono.official.14d19694e - https://godotengine.org
+
+---  GUT  ---
+[1m[INFO]:  [0musing [C:/Users/17359/AppData/Roaming/Godot/app_userdata/TDD-test-game] for temporary output.
+Godot version:  4.6.1
+GUT version:  9.6.0
+[4m
+
+test/unit/test_addition_panel.gd
+[0m* test_has_numbers_array
+[32m    [Passed]:  [0m应有numbers属性
+* test_numbers_is_array
+[32m    [Passed]:  [0mnumbers应为Array
+* test_numbers_default_empty
+[32m    [Passed]:  [0m[0] expected to equal [0]:  默认numbers应为空
+* test_has_max_numbers_property
+[32m    [Passed]:  [0m应有max_numbers属性
+* test_max_numbers_is_two
+[32m    [Passed]:  [0m[2] expected to equal [2]:  max_numbers应为2
+* test_has_click_component
+[32m    [Passed]:  [0mExpected [@Node@23:<Node#111685929517>(click_component.gd)] to be anything but NULL:  应有ClickComponent
+* test_click_component_clicks_required_is_one
+[32m    [Passed]:  [0m[1] expected to equal [1]:  clicks_required应为1
+* test_can_accept_number
+[32m    [Passed]:  [0m[1] expected to equal [1]:  应接收一个数字
+* test_can_accept_two_numbers
+[32m    [Passed]:  [0m[2] expected to equal [2]:  应接收两个数字
+* test_cannot_accept_more_than_max
+[32m    [Passed]:  [0m[2] expected to equal [2]:  不应超过最大数量
+* test_accepts_only_same_level_numbers
+[32m    [Passed]:  [0m不同等级数字应被拒绝
+[32m    [Passed]:  [0m[1] expected to equal [1]:  只应接收同等级数字
+* test_process_creates_new_number
+Godot_v4.6.1-stable_mono_win64_console.exe : SCRIPT ERROR: Cannot call meth
+od 'add_child' on a null value.
+At line:1 char:35
++ ... -test-game; & "C:\Users\17359\Desktop\Godot_v4.6.1-stable_mono_win64\
+ ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (SCRIPT ERROR: C...n a null va 
+   lue.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+   at: AdditionPanel._do_process (res://scripts/addition_panel.gd:203)
+   GDScript backtrace (most recent call first):
+       [0] _do_process (res://scripts/addition_panel.gd:203)
+       [1] try_process (res://scripts/addition_panel.gd:121)
+       [2] _on_click_complete (res://scripts/addition_panel.gd:181)
+       [3] test_process_creates_new_number (res://test/unit/test_addition_p
+anel.gd:125)
+       [4] _run_test (res://addons/gut/gut.gd:615)
+       [5] _test_the_scripts (res://addons/gut/gut.gd:818)
+       [6] test_scripts (res://addons/gut/gut.gd:1030)
+       [7] run_tests (res://addons/gut/gui/GutRunner.gd:198)
+       [8] _run_tests (res://addons/gut/cli/gut_cli.gd:238)
+       [9] main (res://addons/gut/cli/gut_cli.gd:284)
+       [10] _init (res://addons/gut/gut_cmdln.gd:38)
+[32m    [Passed]:  [0m[0] expected to equal [0]:  加工后数字数组应清空
+[31m    [Failed]:  [0mUnexpected Errors:
+    [1] <engine-2>Cannot call method 'add_child' on a null value.
+      at line -1
+[33m    3 Orphans[0m
+[33m        * [NumberObject:<Control#112910666320>(number_object.gd)] + 2[0m
+* test_new_number_value_is_sum
+[32m    [Passed]:  [0m[8] expected to equal [8]:  结果应为3+5=8
+* test_new_number_level_matches_input
+[32m    [Passed]:  [0m[2] expected to equal [2]:  结果等级应为2
+* test_cannot_process_with_one_number
+[32m    [Passed]:  [0m只有一个数字时不应加工
+* test_can_process_with_two_same_level_numbers
+[32m    [Passed]:  [0m两个同等级数字应可加工
+* test_cannot_process_with_different_level_numbers
+[32m    [Passed]:  [0m只有一个数字时不能加工
+* test_can_remove_number
+[32m    [Passed]:  [0m[0] expected to equal [0]:  移除后应为空
+* test_remove_number_by_index
+[32m    [Passed]:  [0m[1] expected to equal [1]:  应剩一个数字
+* test_has_state_property
+[32m    [Passed]:  [0m应有state属性
+* test_state_is_empty_initially
+[32m    [Passed]:  [0m[0] expected to equal [0]:  初始状态应为EMPTY
+* test_state_changes_on_accept
+[32m    [Passed]:  [0m[1] expected to equal [1]:  一个数字状态应为ONE_NUMBER
+[32m    [Passed]:  [0m[2] expected to equal [2]:  两个数字状态应为READY
+* test_auto_detects_number_in_range
+[32m    [Passed]:  [0m[1] expected to equal [1]:  应自动检测并接收范围内的数字
+* test_does_not_detect_dragging_number
+[32m    [Passed]:  [0m[0] expected to equal [0]:  不应接收正在拖动的数字
+[33m3 orphans[0m
+[1m23/24 passed.
+[0m[4m
+
+test/unit/test_auto_clicker.gd
+[0m* test_has_click_interval_property
+[32m    [Passed]:  [0m应有click_interval属性
+* test_default_click_interval
+[32m    [Passed]:  [0m[2.0] expected to equal [2.0]:  默认点击间隔应为2.0秒
+* test_has_timer_property
+[32m    [Passed]:  [0m应有_timer属性
+* test_default_timer_is_zero
+[32m    [Passed]:  [0m[0.0] expected to equal [0.0]:  默认_timer应为0
+* test_has_is_active_property
+[32m    [Passed]:  [0m应有is_active属性
+* test_default_is_active
+[32m    [Passed]:  [0m默认is_active应为true
+* test_size_adjusts_to_parent
+[32m    [Passed]:  [0m[108.0] expected to equal [108.0]:  宽度应比父节点大8像素
+[32m    [Passed]:  [0m[58.0] expected to equal [58.0]:  高度应比父节点大8像素
+* test_position_centered_on_parent
+[32m    [Passed]:  [0m[VECTOR2(-4.0, -4.0)] expected to equal [VECTOR2(-4.0, -4.0)]:  位置应向左上偏移4像素
+* test_z_index_is_negative
+[32m    [Passed]:  [0m[-1] expected to be < than [0]:  z_index应为负数
+* test_z_index_is_minus_one
+[32m    [Passed]:  [0m[-1] expected to equal [-1]:  z_index应为-1
+* test_auto_clicker_in_group
+[32m    [Passed]:  [0m应在auto_clicker组中
+* test_timer_increments_in_process
+[32m    [Passed]:  [0m[0.5] expected to equal [0.5]:  计时器应增加0.5
+* test_timer_resets_after_interval
+[32m    [Passed]:  [0m[0.0] expected to equal [0.0]:  计时器达到间隔后应重置
+* test_does_not_tick_when_not_active
+[32m    [Passed]:  [0m[0.0] expected to equal [0.0]:  未激活时计时器不应增加
+* test_has_trigger_click_method
+[32m    [Passed]:  [0m应有trigger_click方法
+* test_trigger_click_returns_true_with_click_component
+[32m    [Passed]:  [0m有ClickComponent时应返回true
+* test_trigger_click_increments_parent_click_counter
+[32m    [Passed]:  [0m[1] expected to equal [1]:  ClickComponent计数应增加
+* test_has_valid_parent_method
+[32m    [Passed]:  [0m应有has_valid_parent方法
+* test_has_valid_parent_returns_true_with_click_component
+[32m    [Passed]:  [0m有ClickComponent时应返回true
+* test_trigger_click_returns_false_without_click_component
+[32m    [Passed]:  [0m没有ClickComponent时应返回false
+* test_has_border_margin_property
+[32m    [Passed]:  [0m应有border_margin属性
+* test_default_border_margin
+[32m    [Passed]:  [0m[4] expected to equal [4]:  默认边距应为4像素
+* test_size_uses_border_margin
+[32m    [Passed]:  [0m[116.0] expected to equal [116.0]:  宽度应使用border_margin计算
+[32m    [Passed]:  [0m[66.0] expected to equal [66.0]:  高度应使用border_margin计算
+* test_updates_size_on_parent_resize
+[32m    [Passed]:  [0m[208.0] expected to equal [208.0]:  父节点大小变化后应更新宽度
+[32m    [Passed]:  [0m[108.0] expected to equal [108.0]:  父节点大小变化后应更新高度
+[1m24/24 passed.
+[0m[4m
+
+test/unit/test_click_component.gd
+[0m* test_has_clicks_required_property
+[32m    [Passed]:  [0m应有clicks_required属性
+* test_default_clicks_required
+[32m    [Passed]:  [0m[1] expected to equal [1]:  默认需要1次点击
+[33m    1 Orphans[0m
+[33m        * [<Node#119957096062>(click_component.gd)][0m
+* test_has_current_clicks_property
+[32m    [Passed]:  [0m应有current_clicks属性
+* test_default_current_clicks_is_zero
+[32m    [Passed]:  [0m[0] expected to equal [0]:  默认current_clicks应为0
+* test_has_is_clickable_property
+[32m    [Passed]:  [0m应有is_clickable属性
+* test_default_is_clickable
+[32m    [Passed]:  [0m默认is_clickable应为true
+* test_has_on_click_method
+[32m    [Passed]:  [0m应有on_click方法
+* test_on_click_increments_counter
+[32m    [Passed]:  [0m[1] expected to equal [1]:  点击后计数应为1
+* test_on_click_does_not_increment_when_not_clickable
+[32m    [Passed]:  [0m[0] expected to equal [0]:  不可点击时计数不应增加
+* test_on_click_returns_true
+[32m    [Passed]:  [0m点击应返回true
+* test_on_click_returns_false_when_not_clickable
+[32m    [Passed]:  [0m不可点击时点击应返回false
+* test_has_get_progress_method
+[32m    [Passed]:  [0m应有get_progress方法
+* test_get_progress_returns_zero_initially
+[32m    [Passed]:  [0m[0.0] expected to equal [0.0]:  初始进度应为0
+* test_get_progress_returns_correct_value
+[32m    [Passed]:  [0m[0.33333333333333] expected to equal [0.33333333333333]:  进度应为1/3
+* test_get_progress_returns_one_when_complete
+[32m    [Passed]:  [0m[1.0] expected to equal [1.0]:  完成时进度应为1
+* test_has_is_complete_method
+[32m    [Passed]:  [0m应有is_complete方法
+* test_is_complete_returns_false_initially
+[32m    [Passed]:  [0m初始应未完成
+* test_is_complete_returns_true_when_clicks_reached
+[32m    [Passed]:  [0m达到点击次数后应完成
+* test_has_reset_method
+[32m    [Passed]:  [0m应有reset方法
+* test_reset_clears_current_clicks
+[32m    [Passed]:  [0m[0] expected to equal [0]:  重置后current_clicks应为0
+* test_has_click_signal
+[32m    [Passed]:  [0m应有on_clicked信号
+* test_has_complete_signal
+[32m    [Passed]:  [0m应有on_complete信号
+* test_click_signal_emitted
+[32m    [Passed]:  [0mExpected object @Node@210:<Node#121886477057>(click_component.gd) to have emitted signal [on_clicked]:  
+* test_complete_signal_emitted
+[32m    [Passed]:  [0mExpected object @Node@212:<Node#122003917574>(click_component.gd) to have emitted signal [on_complete]:  
+* test_has_progress_changed_signal
+[32m    [Passed]:  [0m应有progress_changed信号
+* test_progress_changed_signal_emitted
+[32m    [Passed]:  [0mExpected object @Node@216:<Node#122205244176>(click_component.gd) to have emitted signal [progress_changed]:  
+[33m1 orphans[0m
+[33m[WARNING]:  [0mTest script still has children when all tests finisehd.
+  @Node@164:<Node#119755769482>(awaiter.gd)
+  @Control@165:<Control#119822878342>
+  @Control@167:<Control#119906764417>
+  @Control@169:<Control#120057759353>
+  @Control@171:<Control#120141645428>
+  @Control@173:<Control#120242308719>
+  @Control@175:<Control#120326194794>
+  @Control@177:<Control#120410080866>
+  @Control@179:<Control#120493968052>
+  @Control@181:<Control#120594631353>
+  @Control@183:<Control#120695294654>
+  @Control@185:<Control#120779180739>
+  @Control@187:<Control#120863066824>
+  @Control@189:<Control#120946952909>
+  @Control@191:<Control#121047616210>
+  @Control@193:<Control#121148279511>
+  @Control@195:<Control#121248942812>
+  @Control@197:<Control#121332828897>
+  @Control@199:<Control#121416714982>
+  @Control@201:<Control#121500601067>
+  @Control@203:<Control#121584487152>
+  @Control@205:<Control#121685150453>
+  @Control@207:<Control#121769036538>
+  @Control@209:<Control#121852922623>
+  @Control@211:<Control#121970363140>
+  @Control@213:<Control#122087803657>
+  @Control@215:<Control#122171689742>
+You can use autofree, autoqfree, add_child_autofree, or add_child_autoqfree to automatically free objects.
+[1m26/26 passed.
+[0m[4m
+
+test/unit/test_collect_panel.gd
+[0m* test_has_collect_method
+[32m    [Passed]:  [0m应有collect_numbers方法
+* test_has_collected_numbers_property
+[32m    [Passed]:  [0m应有collected_numbers属性
+* test_collected_numbers_initially_empty
+[32m    [Passed]:  [0m[0] expected to equal [0]:  初始应无收集数字
+* test_has_send_to_drop_zone_method
+[32m    [Passed]:  [0m应有send_to_drop_zone方法
+* test_has_is_one_time_property
+[32m    [Passed]:  [0m应有is_one_time属性
+* test_default_is_one_time
+[32m    [Passed]:  [0m默认应为一次性
+* test_has_collect_and_send_method
+[32m    [Passed]:  [0m应有collect_and_send方法
+* test_collects_numbers_in_range
+[32m    [Passed]:  [0m[1] expected to equal [1]:  应只收集面板范围内的数字
+* test_has_collect_animation_method
+[32m    [Passed]:  [0m应有play_collect_animation方法
+* test_removes_self_after_send
+[32m    [Passed]:  [0m一次性面板发送后应删除
+[1m10/10 passed.
+[0m[4m
+
+test/unit/test_conveyor_belt.gd
+[0m* test_has_direction_variable
+[32m    [Passed]:  [0m应有direction属性
+* test_initial_direction_is_right
+[32m    [Passed]:  [0m[VECTOR2(1.0, 0.0)] expected to equal [VECTOR2(1.0, 0.0)]:  初始方向应为右
+* test_has_rotate_method
+[32m    [Passed]:  [0m应有rotate_direction方法
+* test_rotate_changes_direction
+[32m    [Passed]:  [0m[VECTOR2(0.0, 1.0)] expected to equal [VECTOR2(0.0, 1.0)]:  旋转后应为下
+[32m    [Passed]:  [0m[VECTOR2(-1.0, 0.0)] expected to equal [VECTOR2(-1.0, 0.0)]:  旋转后应为左
+[32m    [Passed]:  [0m[VECTOR2(0.0, -1.0)] expected to equal [VECTOR2(0.0, -1.0)]:  旋转后应为上
+[32m    [Passed]:  [0m[VECTOR2(1.0, 0.0)] expected to equal [VECTOR2(1.0, 0.0)]:  旋转后应为右
+* test_has_speed_property
+[32m    [Passed]:  [0m应有speed属性
+* test_default_speed
+[32m    [Passed]:  [0m[100.0] expected to be > than [0.0]:  速度应大于0
+* test_has_numbers_array
+[32m    [Passed]:  [0m应有numbers属性
+* test_add_number
+[32m    [Passed]:  [0m[1] expected to equal [1]:  应有一个数字
+* test_remove_number
+[32m    [Passed]:  [0m[0] expected to equal [0]:  应无数字
+* test_move_numbers_in_direction
+[32m    [Passed]:  [0m[100.800003051758] expected to be > than [100.0]:  数字应向右移动
+* test_has_arrow_texture
+[32m    [Passed]:  [0m应有arrow_textures属性
+* test_has_update_arrow_method
+[32m    [Passed]:  [0m应有_update_arrow_texture方法
+* test_has_rotate_on_scroll_method
+[32m    [Passed]:  [0m应有rotate_on_scroll方法
+* test_scroll_up_rotates_clockwise
+[32m    [Passed]:  [0m[VECTOR2(0.0, 1.0)] expected to equal [VECTOR2(0.0, 1.0)]:  滚轮向上应顺时针旋转
+* test_scroll_down_rotates_counter_clockwise
+[32m    [Passed]:  [0m[VECTOR2(0.0, -1.0)] expected to equal [VECTOR2(0.0, -1.0)]:  滚轮向下应逆时针旋转
+* test_handles_scroll_input
+[32m    [Passed]:  [0m应有输入处理方法
+* test_scroll_rotates_direction
+[32m    [Passed]:  [0m[VECTOR2(0.0, 1.0)] expected to equal [VECTOR2(0.0, 1.0)]:  滚轮向上应顺时针旋转
+* test_can_rotate_in_drag_mode
+[32m    [Passed]:  [0m[VECTOR2(0.0, 1.0)] expected to equal [VECTOR2(0.0, 1.0)]:  拖动模式下应能旋转
+* test_can_rotate_in_click_mode
+[32m    [Passed]:  [0m[VECTOR2(0.0, 1.0)] expected to equal [VECTOR2(0.0, 1.0)]:  点击模式下应能旋转
+[1m19/19 passed.
+[0m[4m
+
+test/unit/test_debug_cursor.gd
+[0m* test_cursor_has_background
+[32m    [Passed]:  [0mExpected [@Panel@260:<Panel#138193929843>] to be anything but NULL:  应有背景
+* test_cursor_default_invisible
+[32m    [Passed]:  [0m默认应不可见
+* test_cursor_visible_in_debug_mode
+[32m    [Passed]:  [0m调试模式下应可见
+* test_has_hovered_item_property
+[32m    [Passed]:  [0m应有_hovered_item属性
+* test_default_no_hovered_item
+[32m    [Passed]:  [0mExpected [<null>] to be NULL:  默认应无悬停物品
+* test_has_get_output_component_method
+[32m    [Passed]:  [0m应有_get_output_component方法
+* test_get_output_component_finds_component
+[32m    [Passed]:  [0m[@Node@288:<Node#139334780526>(output_component.gd)] expected to equal [@Node@288:<Node#139334780526>(output_component.gd)]:  应找到OutputComponent
+* test_has_dragging_item_property
+[32m    [Passed]:  [0m应有_dragging_item属性
+* test_default_not_dragging
+[32m    [Passed]:  [0mExpected [<null>] to be NULL:  默认不应在拖动
+* test_has_drag_start_pos_property
+[32m    [Passed]:  [0m应有_drag_start_pos属性
+[1m10/10 passed.
+[0m[4m
+
+test/unit/test_delete_cursor.gd
+[0m* test_has_hovered_item_property
+[32m    [Passed]:  [0m应有_hovered_item属性
+* test_default_no_hovered_item
+[32m    [Passed]:  [0mExpected [<null>] to be NULL:  默认应无悬停物品
+* test_has_delete_item_method
+[32m    [Passed]:  [0m应有_delete_item方法
+* test_has_get_item_value_method
+[32m    [Passed]:  [0m应有_get_item_value方法
+* test_has_spawn_drop_numbers_method
+[32m    [Passed]:  [0m应有_spawn_drop_numbers方法
+* test_hidden_when_not_delete_mode
+[32m    [Passed]:  [0m非删除模式时应隐藏
+* test_connects_to_mode_changed_signal
+[32m    [Passed]:  [0m信号连接测试需要在场景树中验证
+[1m7/7 passed.
+[0m[4m
+
+test/unit/test_game_camera.gd
+[0m* test_has_speed_property
+[32m    [Passed]:  [0m应有move_speed属性
+* test_default_speed
+[32m    [Passed]:  [0m[500.0] expected to be > than [0.0]:  移动速度应大于0
+* test_has_move_method
+[32m    [Passed]:  [0m应有move_camera方法
+* test_move_camera_changes_position
+[32m    [Passed]:  [0m[VECTOR2(10.0, 0.0)] expected to not equal [VECTOR2(0.0, 0.0)]:  移动后位置应改变
+* test_has_process_method
+[32m    [Passed]:  [0m应有_process方法
+* test_has_input_actions
+[32m    [Passed]:  [0m应有移动输入处理
+* test_has_zoom_property
+[32m    [Passed]:  [0m应有缩放属性
+* test_has_zoom_speed_property
+[32m    [Passed]:  [0m应有zoom_speed属性
+* test_has_min_max_zoom
+[32m    [Passed]:  [0m应有min_zoom属性
+[32m    [Passed]:  [0m应有max_zoom属性
+* test_has_zoom_method
+[32m    [Passed]:  [0m应有缩放方法
+* test_default_zoom_is_one
+[32m    [Passed]:  [0m[VECTOR2(1.0, 1.0)] expected to equal [VECTOR2(1.0, 1.0)]:  默认缩放应为1
+* test_zoom_in_increases_zoom
+[32m    [Passed]:  [0m[1.20000004768372] expected to be > than [1.0]:  放大后缩放值应增加
+* test_zoom_out_decreases_zoom
+[32m    [Passed]:  [0m[1.79999995231628] expected to be < than [2.0]:  缩小后缩放值应减少
+* test_zoom_clamped_to_min
+[32m    [Passed]:  [0m[0.5] expected to be >= than [0.5]:  缩放不应小于最小值
+* test_zoom_clamped_to_max
+[32m    [Passed]:  [0m[3.0] expected to be <= than [3.0]:  缩放不应大于最大值
+[1m15/15 passed.
+[0m[4m
+
+test/unit/test_global.gd
+[0m* test_has_operation_mode_enum
+[32m    [Passed]:  [0m应有OperationMode枚举
+* test_has_click_mode
+[32m    [Passed]:  [0m[0] expected to equal [0]:  点击模式应为0
+* test_has_drag_mode
+[32m    [Passed]:  [0m[1] expected to equal [1]:  拖动模式应为1
+* test_has_current_mode
+[32m    [Passed]:  [0m应有current_mode属性
+* test_initial_mode_is_click
+[32m    [Passed]:  [0m[0] expected to equal [0]:  初始模式应为点击模式
+* test_can_change_mode
+[32m    [Passed]:  [0m[1] expected to equal [1]:  应能切换到拖动模式
+* test_has_drag_direction
+[32m    [Passed]:  [0m应有drag_direction属性
+* test_initial_drag_direction_is_right
+[32m    [Passed]:  [0m[VECTOR2(1.0, 0.0)] expected to equal [VECTOR2(1.0, 0.0)]:  初始拖动方向应为右
+* test_has_signal_mode_changed
+[32m    [Passed]:  [0m应有mode_changed信号
+* test_has_signal_direction_changed
+[32m    [Passed]:  [0m应有direction_changed信号
+* test_has_check_position_occupied_method
+[32m    [Passed]:  [0m应有check_position_occupied方法
+* test_check_position_occupied_returns_false_when_empty
+[32m    [Passed]:  [0m空位置应返回false
+* test_check_position_occupied_returns_true_when_occupied
+[32m    [Passed]:  [0m被占用的位置应返回true
+* test_check_position_occupied_ignores_self
+[32m    [Passed]:  [0m忽略自身时应返回false
+* test_check_position_occupied_respects_grid
+[32m    [Passed]:  [0m相近网格位置应被检测为占用
+* test_has_delete_mode
+[32m    [Passed]:  [0m[2] expected to equal [2]:  DELETE模式应为2
+* test_set_delete_mode
+[32m    [Passed]:  [0m[2] expected to equal [2]:  应为删除模式
+* test_is_delete_mode
+[32m    [Passed]:  [0m应为删除模式
+* test_has_calculate_drop_values_method
+[32m    [Passed]:  [0m应有calculate_drop_values方法
+* test_calculate_drop_values_returns_array
+[32m    [Passed]:  [0m应返回数组
+* test_calculate_drop_values_total_not_exceed_60_percent
+[32m    [Passed]:  [0m[58] expected to be <= than [60]:  总价值不应超过60
+[32m    [Passed]:  [0m[19] expected to be <= than [30]:  50的60%是30，不应超过
+* test_calculate_drop_values_only_contains_1_to_10
+[32m    [Passed]:  [0m[5] expected to be >= than [1]:  掉落价值应大于等于1
+[32m    [Passed]:  [0m[5] expected to be <= than [10]:  掉落价值应小于等于10
+[32m    [Passed]:  [0m[5] expected to be >= than [1]:  掉落价值应大于等于1
+[32m    [Passed]:  [0m[5] expected to be <= than [10]:  掉落价值应小于等于10
+[32m    [Passed]:  [0m[8] expected to be >= than [1]:  掉落价值应大于等于1
+[32m    [Passed]:  [0m[8] expected to be <= than [10]:  掉落价值应小于等于10
+[32m    [Passed]:  [0m[5] expected to be >= than [1]:  掉落价值应大于等于1
+[32m    [Passed]:  [0m[5] expected to be <= than [10]:  掉落价值应小于等于10
+[32m    [Passed]:  [0m[2] expected to be >= than [1]:  掉落价值应大于等于1
+[32m    [Passed]:  [0m[2] expected to be <= than [10]:  掉落价值应小于等于10
+[32m    [Passed]:  [0m[4] expected to be >= than [1]:  掉落价值应大于等于1
+[32m    [Passed]:  [0m[4] expected to be <= than [10]:  掉落价值应小于等于10
+[32m    [Passed]:  [0m[9] expected to be >= than [1]:  掉落价值应大于等于1
+[32m    [Passed]:  [0m[9] expected to be <= than [10]:  掉落价值应小于等于10
+[32m    [Passed]:  [0m[4] expected to be >= than [1]:  掉落价值应大于等于1
+[32m    [Passed]:  [0m[4] expected to be <= than [10]:  掉落价值应小于等于10
+[32m    [Passed]:  [0m[7] expected to be >= than [1]:  掉落价值应大于等于1
+[32m    [Passed]:  [0m[7] expected to be <= than [10]:  掉落价值应小于等于10
+[32m    [Passed]:  [0m[4] expected to be >= than [1]:  掉落价值应大于等于1
+[32m    [Passed]:  [0m[4] expected to be <= than [10]:  掉落价值应小于等于10
+[32m    [Passed]:  [0m[2] expected to be >= than [1]:  掉落价值应大于等于1
+[32m    [Passed]:  [0m[2] expected to be <= than [10]:  掉落价值应小于等于10
+[32m    [Passed]:  [0m[1] expected to be >= than [1]:  掉落价值应大于等于1
+[32m    [Passed]:  [0m[1] expected to be <= than [10]:  掉落价值应小于等于10
+[32m    [Passed]:  [0m[1] expected to be >= than [1]:  掉落价值应大于等于1
+[32m    [Passed]:  [0m[1] expected to be <= than [10]:  掉落价值应小于等于10
+* test_has_debug_mode
+[32m    [Passed]:  [0m[3] expected to equal [3]:  DEBUG模式应为3
+* test_has_set_debug_mode_method
+[32m    [Passed]:  [0m应有set_debug_mode方法
+* test_set_debug_mode
+[32m    [Passed]:  [0m[3] expected to equal [3]:  应为调试模式
+* test_has_is_debug_mode_method
+[32m    [Passed]:  [0m应有is_debug_mode方法
+* test_is_debug_mode
+[32m    [Passed]:  [0m应为调试模式
+[1m27/27 passed.
+[0m[4m
+
+test/unit/test_number_object.gd
+[0m* test_initial_value_is_one
+[32m    [Passed]:  [0m[1] expected to equal [1]:  数字初始值应为1
+* test_initial_processed_level_is_zero
+[32m    [Passed]:  [0m[0] expected to equal [0]:  初始加工等级应为0
+* test_get_final_value_returns_correct_value
+[32m    [Passed]:  [0m[5] expected to equal [5]:  加工等级0时最终分数=value
+[32m    [Passed]:  [0m[10] expected to equal [10]:  加工等级1时最终分数=value×2
+[32m    [Passed]:  [0m[20] expected to equal [20]:  加工等级2时最终分数=value×4
+* test_process_increases_level
+[32m    [Passed]:  [0m[1] expected to equal [1]:  加工后等级应为1
+[32m    [Passed]:  [0m[2] expected to equal [2]:  再次加工后等级应为2
+[1m4/4 passed.
+[0m[4m
+
+test/unit/test_output_component.gd
+[0m* test_has_output_direction_property
+[32m    [Passed]:  [0m应有output_direction属性
+* test_default_output_direction_is_right
+[32m    [Passed]:  [0m[VECTOR2(1.0, 0.0)] expected to equal [VECTOR2(1.0, 0.0)]:  默认输出方向应为右
+* test_has_output_offset_property
+[32m    [Passed]:  [0m应有output_offset属性
+* test_default_output_offset
+[32m    [Passed]:  [0m[VECTOR2(100.0, 0.0)] expected to equal [VECTOR2(100.0, 0.0)]:  默认输出偏移应为(100, 0)
+* test_has_is_debugging_property
+[32m    [Passed]:  [0m应有is_debugging属性
+* test_default_not_debugging
+[32m    [Passed]:  [0m默认不应在调试状态
+* test_can_set_output_direction
+[32m    [Passed]:  [0m[VECTOR2(0.0, -1.0)] expected to equal [VECTOR2(0.0, -1.0)]:  应能设置输出方向为上
+* test_set_direction_updates_offset
+[32m    [Passed]:  [0m[VECTOR2(0.0, -100.0)] expected to equal [VECTOR2(0.0, -100.0)]:  向上偏移应为(0, -100)
+[32m    [Passed]:  [0m[VECTOR2(0.0, 100.0)] expected to equal [VECTOR2(0.0, 100.0)]:  向下偏移应为(0, 100)
+[32m    [Passed]:  [0m[VECTOR2(-100.0, 0.0)] expected to equal [VECTOR2(-100.0, 0.0)]:  向左偏移应为(-100, 0)
+[32m    [Passed]:  [0m[VECTOR2(100.0, 0.0)] expected to equal [VECTOR2(100.0, 0.0)]:  向右偏移应为(100, 0)
+* test_has_output_distance_property
+[32m    [Passed]:  [0m应有output_distance属性
+* test_default_output_distance
+[32m    [Passed]:  [0m[100] expected to equal [100]:  默认输出距离应为100
+* test_has_get_output_position_method
+[32m    [Passed]:  [0m应有get_output_position方法
+* test_get_output_position_returns_vector2
+[32m    [Passed]:  [0m应返回Vector2
+* test_get_output_position_relative_to_parent
+[32m    [Passed]:  [0m[VECTOR2(300.0, 250.0)] expected to equal [VECTOR2(300.0, 250.0)]:  输出位置应正确计算
+* test_has_start_debug_method
+[32m    [Passed]:  [0m应有start_debug方法
+* test_has_end_debug_method
+[32m    [Passed]:  [0m应有end_debug方法
+* test_start_debug_sets_is_debugging
+[32m    [Passed]:  [0m开始调试后is_debugging应为true
+* test_end_debug_resets_is_debugging
+[32m    [Passed]:  [0m结束调试后is_debugging应为false
+* test_has_get_direction_from_drag_method
+[32m    [Passed]:  [0m应有get_direction_from_drag方法
+* test_get_direction_from_drag_right
+[32m    [Passed]:  [0m[VECTOR2(1.0, 0.0)] expected to equal [VECTOR2(1.0, 0.0)]:  向右拖动应返回RIGHT
+* test_get_direction_from_drag_left
+[32m    [Passed]:  [0m[VECTOR2(-1.0, 0.0)] expected to equal [VECTOR2(-1.0, 0.0)]:  向左拖动应返回LEFT
+* test_get_direction_from_drag_up
+[32m    [Passed]:  [0m[VECTOR2(0.0, -1.0)] expected to equal [VECTOR2(0.0, -1.0)]:  向上拖动应返回UP
+* test_get_direction_from_drag_down
+[32m    [Passed]:  [0m[VECTOR2(0.0, 1.0)] expected to equal [VECTOR2(0.0, 1.0)]:  向下拖动应返回DOWN
+* test_has_apply_drag_direction_method
+[32m    [Passed]:  [0m应有apply_drag_direction方法
+* test_apply_drag_direction_updates_output
+[32m    [Passed]:  [0m[VECTOR2(1.0, 0.0)] expected to equal [VECTOR2(1.0, 0.0)]:  应更新输出方向
+[1m24/24 passed.
+[0m[4m
+
+test/unit/test_path_build_cursor.gd
+[0m* test_has_path_build_mode
+[32m    [Passed]:  [0m[4] expected to equal [4]:  PATH_BUILD 应为枚举第5项
+* test_global_has_set_path_build_mode
+[32m    [Passed]:  [0m应有set_path_build_mode方法
+* test_global_has_is_path_build_mode
+[32m    [Passed]:  [0m应有is_path_build_mode方法
+* test_set_path_build_mode
+[32m    [Passed]:  [0m应处于铺路模式
+* test_path_build_mode_emits_signal
+[32m    [Passed]:  [0mExpected object Global:<Node#55952016959>(global.gd) to have emitted signal [mode_changed]:  应触发mode_changed信号
+* test_path_calculator_exists
+[32m    [Passed]:  [0mExpected [<RefCounted#-9223371887990534685>(path_calculator.gd)] to be anything but NULL:  PathCalculator 应可实例化
+* test_path_calculator_calculate_l_path
+[32m    [Passed]:  [0m[4] expected to be > than [0]:  路径应有节点
+* test_path_calculator_calculate_conveyor_placements
+[32m    [Passed]:  [0m[3] expected to be > than [0]:  应有放置位置
+[32m    [Passed]:  [0m放置信息应有position
+[32m    [Passed]:  [0m放置信息应有direction
+* test_preview_conveyor_creation
+[32m    [Passed]:  [0m应有预览标记
+[32m    [Passed]:  [0m预览标记应为true
+* test_preview_conveyor_direction
+[32m    [Passed]:  [0m[VECTOR2(1.0, 0.0)] expected to equal [VECTOR2(1.0, 0.0)]:  方向应设置为右
+[32m    [Passed]:  [0m[VECTOR2(0.0, 1.0)] expected to equal [VECTOR2(0.0, 1.0)]:  方向应设置为下
+* test_preview_conveyor_semi_transparent
+[32m    [Passed]:  [0m[0.5] expected to equal [0.5]:  透明度应为0.5
+[1m11/11 passed.
+[0m[4m
+
+test/unit/test_path_calculator.gd
+[0m* test_has_calculate_l_path_method
+[32m    [Passed]:  [0m应有calculate_l_path方法
+* test_calculate_horizontal_path
+[32m    [Passed]:  [0mExpected [ARRAY([(0.0, 0.0), (50.0, 0.0), (100.0, 0.0)])] to be anything but NULL:  应返回路径
+[32m    [Passed]:  [0m[3] expected to be > than [0]:  路径应有节点
+* test_calculate_vertical_path
+[32m    [Passed]:  [0mExpected [ARRAY([(0.0, 0.0), (0.0, 50.0), (0.0, 100.0)])] to be anything but NULL:  应返回路径
+[32m    [Passed]:  [0m[3] expected to be > than [0]:  路径应有节点
+* test_calculate_l_shaped_path_horizontal_first
+[32m    [Passed]:  [0m[VECTOR2(0.0, 0.0)] expected to equal [VECTOR2(0.0, 0.0)]:  路径应从起点开始
+[32m    [Passed]:  [0m[VECTOR2(100.0, 100.0)] expected to equal [VECTOR2(100.0, 100.0)]:  路径应以终点结束
+* test_path_follows_grid
+[32m    [Passed]:  [0m[0.0] expected to equal [0.0]:  X坐标应对齐网格
+[32m    [Passed]:  [0m[0.0] expected to equal [0.0]:  Y坐标应对齐网格
+[32m    [Passed]:  [0m[0.0] expected to equal [0.0]:  X坐标应对齐网格
+[32m    [Passed]:  [0m[0.0] expected to equal [0.0]:  Y坐标应对齐网格
+[32m    [Passed]:  [0m[0.0] expected to equal [0.0]:  X坐标应对齐网格
+[32m    [Passed]:  [0m[0.0] expected to equal [0.0]:  Y坐标应对齐网格
+[32m    [Passed]:  [0m[0.0] expected to equal [0.0]:  X坐标应对齐网格
+[32m    [Passed]:  [0m[0.0] expected to equal [0.0]:  Y坐标应对齐网格
+* test_path_contains_intermediate_points
+[32m    [Passed]:  [0m[4] expected to be >= than [2]:  路径应至少包含起点和终点
+* test_has_get_directions_method
+[32m    [Passed]:  [0m应有get_directions_for_path方法
+* test_get_directions_for_horizontal_path
+[32m    [Passed]:  [0m[2] expected to equal [2]:  方向数量应为路径节点数-1
+* test_same_start_and_end_returns_empty
+[32m    [Passed]:  [0m[0] expected to equal [0]:  起点终点相同时应返回空路径
+* test_path_with_grid_size
+[32m    [Passed]:  [0m每次只能沿一个方向移动
+[32m    [Passed]:  [0m每次只能沿一个方向移动
+* test_calculate_path_from_panels
+[32m    [Passed]:  [0mExpected [ARRAY([(100.0, 50.0), (100.0, 100.0), (100.0, 150.0), (150.0, 150.0)])] to be anything but NULL:  应返回路径
+[32m    [Passed]:  [0m[4] expected to be > than [0]:  路径应有节点
+* test_has_calculate_path_between_panels_method
+[32m    [Passed]:  [0m应有calculate_path_between_panels方法
+[1m12/12 passed.
+[0m[4m
+
+test/unit/test_process_panel.gd
+[0m* test_has_click_component
+[32m    [Passed]:  [0mExpected [ClickComponent:<Node#151364046450>(click_component.gd)] to be anything but NULL:  应有click_component
+* test_has_current_number_property
+[32m    [Passed]:  [0m应有current_number属性
+* test_default_current_number_is_null
+[32m    [Passed]:  [0mExpected [<null>] to be NULL:  默认current_number应为null
+* test_has_processing_property
+[32m    [Passed]:  [0m应有processing属性
+* test_default_not_processing
+[32m    [Passed]:  [0m默认不应在加工中
+* test_can_accept_number
+[32m    [Passed]:  [0m[@Control@426:<Control#152051912308>(number_object.gd)] expected to equal [@Control@426:<Control#152051912308>(number_object.gd)]:  应持有数字实例
+* test_accept_number_moves_to_center
+[33m    --- Awaiting 0.5 seconds  ---
+[0m[32m    [Passed]:  [0m[50.00000000000000000000] expected to equal [50.0] +/- [10.0]:  数字X应在面板中心
+[32m    [Passed]:  [0m[50.00000000000000000000] expected to equal [50.0] +/- [10.0]:  数字Y应在面板中心
+* test_accept_number_sets_processing
+[32m    [Passed]:  [0m接收数字后应在加工中
+* test_cannot_accept_number_when_processing
+[32m    [Passed]:  [0m[@Control@432:<Control#152706223742>(number_object.gd)] expected to equal [@Control@432:<Control#152706223742>(number_object.gd)]:  仍应是原来的数字
+* test_number_is_not_destroyed_on_accept
+[32m    [Passed]:  [0m数字应仍然有效
+* test_click_increments_counter
+[32m    [Passed]:  [0m[1] expected to equal [1]:  点击后计数应为1
+* test_multiple_clicks
+[32m    [Passed]:  [0m[1] expected to equal [1]:  第一次点击后计数应为1
+[32m    [Passed]:  [0m[2] expected to equal [2]:  第二次点击后计数应为2
+[32m    [Passed]:  [0m[3] expected to equal [3]:  第三次点击后计数应为3
+* test_click_does_not_work_without_number
+[32m    [Passed]:  [0m[0] expected to equal [0]:  没有数字时点击不应增加计数
+* test_process_completes_after_required_clicks
+[33m    --- Awaiting 0.5 seconds  ---
+[0m[32m    [Passed]:  [0m[1] expected to equal [1]:  数字加工等级应+1
+* test_process_resets_after_completion
+[33m    --- Awaiting 0.6 seconds  ---
+[0m[32m    [Passed]:  [0mExpected [<null>] to be NULL:  完成后current_number应重置
+[32m    [Passed]:  [0m[0] expected to equal [0]:  完成后current_clicks应重置
+[32m    [Passed]:  [0m完成后processing应为false
+* test_processed_level_increases
+[33m    --- Awaiting 0.5 seconds  ---
+[0m[32m    [Passed]:  [0m[1] expected to equal [1]:  加工等级应+1
+* test_queued_number_enters_after_completion
+[33m    --- Awaiting 0.5 seconds  ---
+[0m[32m    [Passed]:  [0m[<Control#154836930068>(number_object.gd)] expected to equal [<Control#154836930068>(number_object.gd)]:  等待的数字应进入加工
+* test_has_waiting_queue
+[32m    [Passed]:  [0m应有waiting_queue属性
+* test_queue_is_array
+[32m    [Passed]:  [0mwaiting_queue应为数组
+* test_has_output_component
+[32m    [Passed]:  [0mExpected [OutputComponent:<Node#155424132758>(output_component.gd)] to be anything but NULL:  应有output_component
+* test_output_component_has_offset
+[32m    [Passed]:  [0mExpected [OutputComponent:<Node#155558350389>(output_component.gd)] to be anything but NULL:  output_component不应为null
+[32m    [Passed]:  [0m输出组件应有output_offset属性
+* test_auto_detects_number_in_range
+[32m    [Passed]:  [0m[@Control@458:<Control#155742899862>(number_object.gd)] expected to equal [@Control@458:<Control#155742899862>(number_object.gd)]:  应自动接收范围内的数字
+* test_does_not_detect_dragging_number
+[32m    [Passed]:  [0mExpected [<null>] to be NULL:  不应接收正在拖动的数字
+* test_auto_detect_after_processing_complete
+[32m    [Passed]:  [0m[@Control@462:<Control#156195884682>(number_object.gd)] expected to equal [@Control@462:<Control#156195884682>(number_object.gd)]:  应自动接收第一个数字
+[33m    --- Awaiting 0.6 seconds  ---
+[0m[32m    [Passed]:  [0mExpected [<null>] to be NULL:  完成后current_number应重置
+[32m    [Passed]:  [0m[@Control@463:<Control#156481097380>(number_object.gd)] expected to equal [@Control@463:<Control#156481097380>(number_object.gd)]:  应自动接收第二个数字
+* test_can_remove_number_from_panel
+[32m    [Passed]:  [0m[@Control@465:<Control#156699201181>(number_object.gd)] expected to equal [@Control@465:<Control#156699201181>(number_object.gd)]:  数字应在面板中
+[32m    [Passed]:  [0mExpected [<null>] to be NULL:  取出后current_number应为null
+[32m    [Passed]:  [0m取出后processing应为false
+* test_remove_number_resets_clicks
+[32m    [Passed]:  [0m[2] expected to equal [2]:  应有2次点击
+[32m    [Passed]:  [0m[0] expected to equal [0]:  取出后点击计数应重置
+[1m26/26 passed.
+[0m[4m
+
+test/unit/test_score_drop_zone.gd
+[0m* test_has_score_display
+[32m    [Passed]:  [0mExpected [ScoreDropZone:<Control#158578249400>(score_drop_zone.gd)] to be anything but NULL:  应能创建实例
+* test_on_number_dropped_adds_score
+[32m    [Passed]:  [0m[10] expected to equal [10]:  放入数字后应加10分
+* test_on_number_dropped_with_processed_level
+[32m    [Passed]:  [0m[20] expected to equal [20]:  加工等级2的数字应加20分
+* test_multiple_drops_accumulate
+[32m    [Passed]:  [0m[11] expected to equal [11]:  5+6=11分
+* test_display_updates_on_score_change
+[32m    [Passed]:  [0mExpected [ScoreLabel:<Label#160054644412>] to be anything but NULL:  应有ScoreLabel
+[32m    [Passed]:  [0m["分数: 100"] expected to equal ["分数: 100"]:  显示应更新为100
+* test_listens_to_score_changed_signal
+[32m    [Passed]:  [0m应连接到score_changed信号
+* test_external_score_change_updates_display
+[32m    [Passed]:  [0m["分数: 50"] expected to equal ["分数: 50"]:  外部修改后显示应更新
+[32m    [Passed]:  [0m["分数: 30"] expected to equal ["分数: 30"]:  扣除后显示应更新
+[1m7/7 passed.
+[0m[4m
+
+test/unit/test_score_system.gd
+[0m* test_initial_score_should_be_100
+[32m    [Passed]:  [0m[100] expected to equal [100]:  初始分数应该为100
+* test_score_should_accumulate_on_multiple_adds
+[32m    [Passed]:  [0m[103] expected to equal [103]:  添加三次后分数应该为103
+* test_score_should_increase_by_custom_amount
+[32m    [Passed]:  [0m[110] expected to equal [110]:  增加10分后分数应该为110
+* test_score_should_not_be_negative
+[32m    [Passed]:  [0m[0] expected to equal [0]:  分数不应该为负数
+* test_score_can_be_deducted
+[32m    [Passed]:  [0m[70] expected to equal [70]:  扣除后分数应为70
+* test_has_score_changed_signal
+[32m    [Passed]:  [0m应有score_changed信号
+* test_score_changed_signal_emitted_on_add
+[32m    [Passed]:  [0mExpected object @Node@478:<Node#161682034403>(score_system.gd) to have emitted signal [score_changed]:  分数变化应发出信号
+* test_score_changed_signal_has_correct_parameters
+[32m    [Passed]:  [0mExpected [ARRAY([100, 130])] to be anything but NULL:  应有信号参数
+[32m    [Passed]:  [0m[2] expected to equal [2]:  应有2个参数
+[32m    [Passed]:  [0m[100] expected to equal [100]:  第一个参数应为旧分数100
+[32m    [Passed]:  [0m[130] expected to equal [130]:  第二个参数应为新分数130
+* test_signal_emitted_on_deduction
+[32m    [Passed]:  [0mExpected the signal [score_changed] emit count of [1] to equal [1]: 分数变化应发出一次信号
+* test_signal_not_emitted_when_score_unchanged
+[32m    [Passed]:  [0mExpected the signal [score_changed] emit count of [1] to equal [1]: 分数变化应发出一次信号
+[1m10/10 passed.
+[0m[4m
+
+test/unit/test_selectable_component.gd
+[0m* test_has_is_selected_property
+[32m    [Passed]:  [0m应有is_selected属性
+* test_default_not_selected
+[32m    [Passed]:  [0m默认应未选中
+* test_can_select
+[32m    [Passed]:  [0m应被选中
+* test_can_deselect
+[32m    [Passed]:  [0m应取消选中
+* test_has_select_signal
+[32m    [Passed]:  [0m应有selected信号
+* test_has_deselect_signal
+[32m    [Passed]:  [0m应有deselected信号
+* test_select_emits_signal
+[32m    [Passed]:  [0mExpected object @Node@497:<Node#163007434505>(selectable_component.gd) to have emitted signal [selected]:  选中应发出selected信号
+* test_deselect_emits_signal
+[32m    [Passed]:  [0mExpected object @Node@499:<Node#163175206666>(selectable_component.gd) to have emitted signal [deselected]:  取消选中应发出deselected信号
+* test_select_twice_only_emits_once
+[32m    [Passed]:  [0mExpected the signal [selected] emit count of [1] to equal [1]: 重复选中只应发出一次信号
+* test_has_show_selection_indicator_method
+[32m    [Passed]:  [0m应有show_selection_indicator方法
+* test_has_hide_selection_indicator_method
+[32m    [Passed]:  [0m应有hide_selection_indicator方法
+* test_show_indicator_on_select
+[32m    [Passed]:  [0m应被选中
+* test_hide_indicator_on_deselect
+[32m    [Passed]:  [0m应取消选中
+[1m13/13 passed.
+[0m[4m
+
+test/unit/test_selection_box.gd
+[0m* test_has_is_selecting_property
+[32m    [Passed]:  [0m应有is_selecting属性
+* test_default_not_selecting
+[32m    [Passed]:  [0m默认应未选中
+* test_has_selection_complete_signal
+[32m    [Passed]:  [0m应有selection_complete信号
+* test_has_selection_update_signal
+[32m    [Passed]:  [0m应有selection_update信号
+* test_has_start_selection_method
+[32m    [Passed]:  [0m应有start_selection方法
+* test_has_update_selection_method
+[32m    [Passed]:  [0m应有update_selection方法
+* test_has_end_selection_method
+[32m    [Passed]:  [0m应有end_selection方法
+* test_start_selection_sets_selecting
+[32m    [Passed]:  [0m开始框选后应处于选中状态
+* test_start_selection_sets_visible
+[32m    [Passed]:  [0m开始框选后应可见
+* test_end_selection_clears_selecting
+[32m    [Passed]:  [0m结束框选后应清除选中状态
+* test_end_selection_sets_hidden
+[32m    [Passed]:  [0m结束框选后应不可见
+* test_end_selection_emits_signal
+[32m    [Passed]:  [0mExpected object @Control@534:<Control#165456908086>(selection_box.gd) to have emitted signal [selection_complete]:  结束框选应发出信号
+* test_update_selection_emits_signal
+[32m    [Passed]:  [0mExpected object @Control@536:<Control#165607903032>(selection_box.gd) to have emitted signal [selection_update]:  更新框选应发出信号
+* test_has_get_selection_rect_method
+[32m    [Passed]:  [0m应有get_selection_rect方法
+* test_has_get_selection_rect_world_method
+[32m    [Passed]:  [0m应有get_selection_rect_world方法
+[1m15/15 passed.
+[0m[4m
+
+test/unit/test_selection_manager.gd
+[0m* test_has_selected_items_property
+[32m    [Passed]:  [0m应有selected_items属性
+* test_default_no_selected_items
+[32m    [Passed]:  [0m[0] expected to equal [0]:  默认应无选中物品
+* test_has_select_item_method
+[32m    [Passed]:  [0m应有select_item方法
+* test_has_deselect_item_method
+[32m    [Passed]:  [0m应有deselect_item方法
+* test_has_clear_selection_method
+[32m    [Passed]:  [0m应有clear_selection方法
+* test_can_select_item
+[32m    [Passed]:  [0m[1] expected to equal [1]:  应有1个选中物品
+* test_select_item_marks_as_selected
+[32m    [Passed]:  [0m物品应被标记为选中
+* test_can_select_multiple_items
+[32m    [Passed]:  [0m[2] expected to equal [2]:  应有2个选中物品
+* test_clear_selection_deselects_all
+[32m    [Passed]:  [0m[0] expected to equal [0]:  应无选中物品
+[32m    [Passed]:  [0m物品1应取消选中
+[32m    [Passed]:  [0m物品2应取消选中
+* test_has_select_in_rect_method
+[32m    [Passed]:  [0m应有select_in_rect方法
+* test_select_in_rect_selects_items
+[32m    [Passed]:  [0m[1] expected to equal [1]:  应有1个选中物品
+* test_select_in_rect_multiple_items
+[32m    [Passed]:  [0m[2] expected to equal [2]:  应有2个选中物品
+* test_has_move_selected_items_method
+[32m    [Passed]:  [0m应有move_selected_items方法
+* test_move_selected_items
+[32m    [Passed]:  [0m[VECTOR2(100.0, 50.0)] expected to equal [VECTOR2(100.0, 50.0)]:  物品应移动
+* test_has_debug_selected_items_method
+[32m    [Passed]:  [0m应有debug_selected_items方法
+[1m15/15 passed.
+[0m[4m
+
+test/unit/test_shop.gd
+[0m* test_get_items_returns_array
+[32m    [Passed]:  [0mExpected [ARRAY([])] to be anything but NULL:  应返回物品数组
+* test_can_add_item
+[32m    [Passed]:  [0m[1] expected to equal [1]:  应有1个物品
+* test_can_purchase_item_by_index
+[32m    [Passed]:  [0m购买应成功，错误: 
+[32m    [Passed]:  [0m[50] expected to equal [50]:  应扣除50分
+* test_cannot_purchase_when_not_enough_score
+[32m    [Passed]:  [0m购买应失败
+[32m    [Passed]:  [0m[30] expected to equal [30]:  分数不应变化
+* test_purchase_returns_item_info
+[32m    [Passed]:  [0m购买应成功
+[32m    [Passed]:  [0m["score_button"] expected to equal ["score_button"]:  应返回物品名称
+* test_item_has_level_property
+[32m    [Passed]:  [0m[2] expected to equal [2]:  物品应有level属性
+* test_global_has_snap_position_to_grid
+[32m    [Passed]:  [0mGlobal应有snap_position_to_grid方法
+* test_snap_to_grid_aligns_position
+[32m    [Passed]:  [0m[VECTOR2(100.0, 100.0)] expected to equal [VECTOR2(100.0, 100.0)]:  100应对齐到100
+* test_snap_to_grid_rounds_position
+[32m    [Passed]:  [0m[VECTOR2(100.0, 150.0)] expected to equal [VECTOR2(100.0, 150.0)]:  应对齐到最近网格
+* test_snap_to_grid_exact_multiple
+[32m    [Passed]:  [0m[VECTOR2(100.0, 150.0)] expected to equal [VECTOR2(100.0, 150.0)]:  网格倍数应保持不变
+* test_default_level_is_2
+[32m    [Passed]:  [0m[2] expected to equal [2]:  默认层级应为2
+[1m11/11 passed.
+[0m[4m
+
+test/unit/test_shop_item.gd
+[0m* test_initial_name_is_set
+[32m    [Passed]:  [0m["测试物品"] expected to equal ["测试物品"]:  名称应正确设置
+* test_initial_cost_is_set
+[32m    [Passed]:  [0m[100] expected to equal [100]:  价格应正确设置
+* test_initial_scene_is_set
+[32m    [Passed]:  [0m["res://test.tscn"] expected to equal ["res://test.tscn"]:  场景路径应正确设置
+* test_can_afford_returns_true_when_enough_score
+[32m    [Passed]:  [0m分数足够应返回true
+* test_can_afford_returns_false_when_not_enough_score
+[32m    [Passed]:  [0m分数不足应返回false
+* test_purchase_deducts_score
+[32m    [Passed]:  [0m购买应成功
+[32m    [Passed]:  [0m[50] expected to equal [50]:  应扣除50分
+* test_has_drag_preview_method
+[32m    [Passed]:  [0m应有创建预览方法
+* test_drag_preview_created_when_dragging
+SCRIPT ERROR: Cannot call method 'add_child' on a null value.
+   at: ShopItem._create_drag_preview (res://scripts/shop_item.gd:173)
+   GDScript backtrace (most recent call first):
+       [0] _create_drag_preview (res://scripts/shop_item.gd:173)
+       [1] _start_drag (res://scripts/shop_item.gd:155)
+       [2] test_drag_preview_created_when_dragging (res://test/unit/test_sh
+op_item.gd:69)
+       [3] _end_wait (res://addons/gut/awaiter.gd:126)
+       [4] _on_tree_process_frame (res://addons/gut/awaiter.gd:68)
+[32m    [Passed]:  [0mExpected [<PanelContainer#172218126191>] to be anything but NULL:  拖拽时应创建预览
+[31m    [Failed]:  [0mUnexpected Errors:
+    [1] <engine-2>Cannot call method 'add_child' on a null value.
+      at line 74
+[33m    4 Orphans[0m
+[33m        * [<PanelContainer#172218126191>] + 3[0m
+* test_drag_preview_is_scene_instance
+SCRIPT ERROR: Cannot call method 'add_child' on a null value.
+   at: ShopItem._create_drag_preview (res://scripts/shop_item.gd:173)
+   GDScript backtrace (most recent call first):
+       [0] _create_drag_preview (res://scripts/shop_item.gd:173)
+       [1] _start_drag (res://scripts/shop_item.gd:155)
+       [2] test_drag_preview_is_scene_instance (res://test/unit/test_shop_i
+tem.gd:82)
+       [3] _end_wait (res://addons/gut/awaiter.gd:126)
+       [4] _on_tree_process_frame (res://addons/gut/awaiter.gd:68)
+[32m    [Passed]:  [0mExpected [NumberObject:<Control#172805328713>(number_object.gd)] to be anything but NULL:  应创建预览
+[32m    [Passed]:  [0m预览应是对应场景的实例
+[31m    [Failed]:  [0mUnexpected Errors:
+    [1] <engine-2>Cannot call method 'add_child' on a null value.
+      at line 88
+[33m    3 Orphans[0m
+[33m        * [NumberObject:<Control#172805328713>(number_object.gd)] + 2[0m
+* test_drag_preview_is_translucent
+SCRIPT ERROR: Cannot call method 'add_child' on a null value.
+   at: ShopItem._create_drag_preview (res://scripts/shop_item.gd:173)
+   GDScript backtrace (most recent call first):
+       [0] _create_drag_preview (res://scripts/shop_item.gd:173)
+       [1] _start_drag (res://scripts/shop_item.gd:155)
+       [2] test_drag_preview_is_translucent (res://test/unit/test_shop_item
+.gd:96)
+       [3] _end_wait (res://addons/gut/awaiter.gd:126)
+       [4] _on_tree_process_frame (res://addons/gut/awaiter.gd:68)
+[32m    [Passed]:  [0m预览应半透明
+[31m    [Failed]:  [0mUnexpected Errors:
+    [1] <engine-2>Cannot call method 'add_child' on a null value.
+      at line 102
+[33m    3 Orphans[0m
+[33m        * [NumberObject:<Control#173358976727>(number_object.gd)] + 2[0m
+* test_drag_preview_fallback_when_no_scene
+SCRIPT ERROR: Cannot call method 'add_child' on a null value.
+   at: ShopItem._create_drag_preview (res://scripts/shop_item.gd:173)
+   GDScript backtrace (most recent call first):
+       [0] _create_drag_preview (res://scripts/shop_item.gd:173)
+       [1] _start_drag (res://scripts/shop_item.gd:155)
+       [2] test_drag_preview_fallback_when_no_scene (res://test/unit/test_s
+hop_item.gd:110)
+       [3] _end_wait (res://addons/gut/awaiter.gd:126)
+       [4] _on_tree_process_frame (res://addons/gut/awaiter.gd:68)
+[32m    [Passed]:  [0mExpected [<PanelContainer#173895847861>] to be anything but NULL:  无场景时应有默认预览
+[31m    [Failed]:  [0mUnexpected Errors:
+    [1] <engine-2>Cannot call method 'add_child' on a null value.
+      at line 114
+[33m    4 Orphans[0m
+[33m        * [<PanelContainer#173895847861>] + 3[0m
+* test_drag_preview_removed_after_drop
+SCRIPT ERROR: Cannot call method 'add_child' on a null value.
+   at: ShopItem._create_drag_preview (res://scripts/shop_item.gd:173)
+   GDScript backtrace (most recent call first):
+       [0] _create_drag_preview (res://scripts/shop_item.gd:173)
+       [1] _start_drag (res://scripts/shop_item.gd:155)
+       [2] test_drag_preview_removed_after_drop (res://test/unit/test_shop_
+item.gd:121)
+       [3] _end_wait (res://addons/gut/awaiter.gd:126)
+       [4] _on_tree_process_frame (res://addons/gut/awaiter.gd:68)
+[32m    [Passed]:  [0m放下后预览应消失
+[31m    [Failed]:  [0mUnexpected Errors:
+    [1] <engine-2>Cannot call method 'add_child' on a null value.
+      at line 128
+[33m14 orphans[0m
+[1m7/12 passed.
+[0m
+
+
+
+[33m==============================================[0m
+[33m= 17 Orphans[0m
+[33m==============================================[0m
+test_addition_panel.gd
+    - test_process_creates_new_number
+[33m        * [NumberObject:<Control#112910666320>(number_object.gd)] + 2[0m
+test_shop_item.gd
+    - test_drag_preview_created_when_dragging
+[33m        * [<PanelContainer#172218126191>] + 3[0m
+    - test_drag_preview_is_scene_instance
+[33m        * [NumberObject:<Control#172805328713>(number_object.gd)] + 2[0m
+    - test_drag_preview_is_translucent
+[33m        * [NumberObject:<Control#173358976727>(number_object.gd)] + 2[0m
+    - test_drag_preview_fallback_when_no_scene
+[33m        * [<PanelContainer#173895847861>] + 3[0m
+
+
+[33m==============================================
+[0m[33m= Run Summary
+[0m[33m==============================================
+[0m[4m
+test/unit/test_addition_panel.gd
+[0m- test_process_creates_new_number
+[31m    [Failed]:  [0mUnexpected Errors:
+    [1] <engine-2>Cannot call method 'add_child' on a null value.
+          at line -1
+[4m
+test/unit/test_shop_item.gd
+[0m- test_drag_preview_created_when_dragging
+[31m    [Failed]:  [0mUnexpected Errors:
+    [1] <engine-2>Cannot call method 'add_child' on a null value.
+          at line 74
+- test_drag_preview_is_scene_instance
+[31m    [Failed]:  [0mUnexpected Errors:
+    [1] <engine-2>Cannot call method 'add_child' on a null value.
+          at line 88
+- test_drag_preview_is_translucent
+[31m    [Failed]:  [0mUnexpected Errors:
+    [1] <engine-2>Cannot call method 'add_child' on a null value.
+          at line 102
+- test_drag_preview_fallback_when_no_scene
+[31m    [Failed]:  [0mUnexpected Errors:
+    [1] <engine-2>Cannot call method 'add_child' on a null value.
+          at line 114
+- test_drag_preview_removed_after_drop
+[31m    [Failed]:  [0mUnexpected Errors:
+    [1] <engine-2>Cannot call method 'add_child' on a null value.
+          at line 128
+
+Totals
+------
+Warnings              1
+
+Scripts              21
+Tests               322
+Passing Tests       316
+Failing Tests         6
+Asserts           402/408
+Orphans              17
+Time              4.353s
+
+
+[31m---- 6 failing tests ----
+[0m
+[1m[INFO]:  [0mExiting with code 1
+WARNING: 17 RIDs of type "CanvasItem" were leaked.
+   at: _free_rids (servers/rendering/renderer_canvas_cull.cpp:2692)
+ERROR: 2 RID allocations of type 'PN13RendererDummy14TextureStorage12DummyT
+extureE' were leaked at exit.
+ERROR: 14 RID allocations of type 'PN18TextServerAdvanced22ShapedTextDataAd
+vancedE' were leaked at exit.
+ERROR: 1 RID allocations of type 'PN18TextServerAdvanced12FontAdvancedE' we
+re leaked at exit.
+WARNING: ObjectDB instances leaked at exit (run with --verbose for details)
+.
+   at: cleanup (core/object/object.cpp:2641)
+ERROR: 1 resources still in use at exit (run with --verbose for details).
+   at: clear (core/io/resource.cpp:810)

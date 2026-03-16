@@ -210,11 +210,41 @@ func _input(event: InputEvent) -> void:
 				SelectionManager.apply_debug_direction_to_selected(direction)
 			else:
 				# 只应用到当前物品
-				var output_comp = _get_output_component(_dragging_item)
-				if output_comp:
-					output_comp.set_output_direction(direction)
+				# 检查是否是传送带
+				if _dragging_item is ConveyorBelt:
+					_dragging_item.direction = direction
+				elif _dragging_item is SplitterConveyor:
+					# 分流器：根据方向旋转
+					_apply_splitter_rotation(_dragging_item, direction)
+				else:
+					# 普通物品使用 OutputComponent
+					var output_comp = _get_output_component(_dragging_item)
+					if output_comp:
+						output_comp.set_output_direction(direction)
 
 			_dragging_item = null
+
+
+func _apply_splitter_rotation(splitter: SplitterConveyor, target_direction: Vector2) -> void:
+	## 根据目标方向旋转分流器
+	# 目标方向 = 分流后数字要去的方向之一
+	# 需要计算对应的旋转角度
+	match target_direction:
+		Vector2.LEFT:
+			splitter.rotation_angle = 0
+		Vector2.UP:
+			splitter.rotation_angle = 90
+		Vector2.RIGHT:
+			splitter.rotation_angle = 180
+		Vector2.DOWN:
+			splitter.rotation_angle = 270
+		_:
+			return
+
+	# 更新方向和箭头
+	splitter._update_directions()
+	splitter._update_arrow_layout()
+	splitter._update_arrow_textures()
 
 
 func _calculate_direction(delta: Vector2) -> Vector2:
