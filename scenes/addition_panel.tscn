@@ -1,0 +1,58 @@
+[gd_scene format=3 uid="uid://dvxdp4lbfiowb"]
+
+[ext_resource type="Script" uid="uid://dqon5yx1vf7a7" path="res://scripts/addition_panel.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://rdgvr1ygufbm" path="res://scripts/output_component.gd" id="2_output"]
+[ext_resource type="Script" uid="uid://dg0nsamriwcsg" path="res://scripts/selectable_component.gd" id="3_selectable"]
+[ext_resource type="Script" uid="uid://ba6o45fx78yp" path="res://scripts/click_component.gd" id="4_click"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_main"]
+bg_color = Color(0.6, 0.3, 0.6, 0.8)
+border_color = Color(0.8, 0.5, 0.8, 1)
+shadow_size = 3
+shadow_offset = Vector2(2, 2)
+
+[node name="AdditionPanel" type="Control" unique_id=735943929]
+custom_minimum_size = Vector2(150, 150)
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_script")
+
+[node name="OutputComponent" type="Node" parent="." unique_id=727218079]
+script = ExtResource("2_output")
+
+[node name="SelectableComponent" type="Node" parent="." unique_id=2100258097]
+script = ExtResource("3_selectable")
+
+[node name="ClickComponent" type="Node" parent="." unique_id=263356639]
+script = ExtResource("4_click")
+
+[node name="Panel" type="Panel" parent="." unique_id=637764238]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_main")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=780800473]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+alignment = 1
+
+[node name="Label" type="Label" parent="VBoxContainer" unique_id=2030300840]
+layout_mode = 2
+text = "加法面板"
+horizontal_alignment = 1
+
+[node name="StateLabel" type="Label" parent="VBoxContainer" unique_id=772986898]
+layout_mode = 2
+text = "放入两个数字"
+horizontal_alignment = 1
+autowrap_mode = 2

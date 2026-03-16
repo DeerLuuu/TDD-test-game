@@ -14,6 +14,13 @@ func before_each():
 	output_comp.name = "OutputComponent"
 	_panel.add_child(output_comp)
 
+	# 手动添加ClickComponent
+	var click_comp = ClickComponent.new()
+	click_comp.name = "ClickComponent"
+	click_comp.clicks_required = 3
+	click_comp.is_clickable = false
+	_panel.add_child(click_comp)
+
 	add_child_autofree(_panel)
 
 	_number = autofree(NumberObject.new())
@@ -34,9 +41,9 @@ func after_each():
 
 ## === 基本属性测试 ===
 
-func test_has_clicks_required_property():
-	## 应有加工次数属性
-	assert_true("clicks_required" in _panel, "应有clicks_required属性")
+func test_has_click_component():
+	## 应有ClickComponent
+	assert_not_null(_panel.click_component, "应有click_component")
 
 
 func test_has_current_number_property():
@@ -44,24 +51,9 @@ func test_has_current_number_property():
 	assert_true("current_number" in _panel, "应有current_number属性")
 
 
-func test_has_current_clicks_property():
-	## 应有当前点击次数属性
-	assert_true("current_clicks" in _panel, "应有current_clicks属性")
-
-
-func test_default_clicks_required():
-	## 默认需要点击次数
-	assert_eq(_panel.clicks_required, 3, "默认需要3次点击")
-
-
 func test_default_current_number_is_null():
 	## 默认没有正在加工的数字
 	assert_null(_panel.current_number, "默认current_number应为null")
-
-
-func test_default_current_clicks_is_zero():
-	## 默认点击次数为0
-	assert_eq(_panel.current_clicks, 0, "默认current_clicks应为0")
 
 
 func test_has_processing_property():
@@ -128,30 +120,30 @@ func test_click_increments_counter():
 	## 点击增加计数
 	_panel.accept_number(_number)
 	_panel.on_click()
-	assert_eq(_panel.current_clicks, 1, "点击后计数应为1")
+	assert_eq(_panel.click_component.current_clicks, 1, "点击后计数应为1")
 
 
 func test_multiple_clicks():
 	## 多次点击（设置更高的点击次数避免触发完成）
-	_panel.clicks_required = 5
+	_panel.click_component.clicks_required = 5
 	_panel.accept_number(_number)
 
 	_panel.on_click()
-	assert_eq(_panel.current_clicks, 1, "第一次点击后计数应为1")
+	assert_eq(_panel.click_component.current_clicks, 1, "第一次点击后计数应为1")
 	_panel.on_click()
-	assert_eq(_panel.current_clicks, 2, "第二次点击后计数应为2")
+	assert_eq(_panel.click_component.current_clicks, 2, "第二次点击后计数应为2")
 	_panel.on_click()
-	assert_eq(_panel.current_clicks, 3, "第三次点击后计数应为3")
+	assert_eq(_panel.click_component.current_clicks, 3, "第三次点击后计数应为3")
 
 func test_click_does_not_work_without_number():
 	## 没有数字时点击无效
 	_panel.on_click()
-	assert_eq(_panel.current_clicks, 0, "没有数字时点击不应增加计数")
+	assert_eq(_panel.click_component.current_clicks, 0, "没有数字时点击不应增加计数")
 
 
 func test_process_completes_after_required_clicks():
 	## 达到所需点击次数后完成加工
-	_panel.clicks_required = 2
+	_panel.click_component.clicks_required = 2
 	_panel.accept_number(_number)
 
 	_panel.on_click()
@@ -165,7 +157,7 @@ func test_process_completes_after_required_clicks():
 
 func test_process_resets_after_completion():
 	## 加工完成后重置状态
-	_panel.clicks_required = 1
+	_panel.click_component.clicks_required = 1
 	_panel.accept_number(_number)
 
 	_panel.on_click()
@@ -174,7 +166,7 @@ func test_process_resets_after_completion():
 	await wait_seconds(0.6)
 
 	assert_null(_panel.current_number, "完成后current_number应重置")
-	assert_eq(_panel.current_clicks, 0, "完成后current_clicks应重置")
+	assert_eq(_panel.click_component.current_clicks, 0, "完成后current_clicks应重置")
 	assert_false(_panel.processing, "完成后processing应为false")
 
 
@@ -183,7 +175,7 @@ func test_process_resets_after_completion():
 func test_processed_level_increases():
 	## 加工等级增加
 	var initial_level = _number.processed_level
-	_panel.clicks_required = 1
+	_panel.click_component.clicks_required = 1
 	_panel.accept_number(_number)
 	_panel.on_click()
 
@@ -197,7 +189,7 @@ func test_processed_level_increases():
 
 func test_queued_number_enters_after_completion():
 	## 加工完成后等待的数字进入
-	_panel.clicks_required = 1
+	_panel.click_component.clicks_required = 1
 	_panel.accept_number(_number)
 
 	# 模拟另一个数字尝试进入
@@ -263,7 +255,7 @@ func test_does_not_detect_dragging_number():
 
 func test_auto_detect_after_processing_complete():
 	## 加工完成后自动检测下一个数字
-	_panel.clicks_required = 1
+	_panel.click_component.clicks_required = 1
 	_number.global_position = _panel.global_position + _panel.size / 2 - _number.size / 2
 
 	# 等待自动检测
@@ -307,8 +299,8 @@ func test_remove_number_resets_clicks():
 	_panel.accept_number(_number)
 	_panel.on_click()
 	_panel.on_click()
-	assert_eq(_panel.current_clicks, 2, "应有2次点击")
+	assert_eq(_panel.click_component.current_clicks, 2, "应有2次点击")
 
 	_panel.remove_number(_number)
 
-	assert_eq(_panel.current_clicks, 0, "取出后点击计数应重置")
+	assert_eq(_panel.click_component.current_clicks, 0, "取出后点击计数应重置")

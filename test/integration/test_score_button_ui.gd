@@ -18,10 +18,10 @@ func before_each():
 	_drop_zone = add_child_autofree(ScoreDropZoneScene.instantiate())
 
 
-func test_scene_has_add_button():
-	## 场景应包含生成按钮
-	var button = _button.find_child('AddButton', true, false)
-	assert_not_null(button, "场景应包含AddButton")
+func test_scene_has_click_component():
+	## 场景应包含ClickComponent
+	var click_comp = _button.find_child('ClickComponent', true, false)
+	assert_not_null(click_comp, "场景应包含ClickComponent")
 
 
 func test_clicking_button_spawns_number():
@@ -35,7 +35,10 @@ func test_clicking_button_spawns_number():
 	# 统计初始数字数量
 	var initial_numbers = get_tree().get_nodes_in_group("number_objects").size()
 
-	_button.find_child('AddButton', true, false).emit_signal('pressed')
+	# 获取ClickComponent并触发点击完成
+	var click_comp = _button.find_child('ClickComponent', true, false)
+	if click_comp:
+		click_comp.on_complete.emit()
 
 	# 等待一帧让数字生成
 	await wait_idle_frames(1)

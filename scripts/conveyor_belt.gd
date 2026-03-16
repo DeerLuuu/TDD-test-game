@@ -33,11 +33,11 @@ var output_component: OutputComponent:
 
 
 func _ready() -> void:
-	add_to_group("placeable_items")
-	add_to_group("selectable_items")
-	# 检查是否为预览状态
-	if has_meta("is_preview") and get_meta("is_preview"):
-		return
+	# 预览传送带不加入交互组
+	var is_preview = has_meta("is_preview") and get_meta("is_preview")
+	if not is_preview:
+		add_to_group("placeable_items")
+		add_to_group("selectable_items")
 
 	# 初始化箭头纹理字典
 	if arrow_textures.is_empty():
@@ -52,6 +52,10 @@ func _ready() -> void:
 	# 启用鼠标输入处理
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	_update_arrow_texture()
+
+	# 检查是否为预览状态
+	if has_meta("is_preview") and get_meta("is_preview"):
+		return
 
 
 func _process(delta: float) -> void:
@@ -92,6 +96,10 @@ func _detect_numbers() -> void:
 
 func _input(event: InputEvent) -> void:
 	## 处理滚轮输入（旋转传送带方向）
+	# 在铺路模式下不处理滚轮，避免冲突
+	if Global.is_path_build_mode():
+		return
+
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_WHEEL_UP and event.pressed:
 			# 检查鼠标是否在本节点内

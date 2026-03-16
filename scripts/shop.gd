@@ -10,8 +10,6 @@ var _items: Array = []
 @onready var mode_label: Label = $MarginContainer/VBoxContainer/ModeContainer/ModeLabel
 @onready var direction_btn: Button = $MarginContainer/VBoxContainer/ModeContainer/DirectionButton
 
-@export var level_node_arr : Array[Node2D]
-
 func _ready() -> void:
 	add_to_group("shop_panel")
 	_setup_default_items()
@@ -47,6 +45,9 @@ func _unhandled_input(event: InputEvent) -> void:
 			KEY_V:
 				Global.set_debug_mode()
 				get_viewport().set_input_as_handled()
+			KEY_B:
+				Global.set_path_build_mode()
+				get_viewport().set_input_as_handled()
 
 
 func _on_mode_changed(_old_mode: int, _new_mode: int) -> void:
@@ -61,13 +62,15 @@ func _update_mode_ui() -> void:
 	## 更新模式显示
 	if mode_label:
 		if Global.is_click_mode():
-			mode_label.text = "模式: 点击 (Z/X/C/V切换)"
+			mode_label.text = "模式: 点击 (Z/X/C/V/B切换)"
 		elif Global.is_drag_mode():
-			mode_label.text = "模式: 拖动 (Z/X/C/V切换)"
+			mode_label.text = "模式: 拖动 (Z/X/C/V/B切换)"
 		elif Global.is_delete_mode():
-			mode_label.text = "模式: 删除 (Z/X/C/V切换)"
+			mode_label.text = "模式: 删除 (Z/X/C/V/B切换)"
+		elif Global.is_debug_mode():
+			mode_label.text = "模式: 调试 (Z/X/C/V/B切换)"
 		else:
-			mode_label.text = "模式: 调试 (Z/X/C/V切换)"
+			mode_label.text = "模式: 铺路 (Z/X/C/V/B切换)"
 
 
 func _update_direction_ui() -> void:
@@ -108,6 +111,18 @@ func _setup_default_items() -> void:
 			"cost": 150,
 			"scene_path": "res://scenes/process_panel.tscn",
 			"level": 2
+		},
+		{
+			"name": "加法面板",
+			"cost": 120,
+			"scene_path": "res://scenes/addition_panel.tscn",
+			"level": 2
+		},
+		{
+			"name": "自动点击器",
+			"cost": 200,
+			"scene_path": "res://scenes/auto_clicker.tscn",
+			"level": 1
 		}
 	]
 
@@ -203,12 +218,28 @@ func _spawn_purchased_item(scene_path: String, global_pos: Vector2, level: int =
 
 	var instance = scene.instantiate()
 
-	# 对齐网格
-	@warning_ignore("static_called_on_instance")
-	var snapped_pos = Global.snap_position_to_grid(global_pos)
+	# AutoClicker特殊处理：查找目标面板/按钮
+	if instance is AutoClicker:
+		var target = _find_auto_clicker_target(global_pos)
+		if target:
+			# 检查目标是否已经有AutoClicker
+			if _has_auto_clicker(target):
+				instance.queue_free()
+				if cost > 0:
+					GameScore.add_score(cost)
+				return
+			# 添加为目标子节点
+			target.add_child(instance)
+			return
+		else:
+			# 没有有效目标，退款
+			instance.queue_free()
+			if cost > 0:
+				GameScore.add_score(cost)
+			return
 
 	# 根据层级选择父节点
-	var parent = _get_level_parent(level)
+	var parent = Global.get_level_parent(level)
 	if parent:
 		parent.add_child(instance)
 	else:
@@ -217,15 +248,19 @@ func _spawn_purchased_item(scene_path: String, global_pos: Vector2, level: int =
 	# 等待一帧让size正确初始化
 	await get_tree().process_frame
 
-	var target_pos = snapped_pos - instance.size / 2
+	# 统一对齐逻辑：鼠标位置作为中心，减去一半大小后对齐网格
+	@warning_ignore("static_called_on_instance")
+	var target_pos = Global.snap_position_to_grid(global_pos - instance.size / 2)
 
-	# 检测位置是否被占用
-	if Global.check_position_occupied(target_pos, instance.size, instance):
-		# 位置被占用，移除物品并退款
-		instance.queue_free()
-		if cost > 0:
-			GameScore.add_score(cost)
-		return
+	# CollectPanel不需要检查位置占用（可以放置在任意位置）
+	if not instance is CollectPanel:
+		# 检测位置是否被占用
+		if Global.check_position_occupied(target_pos, instance.size, instance):
+			# 位置被占用，移除物品并退款
+			instance.queue_free()
+			if cost > 0:
+				GameScore.add_score(cost)
+			return
 
 	instance.global_position = target_pos
 
@@ -235,6 +270,48 @@ func _spawn_purchased_item(scene_path: String, global_pos: Vector2, level: int =
 
 	# 添加到可放置物品组
 	instance.add_to_group("placeable_items")
+
+
+func _find_auto_clicker_target(global_pos: Vector2) -> Control:
+	## 查找可以放置AutoClicker的目标（必须带有ClickComponent）
+	var items = get_tree().get_nodes_in_group("placeable_items")
+
+	for item in items:
+		if not is_instance_valid(item):
+			continue
+		if not item is Control:
+			continue
+		# 排除AutoClicker自身
+		if item is AutoClicker:
+			continue
+		if item.is_in_group("score_drop_zone"):
+			continue
+
+		# 检查是否有ClickComponent
+		if not _has_click_component(item):
+			continue
+
+		var rect = Rect2(item.global_position, item.size)
+		if rect.has_point(global_pos):
+			return item
+
+	return null
+
+
+func _has_click_component(item: Control) -> bool:
+	## 检查物品是否有ClickComponent
+	for child in item.get_children():
+		if child is ClickComponent:
+			return true
+	return false
+
+
+func _has_auto_clicker(target: Control) -> bool:
+	## 检查目标是否已经有AutoClicker
+	for child in target.get_children():
+		if child is AutoClicker:
+			return true
+	return false
 
 
 func toggle_mode() -> void:
@@ -248,13 +325,6 @@ func toggle_mode() -> void:
 func rotate_drag_direction() -> void:
 	## 旋转拖动方向
 	Global.rotate_drag_direction()
-
-
-func _get_level_parent(level: int) -> Node:
-	var index = level - 1
-	if level_node_arr.size() > index and level_node_arr[index]:
-		return level_node_arr[index]
-	return null
 
 
 func _show_purchase_failed(result: Dictionary) -> void:

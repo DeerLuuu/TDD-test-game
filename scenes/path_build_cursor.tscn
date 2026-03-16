@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://b07ea3c1hm5hh"]
+
+[ext_resource type="Script" path="res://scripts/path_build_cursor.gd" id="1_script"]
+
+[node name="PathBuildCursor" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_script")

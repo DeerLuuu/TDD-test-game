@@ -1,9 +1,6 @@
-extends Control
+class_name ScoreButton extends Control
 ## 分数按钮场景 - 点击生成可拖动数字
 ## 拖动模式下可拖动按钮本身
-
-## 层级节点数组（由外部设置）
-@export var level_node_arr: Array[Node2D] = []
 
 @export var number_scene: PackedScene
 
@@ -13,7 +10,13 @@ var _drag_offset: Vector2 = Vector2.ZERO
 var _drag_preview: Control = null
 var _original_position: Vector2 = Vector2.ZERO
 
-@onready var add_button: Button = $AddButton
+## ClickComponent引用
+var _click_component: ClickComponent = null
+var click_component: ClickComponent:
+	get:
+		if _click_component == null:
+			_click_component = get_node_or_null("ClickComponent")
+		return _click_component
 
 ## 输出组件引用
 var _output_component: OutputComponent = null
@@ -29,8 +32,11 @@ func _ready() -> void:
 	add_to_group("selectable_items")
 	if number_scene == null:
 		number_scene = preload("res://scenes/number_object.tscn")
-	add_button.pressed.connect(_on_add_button_pressed)
 	mouse_filter = Control.MOUSE_FILTER_STOP
+
+	# 连接ClickComponent的完成信号
+	if click_component:
+		click_component.on_complete.connect(_on_click_completed)
 
 
 func _process(_delta: float) -> void:
@@ -42,6 +48,15 @@ func _process(_delta: float) -> void:
 		@warning_ignore("static_called_on_instance")
 		var snapped_pos = Global.snap_position_to_grid(target_pos)
 		_drag_preview.global_position = snapped_pos
+
+
+func _gui_input(event: InputEvent) -> void:
+	## 处理点击输入
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		if event.pressed and Global.is_click_mode():
+			if click_component:
+				click_component.on_click()
+				accept_event()
 
 
 func _input(event: InputEvent) -> void:
@@ -80,10 +95,10 @@ func _end_drag() -> void:
 			global_position = target_pos
 	_is_dragging = false
 
-func _on_add_button_pressed() -> void:
-	## 只在点击模式下生成数字
-	if Global.is_click_mode():
-		_spawn_number()
+
+func _on_click_completed() -> void:
+	## ClickComponent点击完成时生成数字
+	_spawn_number()
 
 
 func _spawn_number() -> void:
@@ -91,7 +106,7 @@ func _spawn_number() -> void:
 	var number = number_scene.instantiate()
 
 	# 获取Level3父节点（层级3）
-	var parent = _get_level_parent(3)
+	var parent = Global.get_level_parent(3)
 	if parent:
 		parent.add_child(number)
 	else:
@@ -115,13 +130,6 @@ func _spawn_number() -> void:
 
 	# 应用弹出动画
 	_apply_pop_animation(number)
-
-
-func _get_level_parent(level: int) -> Node:
-	var index = level - 1
-	if level_node_arr.size() > index and level_node_arr[index]:
-		return level_node_arr[index]
-	return null
 
 
 func _apply_pop_animation(number: Control) -> void:

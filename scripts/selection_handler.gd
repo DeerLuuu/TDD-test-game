@@ -174,8 +174,8 @@ func _on_mouse_moved(_event: InputEventMouseMotion) -> void:
 				var current_time = Time.get_ticks_msec() / 1000.0
 				var elapsed = current_time - _box_select_start_time
 
-				# 长按后开始框选（排除删除模式）
-				if elapsed >= LONG_PRESS_TIME and not Global.is_delete_mode():
+				# 长按后开始框选（排除删除模式和铺路模式）
+				if elapsed >= LONG_PRESS_TIME and not Global.is_delete_mode() and not Global.is_path_build_mode():
 					_start_box_selection(_box_select_start_pos)
 
 	# 更新框选

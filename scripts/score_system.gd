@@ -5,7 +5,7 @@ class_name ScoreSystem
 ## 分数变化信号 - 参数: 旧分数, 新分数
 signal score_changed(old_score: int, new_score: int)
 
-var _score: int = 0:
+var _score: int = 100:
 	set(v):
 		var old_socre : int = _score
 		_score = v

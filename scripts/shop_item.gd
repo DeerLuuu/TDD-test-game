@@ -13,6 +13,9 @@ var _drag_start_pos: Vector2
 var _drag_offset: Vector2
 var _preview: Control = null
 
+## AutoClicker专用：当前悬停的目标面板
+var _auto_clicker_target: Control = null
+
 @onready var name_label: Label = $VBoxContainer/NameLabel
 @onready var cost_label: Label = $VBoxContainer/CostLabel
 
@@ -28,10 +31,77 @@ func _process(_delta: float) -> void:
 	if _is_dragging and _preview:
 		@warning_ignore("static_called_on_instance")
 		var global_mouse = Global.get_scaled_global_mouse_position(get_viewport())
-		var target_pos = global_mouse - _preview.size / 2
+
+		# AutoClicker特殊处理
+		if _is_auto_clicker():
+			_update_auto_clicker_preview(global_mouse)
+		else:
+			var target_pos = global_mouse - _preview.size / 2
+			@warning_ignore("static_called_on_instance")
+			var snapped_pos = Global.snap_position_to_grid(target_pos)
+			_preview.global_position = snapped_pos
+
+
+func _is_auto_clicker() -> bool:
+	## 检查是否是自动点击器
+	return scene_path.find("auto_clicker") != -1
+
+
+func _update_auto_clicker_preview(global_mouse: Vector2) -> void:
+	## 更新AutoClicker预览
+	# 查找悬停的目标面板/按钮
+	_auto_clicker_target = _find_auto_clicker_target(global_mouse)
+
+	if _auto_clicker_target:
+		# 匹配目标大小
+		var target_size = _auto_clicker_target.size + Vector2(8, 8)  # 边距4*2
+		_preview.custom_minimum_size = target_size
+		_preview.size = target_size
+		# 对齐到目标位置
+		_preview.global_position = _auto_clicker_target.global_position - Vector2(4, 4)
+	else:
+		# 默认大小
+		var default_size = Vector2(50, 50)
+		_preview.custom_minimum_size = default_size
+		_preview.size = default_size
+		# 对齐到网格
 		@warning_ignore("static_called_on_instance")
-		var snapped_pos = Global.snap_position_to_grid(target_pos)
+		var snapped_pos = Global.snap_position_to_grid(global_mouse - default_size / 2)
 		_preview.global_position = snapped_pos
+
+
+func _find_auto_clicker_target(global_mouse: Vector2) -> Control:
+	## 查找可以放置AutoClicker的目标（必须带有ClickComponent）
+	var items = get_tree().get_nodes_in_group("placeable_items")
+
+	for item in items:
+		if not is_instance_valid(item):
+			continue
+		if not item is Control:
+			continue
+		# 排除AutoClicker自身
+		if item is AutoClicker:
+			continue
+		if item.is_in_group("score_drop_zone"):
+			continue
+
+		# 检查是否有ClickComponent
+		if not _has_click_component(item):
+			continue
+
+		var rect = Rect2(item.global_position, item.size)
+		if rect.has_point(global_mouse):
+			return item
+
+	return null
+
+
+func _has_click_component(item: Control) -> bool:
+	## 检查物品是否有ClickComponent
+	for child in item.get_children():
+		if child is ClickComponent:
+			return true
+	return false
 
 
 func _gui_input(event: InputEvent) -> void:
@@ -117,8 +187,34 @@ func _create_preview_control() -> Control:
 				return instance
 
 	# Fallback: 创建默认样式预览
+	return _create_fallback_preview()
+
+
+func _create_fallback_preview() -> Control:
+	## 创建默认预览样式
 	var preview = PanelContainer.new()
 	preview.custom_minimum_size = Vector2(120, 60)
+
+	# AutoClicker特殊样式
+	if _is_auto_clicker():
+		preview.custom_minimum_size = Vector2(50, 50)
+		var style = StyleBoxFlat.new()
+		style.bg_color = Color(0.0, 0.0, 0.0, 0.3)
+		style.border_color = Color(1.0, 0.8, 0.2, 0.8)
+		style.set_border_width_all(2)
+		style.set_corner_radius_all(4)
+		preview.add_theme_stylebox_override("panel", style)
+
+		# 添加图标
+		var icon = Label.new()
+		icon.text = "⚡"
+		icon.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		icon.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		icon.add_theme_font_size_override("font_size", 24)
+		icon.add_theme_color_override("font_color", Color(1.0, 0.8, 0.2, 0.9))
+		preview.add_child(icon)
+
+		return preview
 
 	var vbox = VBoxContainer.new()
 	preview.add_child(vbox)
@@ -176,4 +272,9 @@ func _check_drag_out() -> void:
 		# 放置物品时使用缩放后的世界坐标
 		@warning_ignore("static_called_on_instance")
 		var global_mouse = Global.get_scaled_global_mouse_position(get_viewport())
-		dragged_out.emit(self, global_mouse)
+
+		# AutoClicker特殊处理：传递目标信息
+		if _is_auto_clicker() and _auto_clicker_target:
+			dragged_out.emit(self, global_mouse)
+		else:
+			dragged_out.emit(self, global_mouse)

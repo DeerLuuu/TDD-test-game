@@ -47,18 +47,24 @@ func _create_background() -> void:
 
 
 func _update_position() -> void:
-	## 更新位置跟随鼠标（使用屏幕坐标）
+	## 更新位置跟随鼠标（使用世界坐标）
+	var viewport = get_viewport()
+	if not viewport:
+		return
+
+	var canvas_transform = viewport.get_canvas_transform()
+
 	if _hovered_item:
-		# 将物品的世界坐标转换为屏幕坐标
-		var viewport = get_viewport()
-		var canvas_transform = viewport.get_canvas_transform()
 		# 物品的世界坐标 -> 屏幕坐标
 		global_position = canvas_transform * _hovered_item.global_position
 	else:
-		# 使用屏幕坐标
-		var screen_mouse = get_viewport().get_mouse_position()
+		# 使用世界坐标对齐
 		@warning_ignore("static_called_on_instance")
-		global_position = Global.snap_position_to_grid(screen_mouse - Vector2(Global.GRID_SIZE, Global.GRID_SIZE) / 2)
+		var world_mouse = Global.get_scaled_global_mouse_position(viewport)
+		var cursor_size = Vector2(Global.GRID_SIZE, Global.GRID_SIZE)
+		@warning_ignore("static_called_on_instance")
+		var snapped_pos = Global.snap_position_to_grid(world_mouse - cursor_size / 2)
+		global_position = canvas_transform * snapped_pos
 
 
 func _update_size() -> void:
@@ -146,7 +152,7 @@ func _spawn_drop_numbers(values: Array, center_pos: Vector2) -> void:
 		var number = NumberScene.instantiate()
 		number.value = values[i]
 
-		var parent = _get_level_parent(3)
+		var parent = Global.get_level_parent(3)
 		if parent:
 			parent.add_child(number)
 		else:
@@ -168,26 +174,6 @@ func _spawn_drop_numbers(values: Array, center_pos: Vector2) -> void:
 		tween.tween_property(number, "scale", Vector2(1.2, 1.2), 0.3).from(Vector2(0.1, 0.1))
 
 		# 添加到场景树后会自动显示
-
-
-func _get_level_parent(level: int) -> Node:
-	## 获取对应层级的父节点
-	# 需要找到world场景中的level节点
-	var tree = get_tree()
-	if not tree:
-		return null
-
-	var current_scene = tree.current_scene
-	if not current_scene:
-		return null
-
-	# 查找Level节点
-	var level_name = "Level%d" % level
-	var level_node = current_scene.find_child(level_name, true, false)
-	if level_node:
-		return level_node
-
-	return null
 
 
 func _on_mode_changed(_old_mode: int, new_mode: int) -> void:

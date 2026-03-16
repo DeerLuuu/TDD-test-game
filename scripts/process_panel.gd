@@ -1,15 +1,10 @@
 extends Control
 ## 加工面板 - 接收数字，点击加工后提升数字等级
+## 使用ClickComponent处理点击计数逻辑
 class_name ProcessPanel
-
-## 需要点击的次数
-@export var clicks_required: int = 3
 
 ## 当前正在加工的数字
 var current_number: NumberObject = null
-
-## 当前点击次数
-var current_clicks: int = 0
 
 ## 是否正在加工
 var processing: bool = false
@@ -37,12 +32,26 @@ var output_component: OutputComponent:
 			_output_component = get_node_or_null("OutputComponent")
 		return _output_component
 
+## 点击组件引用
+var _click_component: ClickComponent = null
+var click_component: ClickComponent:
+	get:
+		if _click_component == null:
+			_click_component = get_node_or_null("ClickComponent")
+		return _click_component
+
 
 func _ready() -> void:
 	add_to_group("process_panel")
 	add_to_group("placeable_items")
 	add_to_group("selectable_items")
 	mouse_filter = Control.MOUSE_FILTER_STOP
+
+	# 连接点击组件信号
+	if click_component:
+		click_component.on_clicked.connect(_on_click_progress)
+		click_component.on_complete.connect(_on_click_complete)
+
 	_update_display()
 
 
@@ -53,11 +62,11 @@ func _process(_delta: float) -> void:
 
 func _gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
-				if event.pressed:
-					# 点击模式下执行加工
-					if Global.is_click_mode():
-						on_click()
-						accept_event()
+		if event.pressed:
+			# 点击模式下执行加工
+			if Global.is_click_mode():
+				on_click()
+				accept_event()
 
 
 func _auto_detect_numbers() -> void:
@@ -98,7 +107,12 @@ func _update_display() -> void:
 	## 更新显示
 	if click_label:
 		if processing:
-			click_label.text = "%d/%d" % [current_clicks, clicks_required]
+			var current = 0
+			var required = 3
+			if click_component:
+				current = click_component.current_clicks
+				required = click_component.clicks_required
+			click_label.text = "%d/%d" % [current, required]
 		else:
 			click_label.text = "点击加工"
 
@@ -106,7 +120,10 @@ func _update_display() -> void:
 		if processing and current_number:
 			# 有数字时显示进度条并更新进度
 			progress_bar.visible = true
-			progress_bar.value = float(current_clicks) / float(clicks_required) * 100.0
+			var progress = 0.0
+			if click_component:
+				progress = click_component.get_progress() * 100.0
+			progress_bar.value = progress
 		else:
 			# 没有数字时隐藏进度条
 			progress_bar.visible = false
@@ -117,11 +134,19 @@ func on_click() -> void:
 	if not processing or not current_number:
 		return
 
-	current_clicks += 1
+	# 使用点击组件处理点击
+	if click_component:
+		click_component.on_click()
+
+
+func _on_click_progress(_current: int, _required: int) -> void:
+	## 点击进度更新
 	_update_display()
 
-	if current_clicks >= clicks_required:
-		_complete_processing()
+
+func _on_click_complete() -> void:
+	## 点击完成时触发加工
+	_complete_processing()
 
 
 func accept_number(number: NumberObject) -> void:
@@ -133,8 +158,12 @@ func accept_number(number: NumberObject) -> void:
 
 	# 设置当前数字
 	current_number = number
-	current_clicks = 0
 	processing = true
+
+	# 重置点击组件
+	if click_component:
+		click_component.reset()
+		click_component.is_clickable = true
 
 	# 移动数字到面板中心
 	_move_number_to_center(number)
@@ -175,8 +204,11 @@ func _complete_processing() -> void:
 
 	# 重置加工状态（但保持 _is_moving_output）
 	current_number = null
-	current_clicks = 0
 	processing = false
+
+	# 禁用点击组件
+	if click_component:
+		click_component.is_clickable = false
 
 	_update_display()
 
@@ -230,10 +262,14 @@ func remove_number(number: NumberObject) -> void:
 
 	# 重置状态
 	current_number = null
-	current_clicks = 0
 	processing = false
 	_is_moving_output = false
 	_recently_completed = null
+
+	# 重置点击组件
+	if click_component:
+		click_component.reset()
+		click_component.is_clickable = false
 
 	_update_display()
 
@@ -251,7 +287,12 @@ func reset() -> void:
 		current_number.global_position = global_position + size / 2 + output_off
 
 	current_number = null
-	current_clicks = 0
 	processing = false
 	waiting_queue.clear()
+
+	# 重置点击组件
+	if click_component:
+		click_component.reset()
+		click_component.is_clickable = false
+
 	_update_display()

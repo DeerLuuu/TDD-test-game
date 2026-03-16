@@ -81,8 +81,9 @@ func _update_position() -> void:
 		# 显示在鼠标位置（网格对齐）
 		@warning_ignore("static_called_on_instance")
 		var world_mouse = Global.get_scaled_global_mouse_position(viewport)
+		var cursor_size = Vector2(Global.GRID_SIZE, Global.GRID_SIZE)
 		@warning_ignore("static_called_on_instance")
-		var snapped_pos = Global.snap_position_to_grid(world_mouse - Vector2(Global.GRID_SIZE, Global.GRID_SIZE) / 2)
+		var snapped_pos = Global.snap_position_to_grid(world_mouse - cursor_size / 2)
 
 		var canvas_transform = viewport.get_canvas_transform()
 		global_position = canvas_transform * snapped_pos

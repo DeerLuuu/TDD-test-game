@@ -3,10 +3,11 @@ extends Node
 
 ## 操作模式枚举
 enum OperationMode {
-	CLICK,   ## 点击模式
-	DRAG,    ## 拖动模式
-	DELETE,  ## 删除模式
-	DEBUG    ## 调试模式
+	CLICK,       ## 点击模式
+	DRAG,        ## 拖动模式
+	DELETE,      ## 删除模式
+	DEBUG,       ## 调试模式
+	PATH_BUILD   ## 铺路模式
 }
 
 ## 模式变化信号
@@ -87,8 +88,18 @@ func is_debug_mode() -> bool:
 	return current_mode == OperationMode.DEBUG
 
 
+## 切换到铺路模式
+func set_path_build_mode() -> void:
+	current_mode = OperationMode.PATH_BUILD
+
+
+## 是否为铺路模式
+func is_path_build_mode() -> bool:
+	return current_mode == OperationMode.PATH_BUILD
+
+
 ## 网格大小
-const GRID_SIZE: int = 25
+const GRID_SIZE: int = 50
 
 
 ## 将节点对齐到网格
@@ -181,3 +192,20 @@ func calculate_drop_values(total_value: int) -> Array:
 		remaining -= val
 
 	return result
+
+
+## 获取指定层级的父节点
+## level: 层级数字 (1, 2, 3)
+## 返回对应层级节点，如果不存在则返回null
+func get_level_parent(level: int) -> Node:
+	## 从Level分组中获取对应层级的节点
+	var level_nodes = get_tree().get_nodes_in_group("Level")
+
+	for node in level_nodes:
+		if not is_instance_valid(node):
+			continue
+		# 检查节点名称是否匹配 Level1, Level2, Level3
+		if node.name == "Level" + str(level):
+			return node
+
+	return null

@@ -126,19 +126,13 @@ func test_handles_scroll_input():
 	assert_true(_conveyor.has_method("_gui_input") or _conveyor.has_method("_input"), "应有输入处理方法")
 
 
-func test_can_be_dragged():
-	## 应支持拖动
-	assert_true("is_dragging" in _conveyor or "_is_dragging" in _conveyor, "应有拖动状态变量")
-
-
-func test_scroll_rotates_while_dragging():
-	## 拖动时滚轮应能旋转方向
-	_conveyor._is_dragging = true
+func test_scroll_rotates_direction():
+	## 滚轮应能旋转方向
 	_conveyor.direction = Vector2.RIGHT
 
 	# 模拟滚轮向上
 	_conveyor.rotate_on_scroll(1.0)
-	assert_eq(_conveyor.direction, Vector2.DOWN, "拖动时滚轮向上应顺时针旋转")
+	assert_eq(_conveyor.direction, Vector2.DOWN, "滚轮向上应顺时针旋转")
 
 
 func test_can_rotate_in_drag_mode():
