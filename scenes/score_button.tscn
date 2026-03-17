@@ -1,9 +1,9 @@
 [gd_scene format=3 uid="uid://bxq0ehg2kv2ec"]
 
-[ext_resource type="Script" uid="uid://xpfdwuorhxh2" path="res://scenes/score_button.gd" id="1_script"]
-[ext_resource type="Script" uid="uid://rdgvr1ygufbm" path="res://scripts/output_component.gd" id="2_output"]
-[ext_resource type="Script" uid="uid://dg0nsamriwcsg" path="res://scripts/selectable_component.gd" id="3_selectable"]
-[ext_resource type="Script" uid="uid://ba6o45fx78yp" path="res://scripts/click_component.gd" id="4_click"]
+[ext_resource type="Script" uid="uid://xpfdwuorhxh2" path="res://scripts/score_button.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://rdgvr1ygufbm" path="res://scripts/component/output_component.gd" id="2_output"]
+[ext_resource type="Script" uid="uid://dg0nsamriwcsg" path="res://scripts/component/selectable_component.gd" id="3_selectable"]
+[ext_resource type="Script" uid="uid://ba6o45fx78yp" path="res://scripts/component/click_component.gd" id="4_click"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_normal"]
 bg_color = Color(0.2, 0.5, 0.3, 0.95)

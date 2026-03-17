@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://debugcursor" path="res://scenes/debug_cursor.tscn" id="6_debug"]
 [ext_resource type="PackedScene" uid="uid://selectionbox" path="res://scenes/selection_box.tscn" id="7_selection"]
 [ext_resource type="PackedScene" path="res://scenes/path_build_cursor.tscn" id="8_pathbuild"]
+[ext_resource type="PackedScene" path="res://scenes/blueprint_panel.tscn" id="9_blueprint"]
 
 [node name="World" type="Node2D" unique_id=1037587713]
 
@@ -36,6 +37,16 @@ anchors_preset = 0
 [node name="SelectionBox" parent="CanvasLayer" unique_id=888888902 instance=ExtResource("7_selection")]
 
 [node name="PathBuildCursor" parent="CanvasLayer" unique_id=888888903 instance=ExtResource("8_pathbuild")]
+
+[node name="BlueprintPanel" parent="CanvasLayer" unique_id=888888904 instance=ExtResource("9_blueprint")]
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = -320.0
+offset_right = 0.0
+grow_horizontal = 0
+grow_vertical = 0
 
 [node name="Level1" type="Node2D" parent="." unique_id=977147793 groups=["Level"]]
 

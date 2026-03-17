@@ -2,12 +2,19 @@ class_name DeleteCursor extends Control
 ## DeleteCursor - 删除模式的光标指示器
 ## 跟随鼠标，显示红色半透明区域
 ## 悬停在物品上时自动调整为物品大小
+## Ctrl+左键拖动可删除路径上的所有面板
 
 ## 当前悬停的物品
 var _hovered_item: Control = null
 
 ## 背景面板
 var _background: Panel = null
+
+## 是否正在Ctrl拖动删除
+var _is_ctrl_dragging: bool = false
+
+## Ctrl拖动过程中删除的物品（用于避免重复删除）
+var _deleted_items_during_drag: Array[Control] = []
 
 
 func _ready() -> void:
@@ -109,13 +116,65 @@ func _update_hovered_item() -> void:
 
 
 func _input(event: InputEvent) -> void:
-	## 处理点击删除
+	## 处理点击删除和Ctrl拖动删除
 	if not Global.is_delete_mode():
 		return
 
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
-		if event.pressed and _hovered_item:
-			_delete_item(_hovered_item)
+		if event.pressed:
+			# Ctrl+左键：开始拖动删除
+			if Input.is_key_pressed(KEY_CTRL):
+				_start_ctrl_drag()
+			elif _hovered_item:
+				# 普通点击：删除单个物品
+				_delete_item(_hovered_item)
+		else:
+			# 左键释放：结束拖动删除
+			if _is_ctrl_dragging:
+				_end_ctrl_drag()
+
+	elif event is InputEventMouseMotion and _is_ctrl_dragging:
+		# Ctrl拖动过程中：删除路径上的物品
+		_delete_items_in_path()
+
+
+func _start_ctrl_drag() -> void:
+	## 开始Ctrl拖动删除
+	_is_ctrl_dragging = true
+	_deleted_items_during_drag.clear()
+
+
+func _end_ctrl_drag() -> void:
+	## 结束Ctrl拖动删除
+	_is_ctrl_dragging = false
+	_deleted_items_during_drag.clear()
+
+
+func _delete_items_in_path() -> void:
+	## 删除光标路径上的所有物品
+	@warning_ignore("static_called_on_instance")
+	var global_mouse = Global.get_scaled_global_mouse_position(get_viewport())
+	var items = get_tree().get_nodes_in_group("placeable_items")
+
+	for item in items:
+		if not is_instance_valid(item):
+			continue
+		if not item is Control:
+			continue
+		# 排除加分面板
+		if item.is_in_group("score_drop_zone"):
+			continue
+		# 跳过已删除的物品
+		if item in _deleted_items_during_drag:
+			continue
+
+		var rect = Rect2(item.global_position, item.size)
+		if rect.has_point(global_mouse):
+			# 删除物品并生成掉落数字
+			var drop_values = Global.calculate_drop_values(_get_item_value(item))
+			_spawn_drop_numbers(drop_values, item.global_position + item.size / 2)
+			item.queue_free()
+			_deleted_items_during_drag.append(item)
 
 
 func _delete_item(item: Control) -> void:

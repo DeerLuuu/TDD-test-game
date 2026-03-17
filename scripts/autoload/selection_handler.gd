@@ -128,7 +128,7 @@ func _on_mouse_pressed(event: InputEventMouseButton) -> void:
 	else:
 		# 点击空白区域
 		_clicked_empty = true
-		if Global.is_click_mode() or Global.is_drag_mode() or Global.is_debug_mode():
+		if Global.is_click_mode() or Global.is_drag_mode() or Global.is_debug_mode() or Global.is_blueprint_mode():
 			# 清除选中
 			SelectionManager.clear_selection()
 
@@ -163,6 +163,10 @@ func _on_mouse_released(_event: InputEventMouseButton) -> void:
 
 func _on_mouse_moved(_event: InputEventMouseMotion) -> void:
 	## 鼠标移动
+	# 检查是否正在拖拽蓝图
+	if _is_dragging_blueprint():
+		return
+
 	if not _is_dragging_selection and not _is_box_selecting and _clicked_empty:
 		# 检查是否应该开始框选（只在空白区域点击后）
 		var viewport = get_viewport()
@@ -237,6 +241,10 @@ func _on_selection_complete(_rect: Rect2) -> void:
 
 	# 选中范围内物品
 	SelectionManager.select_in_rect(world_rect)
+
+	# 蓝图模式下，捕获选中区域
+	if Global.is_blueprint_mode():
+		_capture_blueprint_selection()
 
 
 func _get_item_at_position(_screen_pos: Vector2) -> Control:
@@ -314,3 +322,64 @@ func get_selected_items() -> Array:
 func has_selection() -> bool:
 	## 是否有选中物品
 	return SelectionManager.has_selection()
+
+
+func _capture_blueprint_selection() -> void:
+	## 捕获蓝图选中区域
+	if not SelectionManager.has_selection():
+		return
+
+	var selected_items = SelectionManager.selected_items.duplicate()
+	if selected_items.is_empty():
+		return
+
+	# 计算基准点（选中最左上角的物品位置）
+	var base_position = Vector2.INF
+	for item in selected_items:
+		if is_instance_valid(item) and item is Control:
+			if item.global_position.x < base_position.x:
+				base_position.x = item.global_position.x
+			if item.global_position.y < base_position.y:
+				base_position.y = item.global_position.y
+
+	# 捕获蓝图
+	BlueprintManager.capture_selection(selected_items, base_position)
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	## 处理全局快捷键
+	# Ctrl+S 保存蓝图（仅在蓝图模式下）
+	if event is InputEventKey and event.pressed:
+		if event.keycode == KEY_S and Input.is_key_pressed(KEY_CTRL):
+			if Global.is_blueprint_mode() and BlueprintManager.get_temp_blueprint():
+				_show_save_blueprint_dialog()
+				get_viewport().set_input_as_handled()
+
+
+func _show_save_blueprint_dialog() -> void:
+	## 显示保存蓝图弹窗
+	var blueprint_panel = _get_blueprint_panel()
+	if blueprint_panel:
+		blueprint_panel.show_save_dialog()
+
+
+func _get_blueprint_panel() -> BlueprintPanel:
+	## 获取蓝图面板
+	var panels = get_tree().get_nodes_in_group("blueprint_panel")
+	if panels.size() > 0:
+		return panels[0]
+
+	# 尝试从场景中查找
+	var scene = get_tree().current_scene
+	if scene:
+		return scene.find_child("BlueprintPanel", true, true)
+
+	return null
+
+
+func _is_dragging_blueprint() -> bool:
+	## 检查是否正在拖拽蓝图
+	var blueprint_panel = _get_blueprint_panel()
+	if blueprint_panel:
+		return blueprint_panel.is_dragging_blueprint()
+	return false

@@ -13,6 +13,9 @@ class_name SplitterConveyor extends Control
 ## 旋转角度 (0, 90, 180, 270)
 var rotation_angle: int = 0
 
+## 是否正在被拖拽（用于限制滚轮旋转）
+var _is_being_dragged: bool = false
+
 ## 箭头纹理资源
 var arrow_textures: Dictionary = {}
 
@@ -61,23 +64,15 @@ var _output_component_1: OutputComponent = null
 var output_component_1: OutputComponent:
 	get:
 		if _output_component_1 == null:
-			_output_component_1 = get_node_or_null("LeftOutputComponent")
+			_output_component_1 = get_node_or_null("OutputComponent1")
 		return _output_component_1
 
 var _output_component_2: OutputComponent = null
 var output_component_2: OutputComponent:
 	get:
 		if _output_component_2 == null:
-			_output_component_2 = get_node_or_null("RightOutputComponent")
+			_output_component_2 = get_node_or_null("OutputComponent2")
 		return _output_component_2
-
-## 输入输出组件（用于调试显示入口方向）
-var _input_output_component: OutputComponent = null
-var input_output_component: OutputComponent:
-	get:
-		if _input_output_component == null:
-			_input_output_component = get_node_or_null("InputOutputComponent")
-		return _input_output_component
 
 
 func _ready() -> void:
@@ -236,10 +231,18 @@ func rotate_direction_ccw() -> void:
 
 
 func rotate_on_scroll(scroll_direction: float) -> void:
+	## 只有在被拖拽时才能旋转
+	if not _is_being_dragged:
+		return
 	if scroll_direction > 0:
 		rotate_direction()
 	else:
 		rotate_direction_ccw()
+
+
+## 设置拖拽状态
+func set_being_dragged(is_dragging: bool) -> void:
+	_is_being_dragged = is_dragging
 
 
 func _update_directions() -> void:
@@ -262,13 +265,12 @@ func _update_directions() -> void:
 
 
 func _update_output_components() -> void:
+	## 更新输出组件方向
+	## 分流器可以从任意方向接收数字，所以不设置输入方向显示
 	if output_component_1 and is_instance_valid(output_component_1):
 		output_component_1.set_output_direction(output_direction_1)
 	if output_component_2 and is_instance_valid(output_component_2):
 		output_component_2.set_output_direction(output_direction_2)
-	# 输入组件显示默认方向（向上）
-	if input_output_component and is_instance_valid(input_output_component):
-		input_output_component.set_output_direction(Vector2.UP)
 
 
 func _update_arrow_layout() -> void:
@@ -329,3 +331,22 @@ func get_arrow_directions() -> Dictionary:
 			return {"arrow1": Vector2.DOWN, "arrow2": Vector2.UP}
 		_:
 			return {"arrow1": Vector2.LEFT, "arrow2": Vector2.RIGHT}
+
+
+func start_debug() -> void:
+	## 开始调试模式 - 启动两个输出组件的调试显示
+	# 先更新输出组件方向
+	_update_output_components()
+	# 然后启动调试显示
+	if output_component_1 and is_instance_valid(output_component_1):
+		output_component_1.start_debug()
+	if output_component_2 and is_instance_valid(output_component_2):
+		output_component_2.start_debug()
+
+
+func end_debug() -> void:
+	## 结束调试模式
+	if output_component_1 and is_instance_valid(output_component_1):
+		output_component_1.end_debug()
+	if output_component_2 and is_instance_valid(output_component_2):
+		output_component_2.end_debug()

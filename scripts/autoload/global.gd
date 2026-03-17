@@ -7,7 +7,8 @@ enum OperationMode {
 	DRAG,        ## 拖动模式
 	DELETE,      ## 删除模式
 	DEBUG,       ## 调试模式
-	PATH_BUILD   ## 铺路模式
+	PATH_BUILD,  ## 铺路模式
+	BLUEPRINT    ## 蓝图模式
 }
 
 ## 模式变化信号
@@ -96,6 +97,16 @@ func set_path_build_mode() -> void:
 ## 是否为铺路模式
 func is_path_build_mode() -> bool:
 	return current_mode == OperationMode.PATH_BUILD
+
+
+## 切换到蓝图模式
+func set_blueprint_mode() -> void:
+	current_mode = OperationMode.BLUEPRINT
+
+
+## 是否为蓝图模式
+func is_blueprint_mode() -> bool:
+	return current_mode == OperationMode.BLUEPRINT
 
 
 ## 网格大小

@@ -1,0 +1,48 @@
+[gd_scene format=3 uid="uid://c8xq5m2nspeed"]
+
+[ext_resource type="Script" uid="uid://dky4dg1onj14w" path="res://scripts/speed_boost_panel.gd" id="1_script"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_boost"]
+bg_color = Color(0.2, 0.6, 0.9, 0.7254902)
+border_color = Color(0.1, 0.4, 0.8, 1)
+shadow_size = 5
+shadow_offset = Vector2(3, 3)
+
+[node name="SpeedBoostPanel" type="Control"]
+custom_minimum_size = Vector2(150, 150)
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_script")
+
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_boost")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -50.0
+offset_top = -30.0
+offset_right = 50.0
+offset_bottom = 30.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="Label" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "加速面板"
+horizontal_alignment = 1
+
+[node name="TimerLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "30.0s"
+horizontal_alignment = 1

@@ -220,11 +220,13 @@ func test_has_rotate_on_scroll_method():
 
 
 func test_rotate_on_scroll_clockwise():
+	_splitter.set_being_dragged(true)
 	_splitter.rotate_on_scroll(1.0)
 	assert_eq(_splitter.rotation_angle, 90, "滚轮向上应顺时针旋转")
 
 
 func test_rotate_on_scroll_counter_clockwise():
+	_splitter.set_being_dragged(true)
 	_splitter.rotate_on_scroll(-1.0)
 	assert_eq(_splitter.rotation_angle, 270, "滚轮向下应逆时针旋转")
 
@@ -300,6 +302,48 @@ func test_has_output_component_1():
 
 func test_has_output_component_2():
 	assert_true("output_component_2" in _splitter, "应有output_component_2属性")
+
+
+## === 滚轮旋转限制测试 ===
+
+func test_has_is_being_dragged_property():
+	## 应有_is_being_dragged属性标记是否正在被拖拽
+	assert_true("_is_being_dragged" in _splitter, "应有_is_being_dragged属性")
+
+
+func test_is_being_dragged_defaults_to_false():
+	## 默认不应处于拖拽状态
+	assert_false(_splitter._is_being_dragged, "默认_is_being_dragged应为false")
+
+
+func test_can_rotate_on_scroll_when_being_dragged():
+	## 拖拽状态下可以用滚轮旋转
+	_splitter.set_being_dragged(true)
+	_splitter.rotation_angle = 0
+	_splitter.rotate_on_scroll(1.0)
+	assert_eq(_splitter.rotation_angle, 90, "拖拽状态下滚轮应能旋转")
+
+
+func test_cannot_rotate_on_scroll_when_not_being_dragged():
+	## 非拖拽状态下不能用滚轮旋转
+	_splitter.set_being_dragged(false)
+	_splitter.rotation_angle = 0
+	_splitter.rotate_on_scroll(1.0)
+	# 角度不应改变
+	assert_eq(_splitter.rotation_angle, 0, "非拖拽状态下滚轮不应旋转")
+
+
+func test_has_set_being_dragged_method():
+	## 应有设置拖拽状态的方法
+	assert_true(_splitter.has_method("set_being_dragged"), "应有set_being_dragged方法")
+
+
+func test_set_being_dragged_sets_property():
+	## set_being_dragged方法应设置_is_being_dragged属性
+	_splitter.set_being_dragged(true)
+	assert_true(_splitter._is_being_dragged, "设置后应为true")
+	_splitter.set_being_dragged(false)
+	assert_false(_splitter._is_being_dragged, "设置后应为false")
 
 
 ## === 辅助方法 ===

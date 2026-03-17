@@ -24,26 +24,20 @@ func test_scene_has_click_component():
 	assert_not_null(click_comp, "场景应包含ClickComponent")
 
 
-func test_clicking_button_spawns_number():
 	## 点击按钮应生成数字
-	# 设置为点击模式
+func test_clicking_button_spawns_number():
+	# arrange
 	Global.set_click_mode()
-
-	# 等待一帧确保场景稳定
 	await wait_idle_frames(1)
-
-	# 统计初始数字数量
 	var initial_numbers = get_tree().get_nodes_in_group("number_objects").size()
 
-	# 获取ClickComponent并触发点击完成
+	# act
 	var click_comp = _button.find_child('ClickComponent', true, false)
 	if click_comp:
 		click_comp.on_complete.emit()
-
-	# 等待一帧让数字生成
 	await wait_idle_frames(1)
 
-	# 检查是否有新的数字节点生成
+	# assert
 	var new_numbers = get_tree().get_nodes_in_group("number_objects").size()
 	assert_eq(new_numbers, initial_numbers + 1, "点击后应生成新数字")
 

@@ -20,6 +20,9 @@ var direction: Vector2 = Vector2.RIGHT:
 		_update_arrow_texture()
 		_sync_output_direction()
 
+## 是否正在被拖拽（用于限制滚轮旋转）
+var _is_being_dragged: bool = false
+
 ## 当前传送带上的数字
 var numbers: Array[NumberObject] = []
 
@@ -153,10 +156,18 @@ func rotate_direction_ccw() -> void:
 func rotate_on_scroll(scroll_direction: float) -> void:
 	## scroll_direction > 0: 滚轮向上，顺时针旋转
 	## scroll_direction < 0: 滚轮向下，逆时针旋转
+	## 只有在被拖拽时才能旋转
+	if not _is_being_dragged:
+		return
 	if scroll_direction > 0:
 		rotate_direction()
 	else:
 		rotate_direction_ccw()
+
+
+## 设置拖拽状态
+func set_being_dragged(is_dragging: bool) -> void:
+	_is_being_dragged = is_dragging
 
 
 ## 添加数字到传送带

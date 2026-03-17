@@ -8,6 +8,9 @@ class_name NumberObject
 var _is_dragging: bool = false
 var _drag_offset: Vector2 = Vector2.ZERO
 
+## 是否正在被加工面板/加法面板加工
+var _is_being_processed: bool = false
+
 @onready var label: Label = get_node_or_null("Label")
 
 

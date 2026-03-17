@@ -160,6 +160,9 @@ func accept_number(number: NumberObject) -> void:
 	current_number = number
 	processing = true
 
+	# 标记数字正在被加工
+	number._is_being_processed = true
+
 	# 重置点击组件
 	if click_component:
 		click_component.reset()
@@ -195,6 +198,9 @@ func _complete_processing() -> void:
 
 	# 加工数字
 	current_number.process()
+
+	# 重置数字的加工标记
+	current_number._is_being_processed = false
 
 	# 标记正在移动输出
 	_is_moving_output = true
@@ -259,6 +265,9 @@ func remove_number(number: NumberObject) -> void:
 	## 从加工面板中取出数字
 	if current_number != number:
 		return
+
+	# 重置数字的加工标记
+	number._is_being_processed = false
 
 	# 重置状态
 	current_number = null

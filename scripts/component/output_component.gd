@@ -41,6 +41,9 @@ func set_output_direction(direction: Vector2) -> void:
 	## 设置输出方向
 	output_direction = direction
 	_update_output_offset()
+	# 如果正在调试，更新调试箭头
+	if is_debugging:
+		update_debug_arrow()
 
 
 func get_output_position() -> Vector2:

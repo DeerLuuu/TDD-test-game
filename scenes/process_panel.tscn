@@ -1,9 +1,9 @@
 [gd_scene format=3 uid="uid://o63brrdleur"]
 
-[ext_resource type="Script" path="res://scripts/process_panel.gd" id="1_script"]
-[ext_resource type="Script" uid="uid://rdgvr1ygufbm" path="res://scripts/output_component.gd" id="2_output"]
-[ext_resource type="Script" path="res://scripts/selectable_component.gd" id="3_selectable"]
-[ext_resource type="Script" path="res://scripts/click_component.gd" id="4_click"]
+[ext_resource type="Script" uid="uid://cuwjat72fjupm" path="res://scripts/process_panel.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://rdgvr1ygufbm" path="res://scripts/component/output_component.gd" id="2_output"]
+[ext_resource type="Script" uid="uid://dg0nsamriwcsg" path="res://scripts/component/selectable_component.gd" id="3_selectable"]
+[ext_resource type="Script" uid="uid://ba6o45fx78yp" path="res://scripts/component/click_component.gd" id="4_click"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1dxli"]
 bg_color = Color(0.29803923, 0.47843137, 0.7490196, 0.65882355)
@@ -26,7 +26,6 @@ script = ExtResource("3_selectable")
 [node name="ClickComponent" type="Node" parent="." unique_id=866048599]
 script = ExtResource("4_click")
 clicks_required = 3
-is_clickable = true
 
 [node name="Panel" type="Panel" parent="." unique_id=97790531]
 layout_mode = 1

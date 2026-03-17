@@ -27,7 +27,6 @@ var output_component: OutputComponent:
 
 func _ready() -> void:
 	add_to_group("placeable_items")
-	add_to_group("selectable_items")
 	mouse_filter = Control.MOUSE_FILTER_STOP
 
 	# 检查是否为预览状态
@@ -77,6 +76,10 @@ func collect_numbers() -> void:
 
 		# 跳过正在被拖动的数字
 		if number._is_dragging:
+			continue
+
+		# 跳过正在被加工的数字
+		if number._is_being_processed:
 			continue
 
 		# 检测数字中心是否在面板范围内

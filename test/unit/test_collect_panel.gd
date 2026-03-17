@@ -78,3 +78,37 @@ func test_removes_self_after_send():
 	# 检查是否正在删除中或已无效
 	await wait_idle_frames(1)
 	assert_true(not is_instance_valid(_panel) or _panel.is_queued_for_deletion(), "一次性面板发送后应删除")
+
+
+## === 加工中数字保护测试 ===
+
+func test_does_not_collect_number_being_processed():
+	## 不应收集正在被加工面板加工的数字
+	var number = NumberObject.new()
+	number.global_position = Vector2(10, 10)
+	number.size = Vector2(50, 50)
+	number._is_being_processed = true  # 标记为正在加工
+	add_child_autofree(number)
+
+	_panel.global_position = Vector2(0, 0)
+	_panel.size = Vector2(200, 200)
+
+	_panel.collect_numbers()
+
+	assert_eq(_panel.collected_numbers.size(), 0, "不应收集正在加工中的数字")
+
+
+func test_does_not_collect_number_being_added():
+	## 不应收集正在被加法面板加工的数字
+	var number = NumberObject.new()
+	number.global_position = Vector2(10, 10)
+	number.size = Vector2(50, 50)
+	number._is_being_processed = true  # 标记为正在加工
+	add_child_autofree(number)
+
+	_panel.global_position = Vector2(0, 0)
+	_panel.size = Vector2(200, 200)
+
+	_panel.collect_numbers()
+
+	assert_eq(_panel.collected_numbers.size(), 0, "不应收集正在加法面板中的数字")

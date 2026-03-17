@@ -1,8 +1,7 @@
 [gd_scene format=3 uid="uid://6l7hf7rawp2n"]
 
 [ext_resource type="Script" uid="uid://cma2d42irpcie" path="res://scripts/collect_panel.gd" id="1_script"]
-[ext_resource type="Script" uid="uid://rdgvr1ygufbm" path="res://scripts/output_component.gd" id="2_output"]
-[ext_resource type="Script" path="res://scripts/selectable_component.gd" id="3_selectable"]
+[ext_resource type="Script" uid="uid://rdgvr1ygufbm" path="res://scripts/component/output_component.gd" id="2_output"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0eu7s"]
 bg_color = Color(0.69803923, 0.5411765, 0.21960784, 0.7254902)
@@ -18,9 +17,6 @@ script = ExtResource("1_script")
 
 [node name="OutputComponent" type="Node" parent="." unique_id=166108943]
 script = ExtResource("2_output")
-
-[node name="SelectableComponent" type="Node" parent="." unique_id=1331186536]
-script = ExtResource("3_selectable")
 
 [node name="Panel" type="Panel" parent="." unique_id=616605374]
 layout_mode = 1

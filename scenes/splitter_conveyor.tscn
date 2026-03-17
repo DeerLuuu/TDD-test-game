@@ -3,8 +3,8 @@
 [ext_resource type="Script" uid="uid://b5h7h0kj3mbu" path="res://scripts/splitter_conveyor.gd" id="1_script"]
 [ext_resource type="Texture2D" uid="uid://bricornlfq21h" path="res://assets/arrows/arrow_right.svg" id="3_arrow_right"]
 [ext_resource type="Texture2D" uid="uid://bcp64if2ehp58" path="res://assets/arrows/arrow_left.svg" id="4_7a82n"]
-[ext_resource type="Script" uid="uid://rdgvr1ygufbm" path="res://scripts/output_component.gd" id="4_output"]
-[ext_resource type="Script" uid="uid://dg0nsamriwcsg" path="res://scripts/selectable_component.gd" id="5_selectable"]
+[ext_resource type="Script" uid="uid://rdgvr1ygufbm" path="res://scripts/component/output_component.gd" id="4_output"]
+[ext_resource type="Script" uid="uid://dg0nsamriwcsg" path="res://scripts/component/selectable_component.gd" id="5_selectable"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_03uyg"]
 bg_color = Color(1, 1, 1, 0.6392157)
@@ -31,17 +31,13 @@ script = ExtResource("1_script")
 [node name="SelectableComponent" type="Node" parent="." unique_id=491695519]
 script = ExtResource("5_selectable")
 
-[node name="InputOutputComponent" type="Node" parent="." unique_id=1973769838]
+[node name="OutputComponent1" type="Node" parent="." unique_id=488055646]
 script = ExtResource("4_output")
-output_distance = 40
+output_distance = 35
 
-[node name="LeftOutputComponent" type="Node" parent="." unique_id=488055646]
+[node name="OutputComponent2" type="Node" parent="." unique_id=1706668411]
 script = ExtResource("4_output")
-output_distance = 40
-
-[node name="RightOutputComponent" type="Node" parent="." unique_id=1706668411]
-script = ExtResource("4_output")
-output_distance = 40
+output_distance = 35
 
 [node name="Panel" type="Panel" parent="." unique_id=2076210987]
 layout_mode = 1

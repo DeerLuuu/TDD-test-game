@@ -10,11 +10,11 @@ func before_each():
 	_parent = autofree(Control.new())
 	_parent.custom_minimum_size = Vector2(100, 100)
 	add_child_autofree(_parent)
-	
+
 	# 创建组件
 	_component = autofree(OutputComponent.new())
 	_parent.add_child(_component)
-	
+
 	# 重置全局状态
 	Global.set_click_mode()
 
@@ -71,13 +71,13 @@ func test_set_direction_updates_offset():
 	_component.output_distance = 100
 	_component.set_output_direction(Vector2.UP)
 	assert_eq(_component.output_offset, Vector2(0, -100), "向上偏移应为(0, -100)")
-	
+
 	_component.set_output_direction(Vector2.DOWN)
 	assert_eq(_component.output_offset, Vector2(0, 100), "向下偏移应为(0, 100)")
-	
+
 	_component.set_output_direction(Vector2.LEFT)
 	assert_eq(_component.output_offset, Vector2(-100, 0), "向左偏移应为(-100, 0)")
-	
+
 	_component.set_output_direction(Vector2.RIGHT)
 	assert_eq(_component.output_offset, Vector2(100, 0), "向右偏移应为(100, 0)")
 
@@ -111,11 +111,11 @@ func test_get_output_position_relative_to_parent():
 	_parent.size = Vector2(100, 100)  # 直接设置size
 	# 等待size生效
 	await wait_idle_frames(1)
-	
+
 	# 先设置distance，再设置direction（会触发更新）
 	_component.output_distance = 50
 	_component.set_output_direction(Vector2.RIGHT)
-	
+
 	var output_pos = _component.get_output_position()
 	# 输出位置应该是父节点中心 + 输出偏移
 	# 父节点中心 = global_position + size/2 = (200, 200) + (50, 50) = (250, 250)
@@ -209,7 +209,7 @@ func test_apply_drag_direction_updates_output():
 	_parent.size = Vector2(100, 100)
 	# 父节点中心 = (150, 150)
 	var drag_end = Vector2(300, 150)  # 明显向右
-	
+
 	_component.apply_drag_direction(drag_end)
-	
+
 	assert_eq(_component.output_direction, Vector2.RIGHT, "应更新输出方向")

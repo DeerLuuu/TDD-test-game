@@ -86,16 +86,38 @@ func select_in_rect_replace(rect: Rect2) -> void:
 
 
 func move_selected_items(delta: Vector2) -> void:
-	## 移动所有选中物品
+	## 移动所有选中物品，同时移动正在加工的数字
 	for item in selected_items:
 		if is_instance_valid(item):
 			item.global_position += delta
+
+			# 检查是否是加工面板，需要移动正在加工的数字
+			_move_processing_number(item, delta)
+
+
+func _move_processing_number(item: Control, delta: Vector2) -> void:
+	## 移动面板时，同时移动正在加工的数字
+	# ProcessPanel
+	if item is ProcessPanel and item.current_number and is_instance_valid(item.current_number):
+		item.current_number.global_position += delta
+
+	# AdditionPanel - 可能有多个数字
+	if item is AdditionPanel:
+		for number in item.numbers:
+			if is_instance_valid(number):
+				number.global_position += delta
 
 
 func debug_selected_items() -> void:
 	## 调试所有选中物品（启动输出组件调试）
 	for item in selected_items:
 		if not is_instance_valid(item):
+			continue
+
+		# 分流器有特殊的调试方法
+		var splitter = _get_splitter_conveyor(item)
+		if splitter:
+			splitter.start_debug()
 			continue
 
 		var output_comp = _get_output_component(item)
@@ -154,6 +176,12 @@ func stop_debug_selected_items() -> void:
 		if not is_instance_valid(item):
 			continue
 
+		# 分流器有特殊的调试方法
+		var splitter = _get_splitter_conveyor(item)
+		if splitter:
+			splitter.end_debug()
+			continue
+
 		var output_comp = _get_output_component(item)
 		if output_comp:
 			output_comp.end_debug()
@@ -177,10 +205,15 @@ func show_drag_preview() -> void:
 		if not is_instance_valid(item):
 			continue
 
+		# 设置传送带/分流器的拖拽状态
+		if item is ConveyorBelt or item is SplitterConveyor:
+			item.set_being_dragged(true)
+
 		var preview = _create_preview_for_item(item)
 		if preview:
 			_drag_previews.append(preview)
-			get_tree().current_scene.add_child(preview)
+			var parent = get_tree().current_scene if get_tree().current_scene else get_tree().root
+			parent.add_child(preview)
 
 
 func update_drag_preview(delta: Vector2) -> void:
@@ -196,6 +229,13 @@ func hide_drag_preview() -> void:
 		if is_instance_valid(preview):
 			preview.queue_free()
 	_drag_previews.clear()
+
+	# 重置传送带/分流器的拖拽状态
+	for item in selected_items:
+		if not is_instance_valid(item):
+			continue
+		if item is ConveyorBelt or item is SplitterConveyor:
+			item.set_being_dragged(false)
 
 
 func _create_preview_for_item(item: Control) -> Control:

@@ -105,12 +105,11 @@ func _spawn_number() -> void:
 	## 生成一个数字对象在输出方向
 	var number = number_scene.instantiate()
 
-	# 获取Level3父节点（层级3）
+	# 获取Level3父节点（层级3），如果不存在则使用 current_scene 或 root
 	var parent = Global.get_level_parent(3)
-	if parent:
-		parent.add_child(number)
-	else:
-		get_tree().current_scene.add_child(number)
+	if not parent:
+		parent = get_tree().current_scene if get_tree().current_scene else get_tree().root
+	parent.add_child(number)
 
 	# 获取生成位置
 	var spawn_pos: Vector2

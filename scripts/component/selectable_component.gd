@@ -56,15 +56,15 @@ func show_selection_indicator() -> void:
 	var parent = get_parent()
 	if not parent or not parent is Control:
 		return
-	
+
 	if _selection_border:
 		return  # 已经存在
-	
+
 	# 创建边框
 	_selection_border = PanelContainer.new()
 	_selection_border.name = "SelectionBorder"
 	_selection_border.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	
+
 	# 设置边框样式
 	var style = StyleBoxFlat.new()
 	style.bg_color = Color.TRANSPARENT
@@ -72,7 +72,7 @@ func show_selection_indicator() -> void:
 	style.set_border_width_all(BORDER_WIDTH)
 	style.set_corner_radius_all(2)
 	_selection_border.add_theme_stylebox_override("panel", style)
-	
+
 	# 设置位置和大小（覆盖父节点）
 	_selection_border.anchor_right = 1.0
 	_selection_border.anchor_bottom = 1.0
@@ -80,7 +80,7 @@ func show_selection_indicator() -> void:
 	_selection_border.offset_top = -BORDER_WIDTH
 	_selection_border.offset_right = BORDER_WIDTH
 	_selection_border.offset_bottom = BORDER_WIDTH
-	
+
 	parent.add_child(_selection_border)
 
 

@@ -11,7 +11,7 @@ func before_each():
 	_parent.custom_minimum_size = Vector2(100, 100)
 	_parent.add_to_group("selectable_items")
 	add_child_autofree(_parent)
-	
+
 	# 创建组件
 	_component = autofree(SelectableComponent.new())
 	_parent.add_child(_component)

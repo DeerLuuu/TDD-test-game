@@ -40,10 +40,6 @@ size_flags_horizontal = 3
 text = "模式: 点击 (Z/X切换)"
 horizontal_alignment = 1
 
-[node name="DirectionButton" type="Button" parent="MarginContainer/VBoxContainer/ModeContainer" unique_id=976046262]
-layout_mode = 2
-text = "方向: →"
-
 [node name="HSeparator" type="HSeparator" parent="MarginContainer/VBoxContainer" unique_id=287018949]
 layout_mode = 2
 

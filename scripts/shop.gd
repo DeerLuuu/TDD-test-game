@@ -8,25 +8,14 @@ var _items: Array = []
 
 @onready var item_container: GridContainer = $MarginContainer/VBoxContainer/ScrollContainer/ItemContainer
 @onready var mode_label: Label = $MarginContainer/VBoxContainer/ModeContainer/ModeLabel
-@onready var direction_btn: Button = $MarginContainer/VBoxContainer/ModeContainer/DirectionButton
 
 func _ready() -> void:
 	add_to_group("shop_panel")
 	_setup_default_items()
 	_create_item_widgets()
 	_update_mode_ui()
-	_update_direction_ui()
 	# 连接Global信号
 	Global.mode_changed.connect(_on_mode_changed)
-	Global.direction_changed.connect(_on_direction_changed)
-	# 连接方向按钮信号
-	if direction_btn:
-		direction_btn.pressed.connect(_on_direction_button_pressed)
-
-
-func _on_direction_button_pressed() -> void:
-	## 方向按钮点击事件
-	rotate_drag_direction()
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -48,41 +37,30 @@ func _unhandled_input(event: InputEvent) -> void:
 			KEY_B:
 				Global.set_path_build_mode()
 				get_viewport().set_input_as_handled()
+			KEY_M:
+				Global.set_blueprint_mode()
+				get_viewport().set_input_as_handled()
 
 
 func _on_mode_changed(_old_mode: int, _new_mode: int) -> void:
 	_update_mode_ui()
 
 
-func _on_direction_changed(_old_dir: Vector2, _new_dir: Vector2) -> void:
-	_update_direction_ui()
-
-
 func _update_mode_ui() -> void:
 	## 更新模式显示
 	if mode_label:
 		if Global.is_click_mode():
-			mode_label.text = "模式: 点击 (Z/X/C/V/B切换)"
+			mode_label.text = "模式: 点击 (Z/X/C/V/B/M切换)"
 		elif Global.is_drag_mode():
-			mode_label.text = "模式: 拖动 (Z/X/C/V/B切换)"
+			mode_label.text = "模式: 拖动 (Z/X/C/V/B/M切换)"
 		elif Global.is_delete_mode():
-			mode_label.text = "模式: 删除 (Z/X/C/V/B切换)"
+			mode_label.text = "模式: 删除 (Z/X/C/V/B/M切换)"
 		elif Global.is_debug_mode():
-			mode_label.text = "模式: 调试 (Z/X/C/V/B切换)"
+			mode_label.text = "模式: 调试 (Z/X/C/V/B/M切换)"
+		elif Global.is_blueprint_mode():
+			mode_label.text = "模式: 蓝图 (Z/X/C/V/B/M切换)"
 		else:
-			mode_label.text = "模式: 铺路 (Z/X/C/V/B切换)"
-
-
-func _update_direction_ui() -> void:
-	## 更新方向按钮显示
-	if direction_btn:
-		var dir_text = ""
-		match Global.drag_direction:
-			Vector2.RIGHT: dir_text = "→"
-			Vector2.LEFT: dir_text = "←"
-			Vector2.UP: dir_text = "↑"
-			Vector2.DOWN: dir_text = "↓"
-		direction_btn.text = "方向: " + dir_text
+			mode_label.text = "模式: 铺路 (Z/X/C/V/B/M切换)"
 
 
 func _setup_default_items() -> void:
@@ -110,7 +88,7 @@ func _setup_default_items() -> void:
 			"name": "收集面板",
 			"cost": 80,
 			"scene_path": "res://scenes/collect_panel.tscn",
-			"level": 2
+			"level": 1
 		},
 		{
 			"name": "加工面板",
@@ -128,6 +106,12 @@ func _setup_default_items() -> void:
 			"name": "自动点击器",
 			"cost": 200,
 			"scene_path": "res://scenes/auto_clicker.tscn",
+			"level": 1
+		},
+		{
+			"name": "加速面板",
+			"cost": 150,
+			"scene_path": "res://scenes/speed_boost_panel.tscn",
 			"level": 1
 		}
 	]
@@ -258,8 +242,8 @@ func _spawn_purchased_item(scene_path: String, global_pos: Vector2, level: int =
 	@warning_ignore("static_called_on_instance")
 	var target_pos = Global.snap_position_to_grid(global_pos - instance.size / 2)
 
-	# CollectPanel不需要检查位置占用（可以放置在任意位置）
-	if not instance is CollectPanel:
+	# CollectPanel和SpeedBoostPanel不需要检查位置占用（可以放置在任意位置）
+	if not instance is CollectPanel and not instance is SpeedBoostPanel:
 		# 检测位置是否被占用
 		if Global.check_position_occupied(target_pos, instance.size, instance):
 			# 位置被占用，移除物品并退款
@@ -269,10 +253,6 @@ func _spawn_purchased_item(scene_path: String, global_pos: Vector2, level: int =
 			return
 
 	instance.global_position = target_pos
-
-	# 如果是有朝向的物品（如传送带），设置方向
-	if instance is ConveyorBelt:
-		instance.direction = Global.drag_direction
 
 	# 添加到可放置物品组
 	instance.add_to_group("placeable_items")
@@ -326,11 +306,6 @@ func toggle_mode() -> void:
 		Global.set_drag_mode()
 	else:
 		Global.set_click_mode()
-
-
-func rotate_drag_direction() -> void:
-	## 旋转拖动方向
-	Global.rotate_drag_direction()
 
 
 func _show_purchase_failed(result: Dictionary) -> void:

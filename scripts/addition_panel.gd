@@ -84,6 +84,9 @@ func accept_number(number: NumberObject) -> bool:
 		elif number.processed_level != numbers[0].processed_level:
 			return false
 
+	# 标记数字正在被加工
+	number._is_being_processed = true
+
 	numbers.append(number)
 	_update_state()
 	_move_number_to_slot(number)
@@ -94,6 +97,8 @@ func accept_number(number: NumberObject) -> bool:
 func remove_number(number: NumberObject) -> void:
 	var index = numbers.find(number)
 	if index >= 0:
+		# 重置加工标记
+		number._is_being_processed = false
 		numbers.remove_at(index)
 		_update_state()
 		_update_display()
@@ -187,6 +192,8 @@ func _do_process() -> void:
 
 	for number in numbers:
 		if is_instance_valid(number):
+			# 重置加工标记
+			number._is_being_processed = false
 			number.queue_free()
 
 	numbers.clear()
@@ -196,11 +203,11 @@ func _do_process() -> void:
 	new_number.value = result_value
 	new_number.processed_level = result_level
 
+	# 获取Level3父节点，如果不存在则使用 current_scene 或 root
 	var parent = Global.get_level_parent(3)
-	if parent:
-		parent.add_child(new_number)
-	else:
-		get_tree().current_scene.add_child(new_number)
+	if not parent:
+		parent = get_tree().current_scene if get_tree().current_scene else get_tree().root
+	parent.add_child(new_number)
 
 	var spawn_pos: Vector2
 	if output_component:

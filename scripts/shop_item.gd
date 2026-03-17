@@ -170,7 +170,9 @@ func _create_drag_preview() -> void:
 		@warning_ignore("static_called_on_instance")
 		var global_mouse = Global.get_scaled_global_mouse_position(get_viewport())
 		_preview.global_position = global_mouse - _preview.size / 2
-		get_tree().current_scene.add_child(_preview)
+		# 使用 current_scene 或 root 作为父节点（命令行测试时 current_scene 可能为 null）
+		var parent = get_tree().current_scene if get_tree().current_scene else get_tree().root
+		parent.add_child(_preview)
 
 
 func _create_preview_control() -> Control:
@@ -184,6 +186,9 @@ func _create_preview_control() -> Control:
 				instance.set_meta("is_preview", true)
 				instance.set_process(false)
 				instance.set_physics_process(false)
+				# 设置传送带/分流器的拖拽状态，允许滚轮旋转
+				if instance is ConveyorBelt or instance is SplitterConveyor:
+					instance.set_being_dragged(true)
 				return instance
 
 	# Fallback: 创建默认样式预览

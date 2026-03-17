@@ -65,3 +65,35 @@ func test_connects_to_mode_changed_signal():
 	# 注意：由于_cursor是新创建的，可能还未调用_ready
 	# 所以这个测试可能需要调整
 	pass_test("信号连接测试需要在场景树中验证")
+
+
+## === Ctrl+拖动删除测试 ===
+
+func test_has_is_ctrl_dragging_property():
+	## 应有Ctrl拖动状态属性
+	assert_true("_is_ctrl_dragging" in _cursor, "应有_is_ctrl_dragging属性")
+
+
+func test_ctrl_dragging_defaults_to_false():
+	## 默认不在Ctrl拖动状态
+	assert_false(_cursor._is_ctrl_dragging, "默认_is_ctrl_dragging应为false")
+
+
+func test_has_deleted_items_during_drag_property():
+	## 应有记录拖动过程中删除物品的数组
+	assert_true("_deleted_items_during_drag" in _cursor, "应有_deleted_items_during_drag属性")
+
+
+func test_has_start_ctrl_drag_method():
+	## 应有开始Ctrl拖动方法
+	assert_true(_cursor.has_method("_start_ctrl_drag"), "应有_start_ctrl_drag方法")
+
+
+func test_has_end_ctrl_drag_method():
+	## 应有结束Ctrl拖动方法
+	assert_true(_cursor.has_method("_end_ctrl_drag"), "应有_end_ctrl_drag方法")
+
+
+func test_has_delete_items_in_path_method():
+	## 应有删除路径上物品的方法
+	assert_true(_cursor.has_method("_delete_items_in_path"), "应有_delete_items_in_path方法")

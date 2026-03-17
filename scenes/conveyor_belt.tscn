@@ -2,8 +2,8 @@
 
 [ext_resource type="Script" uid="uid://cltedx01dckam" path="res://scripts/conveyor_belt.gd" id="1_script"]
 [ext_resource type="Texture2D" uid="uid://bricornlfq21h" path="res://assets/arrows/arrow_right.svg" id="2_arrow"]
-[ext_resource type="Script" uid="uid://rdgvr1ygufbm" path="res://scripts/output_component.gd" id="3_output"]
-[ext_resource type="Script" path="res://scripts/selectable_component.gd" id="4_selectable"]
+[ext_resource type="Script" uid="uid://rdgvr1ygufbm" path="res://scripts/component/output_component.gd" id="3_output"]
+[ext_resource type="Script" uid="uid://dg0nsamriwcsg" path="res://scripts/component/selectable_component.gd" id="4_selectable"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_03uyg"]
 bg_color = Color(1, 1, 1, 0.6392157)
