@@ -20,6 +20,7 @@ var _panel_costs: Dictionary = {
 	"res://scenes/score_button.tscn": 50,
 	"res://scenes/conveyor_belt.tscn": 100,
 	"res://scenes/splitter_conveyor.tscn": 150,
+	"res://scenes/tri_splitter_conveyor.tscn": 200,
 	"res://scenes/process_panel.tscn": 150,
 	"res://scenes/addition_panel.tscn": 120,
 	"res://scenes/auto_clicker.tscn": 200
@@ -154,6 +155,9 @@ func _should_skip_item(item: Control) -> bool:
 	# 跳过技能类面板
 	if item is CollectPanel or item is SpeedBoostPanel:
 		return true
+	# 跳过附加模块（AutoClicker和SpeedBooster依附于父节点）
+	if item is AutoClicker or item is SpeedBooster:
+		return true
 	# 跳过加分面板
 	if item.is_in_group("score_drop_zone"):
 		return true
@@ -184,6 +188,10 @@ func _capture_panel_data(item: Control, base_position: Vector2) -> Dictionary:
 	if item is SplitterConveyor:
 		panel_data["rotation_angle"] = item.rotation_angle
 
+	# 获取调试方向（用于三相分流器）
+	if item is TriSplitterConveyor:
+		panel_data["debug_direction"] = item.debug_direction
+
 	# 获取输出组件的方向
 	var output_comp = _get_output_component(item)
 	if output_comp:
@@ -197,10 +205,12 @@ func _get_scene_path(item: Control) -> String:
 	# 根据类型判断场景路径
 	if item is ScoreButton:
 		return "res://scenes/score_button.tscn"
-	if item is ConveyorBelt and not item is SplitterConveyor:
-		return "res://scenes/conveyor_belt.tscn"
+	if item is TriSplitterConveyor:
+		return "res://scenes/tri_splitter_conveyor.tscn"
 	if item is SplitterConveyor:
 		return "res://scenes/splitter_conveyor.tscn"
+	if item is ConveyorBelt:
+		return "res://scenes/conveyor_belt.tscn"
 	if item is ProcessPanel:
 		return "res://scenes/process_panel.tscn"
 	if item is AdditionPanel:
@@ -298,11 +308,16 @@ func _spawn_panel(panel_data: Dictionary, base_position: Vector2) -> void:
 		instance.direction = panel_data["direction"]
 
 	# 设置旋转角度（分流器）
-	if instance is SplitterConveyor and panel_data.has("rotation_angle"):
-		instance.rotation_angle = panel_data["rotation_angle"]
-		instance._update_directions()
-		instance._update_arrow_layout()
-		instance._update_arrow_textures()
+	if instance is SplitterConveyor and not instance is TriSplitterConveyor:
+		if panel_data.has("rotation_angle"):
+			instance.rotation_angle = panel_data["rotation_angle"]
+			instance._update_directions()
+			instance._update_arrow_layout()
+			instance._update_arrow_textures()
+
+	# 设置调试方向（三相分流器）
+	if instance is TriSplitterConveyor and panel_data.has("debug_direction"):
+		instance.set_debug_direction(panel_data["debug_direction"])
 
 	# 设置输出方向
 	if panel_data.has("output_direction"):

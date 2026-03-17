@@ -1,8 +1,13 @@
-class_name SplitterConveyor extends Control
-## SplitterConveyor 分流传送带
-## 数字从任意方向进入，移动到中心后交替向两个输出方向分流
-## 0°/180°: 左右分流
-## 90°/270°: 上下分流
+class_name TriSplitterConveyor extends Control
+## TriSplitterConveyor 三相分流传送带
+## 数字从任意方向进入，移动到中心后轮流向三个输出方向分流
+##
+## 调试模式：
+## - 只有一个调试箭头，指向出口1的方向
+## - 调试箭头指向上 → 入口在下（隐藏下面箭头），出口: 上、右、左
+## - 调试箭头指向下 → 入口在上（隐藏上面箭头），出口: 下、左、右
+## - 调试箭头指向左 → 入口在右（隐藏右面箭头），出口: 左、下、上
+## - 调试箭头指向右 → 入口在左（隐藏左面箭头），出口: 右、上、下
 
 ## 移动速度（像素/秒）
 @export var speed: float = 100.0
@@ -10,8 +15,8 @@ class_name SplitterConveyor extends Control
 ## 对齐速度（像素/秒）- 移动到中心的速度
 @export var align_speed: float = 200.0
 
-## 旋转角度 (0, 90, 180, 270)
-var rotation_angle: int = 0
+## 调试箭头方向（出口1的方向）
+var debug_direction: Vector2 = Vector2.DOWN
 
 ## 是否正在被拖拽（用于限制滚轮旋转）
 var _is_being_dragged: bool = false
@@ -22,36 +27,16 @@ var arrow_textures: Dictionary = {}
 ## 金色箭头纹理（用于有SpeedBooster时）
 var _gold_arrow_textures: Dictionary = {}
 
-## BoxContainer引用
-var _box_container: BoxContainer = null
-var box_container: BoxContainer:
-	get:
-		if _box_container == null:
-			_box_container = get_node_or_null("BoxContainer")
-		return _box_container
+## 输出方向（根据调试方向自动计算）
+var output_direction_1: Vector2 = Vector2.DOWN
+var output_direction_2: Vector2 = Vector2.LEFT
+var output_direction_3: Vector2 = Vector2.RIGHT
 
-## 左箭头节点引用（懒加载）
-var _left_arrow: TextureRect = null
-var left_arrow: TextureRect:
-	get:
-		if _left_arrow == null:
-			_left_arrow = get_node_or_null("%LeftArrow")
-		return _left_arrow
+## 入口方向
+var input_direction: Vector2 = Vector2.UP
 
-## 右箭头节点引用（懒加载）
-var _right_arrow: TextureRect = null
-var right_arrow: TextureRect:
-	get:
-		if _right_arrow == null:
-			_right_arrow = get_node_or_null("%RightArrow")
-		return _right_arrow
-
-## 输出方向（根据旋转角度自动计算）
-var output_direction_1: Vector2 = Vector2.LEFT
-var output_direction_2: Vector2 = Vector2.RIGHT
-
-## 下次输出方向（"1" 或 "2"）
-var next_output: String = "1"
+## 下次输出方向（1, 2, 3 循环）
+var next_output: int = 1
 
 ## 当前传送带上的数字
 var numbers: Array[NumberObject] = []
@@ -62,7 +47,37 @@ var _number_outputs: Dictionary = {}
 ## 数字是否已对齐到中心
 var _number_aligned: Dictionary = {}
 
-## 输出组件引用
+## 四个箭头节点引用（懒加载）
+## Arrow1: 左方向, Arrow2: 右方向, Arrow3: 上方向, Arrow4: 下方向
+var _arrow1: TextureRect = null
+var arrow1: TextureRect:
+	get:
+		if _arrow1 == null:
+			_arrow1 = get_node_or_null("BottomRow/Arrow1")
+		return _arrow1
+
+var _arrow2: TextureRect = null
+var arrow2: TextureRect:
+	get:
+		if _arrow2 == null:
+			_arrow2 = get_node_or_null("BottomRow/Arrow2")
+		return _arrow2
+
+var _arrow3: TextureRect = null
+var arrow3: TextureRect:
+	get:
+		if _arrow3 == null:
+			_arrow3 = get_node_or_null("HBoxContainer/Arrow3")
+		return _arrow3
+
+var _arrow4: TextureRect = null
+var arrow4: TextureRect:
+	get:
+		if _arrow4 == null:
+			_arrow4 = get_node_or_null("HBoxContainer/Arrow4")
+		return _arrow4
+
+## 输出组件引用（用于调试箭头显示）
 var _output_component_1: OutputComponent = null
 var output_component_1: OutputComponent:
 	get:
@@ -76,6 +91,13 @@ var output_component_2: OutputComponent:
 		if _output_component_2 == null:
 			_output_component_2 = get_node_or_null("OutputComponent2")
 		return _output_component_2
+
+var _output_component_3: OutputComponent = null
+var output_component_3: OutputComponent:
+	get:
+		if _output_component_3 == null:
+			_output_component_3 = get_node_or_null("OutputComponent3")
+		return _output_component_3
 
 
 func _ready() -> void:
@@ -92,9 +114,8 @@ func _ready() -> void:
 	if is_preview:
 		return
 
-	# 更新方向和箭头
-	_update_directions()
-	_update_arrow_layout()
+	# 初始化方向和箭头
+	_update_directions_from_debug()
 	_update_arrow_textures()
 
 
@@ -181,12 +202,19 @@ func remove_number(number: NumberObject) -> void:
 
 func get_next_output() -> Vector2:
 	var output: Vector2
-	if next_output == "1":
-		output = output_direction_1
-		next_output = "2"
-	else:
-		output = output_direction_2
-		next_output = "1"
+	match next_output:
+		1:
+			output = output_direction_1
+			next_output = 2
+		2:
+			output = output_direction_2
+			next_output = 3
+		3:
+			output = output_direction_3
+			next_output = 1
+		_:
+			output = output_direction_1
+			next_output = 2
 	return output
 
 
@@ -211,123 +239,124 @@ func _align_to_center(number: NumberObject, delta: float) -> void:
 	var number_center = number.global_position + number.size / 2
 	var splitter_center = get_center_position()
 
-	# 计算到中心的距离
 	var to_center = splitter_center - number_center
 	var distance = to_center.length()
 
 	if distance <= align_speed * delta:
-		# 已到达中心，精确对齐
 		number.global_position = splitter_center - number.size / 2
 		_number_aligned[number_id] = true
 	else:
-		# 向中心移动
 		var move_dir = to_center.normalized()
 		number.global_position += move_dir * align_speed * delta
-
-
-func rotate_direction() -> void:
-	rotation_angle = (rotation_angle + 90) % 360
-	_update_directions()
-	_update_arrow_layout()
-	_update_arrow_textures()
-
-
-func rotate_direction_ccw() -> void:
-	rotation_angle = (rotation_angle - 90 + 360) % 360
-	_update_directions()
-	_update_arrow_layout()
-	_update_arrow_textures()
 
 
 func rotate_on_scroll(scroll_direction: float) -> void:
 	## 只有在被拖拽时才能旋转
 	if not _is_being_dragged:
 		return
+
+	# 顺时针旋转调试方向
 	if scroll_direction > 0:
-		rotate_direction()
+		match debug_direction:
+			Vector2.UP:
+				set_debug_direction(Vector2.RIGHT)
+			Vector2.RIGHT:
+				set_debug_direction(Vector2.DOWN)
+			Vector2.DOWN:
+				set_debug_direction(Vector2.LEFT)
+			Vector2.LEFT:
+				set_debug_direction(Vector2.UP)
 	else:
-		rotate_direction_ccw()
+		match debug_direction:
+			Vector2.UP:
+				set_debug_direction(Vector2.LEFT)
+			Vector2.LEFT:
+				set_debug_direction(Vector2.DOWN)
+			Vector2.DOWN:
+				set_debug_direction(Vector2.RIGHT)
+			Vector2.RIGHT:
+				set_debug_direction(Vector2.UP)
 
 
-## 设置拖拽状态
 func set_being_dragged(is_dragging: bool) -> void:
 	_is_being_dragged = is_dragging
 
 
-func _update_directions() -> void:
-	## 根据旋转角度更新输出方向
-	match rotation_angle:
-		0:
-			output_direction_1 = Vector2.LEFT
-			output_direction_2 = Vector2.RIGHT
-		90:
-			output_direction_1 = Vector2.UP
-			output_direction_2 = Vector2.DOWN
-		180:
-			output_direction_1 = Vector2.RIGHT
-			output_direction_2 = Vector2.LEFT
-		270:
-			output_direction_1 = Vector2.DOWN
-			output_direction_2 = Vector2.UP
-
+func set_debug_direction(direction: Vector2) -> void:
+	## 设置调试方向（由debug_cursor调用）
+	debug_direction = direction
+	_update_directions_from_debug()
+	_update_arrow_textures()
 	_update_output_components()
-
-
-func _update_output_components() -> void:
-	## 更新输出组件方向
-	## 分流器可以从任意方向接收数字，所以不设置输入方向显示
+	# 更新调试箭头显示
 	if output_component_1 and is_instance_valid(output_component_1):
-		output_component_1.set_output_direction(output_direction_1)
-	if output_component_2 and is_instance_valid(output_component_2):
-		output_component_2.set_output_direction(output_direction_2)
+		output_component_1.update_debug_arrow()
 
 
-func _update_arrow_layout() -> void:
-	## 更新箭头布局（水平或垂直）
-	if box_container and is_instance_valid(box_container):
-		# 0°/180°: 水平布局，显示左右箭头
-		# 90°/270°: 垂直布局，显示上下箭头
-		match rotation_angle:
-			0, 180:
-				box_container.vertical = false
-			90, 270:
-				box_container.vertical = true
+func _update_directions_from_debug() -> void:
+	## 根据调试方向更新输出方向
+	## 调试方向 = 出口1方向
+	## 入口方向 = 调试方向的反方向
+	output_direction_1 = debug_direction
+	input_direction = -debug_direction
+
+	# 根据调试方向确定出口2和出口3
+	# 出口顺序：调试方向、顺时针下一个、逆时针下一个
+	match debug_direction:
+		Vector2.LEFT:
+			output_direction_2 = Vector2.DOWN
+			output_direction_3 = Vector2.UP
+		Vector2.UP:
+			output_direction_2 = Vector2.RIGHT
+			output_direction_3 = Vector2.LEFT
+		Vector2.RIGHT:
+			output_direction_2 = Vector2.UP
+			output_direction_3 = Vector2.DOWN
+		Vector2.DOWN:
+			output_direction_2 = Vector2.LEFT
+			output_direction_3 = Vector2.RIGHT
 
 
 func _update_arrow_textures() -> void:
 	## 更新箭头纹理
+	## 入口方向的箭头设置texture为null（隐藏），其他方向显示对应箭头
 	if arrow_textures.is_empty():
 		_load_arrow_textures()
 
 	var use_gold = _has_speed_booster()
 	var textures = _gold_arrow_textures if use_gold else arrow_textures
 
-	# 根据旋转角度确定箭头纹理
-	match rotation_angle:
-		0:
-			# 左右分流：左箭头指向左，右箭头指向右
-			if left_arrow and is_instance_valid(left_arrow):
-				left_arrow.texture = textures.get(Vector2.LEFT)
-			if right_arrow and is_instance_valid(right_arrow):
-				right_arrow.texture = textures.get(Vector2.RIGHT)
-		90:
-			# 上下分流：左箭头指向上，右箭头指向下
-			if left_arrow and is_instance_valid(left_arrow):
-				left_arrow.texture = textures.get(Vector2.UP)
-			if right_arrow and is_instance_valid(right_arrow):
-				right_arrow.texture = textures.get(Vector2.DOWN)
-		180:
-			# 左右分流（反向）：左箭头指向右，右箭头指向左
-			if left_arrow and is_instance_valid(left_arrow):
-				left_arrow.texture = textures.get(Vector2.LEFT)
-			if right_arrow and is_instance_valid(right_arrow):
-				right_arrow.texture = textures.get(Vector2.RIGHT)
-		270:
-			# 上下分流（反向）：左箭头指向下，右箭头指向上
-			if left_arrow and is_instance_valid(left_arrow):
-				left_arrow.texture = textures.get(Vector2.UP)
-			if right_arrow and is_instance_valid(right_arrow):
-				right_arrow.texture = textures.get(Vector2.DOWN)
+	# Arrow1 = 左方向
+	if arrow1 and is_instance_valid(arrow1):
+		if input_direction == Vector2.LEFT:
+			arrow1.texture = null
+		else:
+			arrow1.texture = textures.get(Vector2.LEFT)
+		arrow1.visible = true
+
+	# Arrow2 = 右方向
+	if arrow2 and is_instance_valid(arrow2):
+		if input_direction == Vector2.RIGHT:
+			arrow2.texture = null
+		else:
+			arrow2.texture = textures.get(Vector2.RIGHT)
+		arrow2.visible = true
+
+	# Arrow3 = 上方向
+	if arrow3 and is_instance_valid(arrow3):
+		if input_direction == Vector2.UP:
+			arrow3.texture = null
+		else:
+			arrow3.texture = textures.get(Vector2.UP)
+		arrow3.visible = true
+
+	# Arrow4 = 下方向
+	if arrow4 and is_instance_valid(arrow4):
+		if input_direction == Vector2.DOWN:
+			arrow4.texture = null
+		else:
+			arrow4.texture = textures.get(Vector2.DOWN)
+		arrow4.visible = true
 
 
 func _has_speed_booster() -> bool:
@@ -344,34 +373,52 @@ func update_arrow_color() -> void:
 
 
 func get_arrow_directions() -> Dictionary:
-	## 返回两个箭头的方向（用于测试）
-	match rotation_angle:
-		0:
-			return {"arrow1": Vector2.LEFT, "arrow2": Vector2.RIGHT}
-		90:
-			return {"arrow1": Vector2.UP, "arrow2": Vector2.DOWN}
-		180:
-			return {"arrow1": Vector2.RIGHT, "arrow2": Vector2.LEFT}
-		270:
-			return {"arrow1": Vector2.DOWN, "arrow2": Vector2.UP}
-		_:
-			return {"arrow1": Vector2.LEFT, "arrow2": Vector2.RIGHT}
+	## 返回四个箭头的方向（用于测试）
+	## 入口方向返回null
+	return {
+		"arrow1": null if input_direction == Vector2.LEFT else Vector2.LEFT,
+		"arrow2": null if input_direction == Vector2.RIGHT else Vector2.RIGHT,
+		"arrow3": null if input_direction == Vector2.UP else Vector2.UP,
+		"arrow4": null if input_direction == Vector2.DOWN else Vector2.DOWN
+	}
 
 
 func start_debug() -> void:
-	## 开始调试模式 - 启动两个输出组件的调试显示
-	# 先更新输出组件方向
+	## 开始调试模式 - 只显示一个调试箭头（指向debug_direction）
 	_update_output_components()
-	# 然后启动调试显示
 	if output_component_1 and is_instance_valid(output_component_1):
 		output_component_1.start_debug()
-	if output_component_2 and is_instance_valid(output_component_2):
-		output_component_2.start_debug()
 
 
 func end_debug() -> void:
 	## 结束调试模式
 	if output_component_1 and is_instance_valid(output_component_1):
 		output_component_1.end_debug()
+
+
+func _update_output_components() -> void:
+	## 更新输出组件方向
+	if output_component_1 and is_instance_valid(output_component_1):
+		output_component_1.set_output_direction(output_direction_1)
 	if output_component_2 and is_instance_valid(output_component_2):
-		output_component_2.end_debug()
+		output_component_2.set_output_direction(output_direction_2)
+	if output_component_3 and is_instance_valid(output_component_3):
+		output_component_3.set_output_direction(output_direction_3)
+
+
+func _update_debug_arrow() -> void:
+	## 更新调试箭头显示
+	_update_output_components()
+	if output_component_1 and is_instance_valid(output_component_1):
+		output_component_1.update_debug_arrow()
+
+
+# 兼容旧代码的属性
+var rotation_angle: int = 0:
+	get:
+		match debug_direction:
+			Vector2.LEFT: return 0
+			Vector2.UP: return 90
+			Vector2.RIGHT: return 180
+			Vector2.DOWN: return 270
+		return 0

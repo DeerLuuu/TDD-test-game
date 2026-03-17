@@ -1,0 +1,120 @@
+[gd_scene format=3 uid="uid://cagbfebv7rdto"]
+
+[ext_resource type="Script" uid="uid://c14l155s2ucad" path="res://scripts/tri_splitter_conveyor.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://bricornlfq21h" path="res://assets/arrows/arrow_right.svg" id="2_arrow_right"]
+[ext_resource type="Texture2D" uid="uid://bcp64if2ehp58" path="res://assets/arrows/arrow_left.svg" id="3_arrow_left"]
+[ext_resource type="Texture2D" uid="uid://de4qnlp21j3ip" path="res://assets/arrows/arrow_down.svg" id="4_arrow_down"]
+[ext_resource type="Texture2D" uid="uid://bfhj8r1bxciku" path="res://assets/arrows/arrow_up.svg" id="5_arrow_up"]
+[ext_resource type="Script" uid="uid://rdgvr1ygufbm" path="res://scripts/component/output_component.gd" id="5_output"]
+[ext_resource type="Script" uid="uid://dg0nsamriwcsg" path="res://scripts/component/selectable_component.gd" id="6_selectable"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_main"]
+bg_color = Color(0.9, 0.85, 0.7, 0.7)
+border_color = Color(0.6, 0.5, 0.3, 1)
+shadow_size = 5
+shadow_offset = Vector2(3, 3)
+
+[node name="TriSplitterConveyor" type="Control" unique_id=1435851609]
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -25.0
+offset_top = -25.0
+offset_right = 25.0
+offset_bottom = 25.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_script")
+
+[node name="SelectableComponent" type="Node" parent="." unique_id=491695520]
+script = ExtResource("6_selectable")
+
+[node name="OutputComponent1" type="Node" parent="." unique_id=488055647]
+script = ExtResource("5_output")
+output_distance = 35
+
+[node name="OutputComponent2" type="Node" parent="." unique_id=1706668412]
+script = ExtResource("5_output")
+output_distance = 35
+
+[node name="OutputComponent3" type="Node" parent="." unique_id=1706668413]
+script = ExtResource("5_output")
+output_distance = 35
+
+[node name="Panel" type="Panel" parent="." unique_id=2076210988]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_main")
+
+[node name="BottomRow" type="HBoxContainer" parent="." unique_id=392847562]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -27.0
+offset_top = -12.5
+offset_right = 27.0
+offset_bottom = 12.5
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="Arrow1" type="TextureRect" parent="BottomRow" unique_id=2020349269]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(25, 25)
+layout_mode = 2
+size_flags_horizontal = 3
+texture = ExtResource("3_arrow_left")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Arrow2" type="TextureRect" parent="BottomRow" unique_id=2020349270]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(25, 25)
+layout_mode = 2
+size_flags_horizontal = 3
+texture = ExtResource("2_arrow_right")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="HBoxContainer" type="VBoxContainer" parent="." unique_id=571429258]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -27.0
+offset_top = -27.0
+offset_right = 27.0
+offset_bottom = 27.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Arrow3" type="TextureRect" parent="HBoxContainer" unique_id=927149966]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(25, 25)
+layout_mode = 2
+size_flags_horizontal = 4
+texture = ExtResource("5_arrow_up")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Arrow4" type="TextureRect" parent="HBoxContainer" unique_id=911602017]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(25, 25)
+layout_mode = 2
+size_flags_horizontal = 4
+texture = ExtResource("4_arrow_down")
+expand_mode = 1
+stretch_mode = 5

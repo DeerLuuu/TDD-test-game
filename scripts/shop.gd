@@ -4,14 +4,35 @@ class_name Shop
 
 signal item_purchased(item_data: Dictionary)
 
+## 商品分类枚举
+enum Category {
+	ALL,        ## 全部
+	PROCESS,    ## 加工类
+	SKILL,      ## 技能类
+	MODULE,     ## 模块类
+	TRANSPORT   ## 运输类
+}
+
+const CATEGORY_NAMES := {
+	Category.ALL: "全部",
+	Category.PROCESS: "加工",
+	Category.SKILL: "技能",
+	Category.MODULE: "模块",
+	Category.TRANSPORT: "运输"
+}
+
 var _items: Array = []
+var _current_category: int = Category.ALL
+var _button_group: ButtonGroup = null
 
 @onready var item_container: GridContainer = $MarginContainer/VBoxContainer/ScrollContainer/ItemContainer
 @onready var mode_label: Label = $MarginContainer/VBoxContainer/ModeContainer/ModeLabel
+@onready var category_container: HBoxContainer = $MarginContainer/VBoxContainer/CategoryContainer
 
 func _ready() -> void:
 	add_to_group("shop_panel")
 	_setup_default_items()
+	_create_category_buttons()
 	_create_item_widgets()
 	_update_mode_ui()
 	# 连接Global信号
@@ -66,53 +87,79 @@ func _update_mode_ui() -> void:
 func _setup_default_items() -> void:
 	## 设置默认商品列表
 	_items = [
+		# 模块类
 		{
 			"name": "加分按钮",
 			"cost": 50,
 			"scene_path": "res://scenes/score_button.tscn",
-			"level": 2
-		},
-		{
-			"name": "传送带",
-			"cost": 100,
-			"scene_path": "res://scenes/conveyor_belt.tscn",
-			"level": 2
-		},
-		{
-			"name": "分流传送带",
-			"cost": 150,
-			"scene_path": "res://scenes/splitter_conveyor.tscn",
-			"level": 2
+			"level": 2,
+			"category": Category.MODULE
 		},
 		{
 			"name": "收集面板",
 			"cost": 80,
 			"scene_path": "res://scenes/collect_panel.tscn",
-			"level": 1
+			"level": 1,
+			"category": Category.MODULE
 		},
+		# 运输类
+		{
+			"name": "传送带",
+			"cost": 100,
+			"scene_path": "res://scenes/conveyor_belt.tscn",
+			"level": 2,
+			"category": Category.TRANSPORT
+		},
+		{
+			"name": "分流传送带",
+			"cost": 150,
+			"scene_path": "res://scenes/splitter_conveyor.tscn",
+			"level": 2,
+			"category": Category.TRANSPORT
+		},
+		{
+			"name": "三相分流器",
+			"cost": 200,
+			"scene_path": "res://scenes/tri_splitter_conveyor.tscn",
+			"level": 2,
+			"category": Category.TRANSPORT
+		},
+		# 加工类
 		{
 			"name": "加工面板",
 			"cost": 150,
 			"scene_path": "res://scenes/process_panel.tscn",
-			"level": 2
+			"level": 2,
+			"category": Category.PROCESS
 		},
 		{
 			"name": "加法面板",
 			"cost": 120,
 			"scene_path": "res://scenes/addition_panel.tscn",
-			"level": 2
+			"level": 2,
+			"category": Category.PROCESS
 		},
+		# 技能类
 		{
 			"name": "自动点击器",
 			"cost": 200,
 			"scene_path": "res://scenes/auto_clicker.tscn",
-			"level": 1
+			"level": 1,
+			"category": Category.SKILL
+		},
+		{
+			"name": "速度加速器",
+			"cost": 180,
+			"scene_path": "res://scenes/speed_booster.tscn",
+			"level": 1,
+			"category": Category.SKILL
 		},
 		{
 			"name": "加速面板",
 			"cost": 150,
 			"scene_path": "res://scenes/speed_boost_panel.tscn",
-			"level": 1
+			"level": 1,
+			"category": Category.SKILL
 		}
 	]
 
@@ -127,16 +174,63 @@ func _create_item_widgets() -> void:
 
 	var ShopItemScene = preload("res://scenes/shop_item.tscn")
 
+	# 过滤当前分类的商品
+	var filtered_indices := []
 	for i in _items.size():
 		var item_data = _items[i]
+		if _current_category == Category.ALL or item_data.get("category", Category.ALL) == _current_category:
+			filtered_indices.append(i)
+
+	# 创建商品widget，保存原始索引
+	for original_index in filtered_indices:
+		var item_data = _items[original_index]
 		var item_widget = ShopItemScene.instantiate()
 		item_widget.item_name = item_data.name
 		item_widget.cost = item_data.cost
 		item_widget.scene_path = item_data.scene_path
 
-		item_widget.dragged_out.connect(_on_item_dragged_out.bind(i))
+		item_widget.dragged_out.connect(_on_item_dragged_out.bind(original_index))
 
 		item_container.add_child(item_widget)
+
+
+func _create_category_buttons() -> void:
+	## 创建分类按钮
+	if not category_container:
+		return
+
+	for child in category_container.get_children():
+		child.queue_free()
+
+	for category in [Category.ALL, Category.PROCESS, Category.SKILL, Category.MODULE, Category.TRANSPORT]:
+		var btn = Button.new()
+		btn.text = CATEGORY_NAMES[category]
+		btn.toggle_mode = true
+		btn.button_group = _get_or_create_button_group()
+		btn.set_pressed_no_signal(category == _current_category)
+		btn.pressed.connect(_on_category_button_pressed.bind(category))
+		btn.custom_minimum_size.x = 50
+		category_container.add_child(btn)
+
+
+func _get_or_create_button_group() -> ButtonGroup:
+	## 获取或创建按钮组
+	if _button_group == null:
+		_button_group = ButtonGroup.new()
+	return _button_group
+
+
+func _on_category_button_pressed(category: int) -> void:
+	## 分类按钮点击处理
+	_set_category(category)
+
+
+func _set_category(category: int) -> void:
+	## 设置当前分类
+	if _current_category == category:
+		return
+	_current_category = category
+	_create_item_widgets()
 
 
 func add_item(item_data: Dictionary) -> void:
@@ -228,6 +322,28 @@ func _spawn_purchased_item(scene_path: String, global_pos: Vector2, level: int =
 				GameScore.add_score(cost)
 			return
 
+	# SpeedBooster特殊处理：查找目标传送带
+	if instance is SpeedBooster:
+		var target = _find_speed_booster_target(global_pos)
+		if target:
+			# 检查目标是否已经有SpeedBooster
+			if _has_speed_booster(target):
+				instance.queue_free()
+				if cost > 0:
+					GameScore.add_score(cost)
+				return
+			# 添加为目标子节点
+			target.add_child(instance)
+			# 更新目标的箭头颜色
+			_update_target_arrow_color(target)
+			return
+		else:
+			# 没有有效目标，退款
+			instance.queue_free()
+			if cost > 0:
+				GameScore.add_score(cost)
+			return
+
 	# 根据层级选择父节点
 	var parent = Global.get_level_parent(level)
 	if parent:
@@ -298,6 +414,44 @@ func _has_auto_clicker(target: Control) -> bool:
 		if child is AutoClicker:
 			return true
 	return false
+
+
+func _find_speed_booster_target(global_pos: Vector2) -> Control:
+	## 查找可以放置SpeedBooster的目标（必须是传送带类型）
+	var items = get_tree().get_nodes_in_group("placeable_items")
+
+	for item in items:
+		if not is_instance_valid(item):
+			continue
+		if not item is Control:
+			continue
+		# 只允许传送带类型
+		if not (item is ConveyorBelt or item is SplitterConveyor or item is TriSplitterConveyor):
+			continue
+
+		var rect = Rect2(item.global_position, item.size)
+		if rect.has_point(global_pos):
+			return item
+
+	return null
+
+
+func _has_speed_booster(target: Control) -> bool:
+	## 检查目标是否已经有SpeedBooster
+	for child in target.get_children():
+		if child is SpeedBooster:
+			return true
+	return false
+
+
+func _update_target_arrow_color(target: Control) -> void:
+	## 更新目标的箭头颜色为金色
+	if target is ConveyorBelt:
+		target.update_arrow_color()
+	elif target is SplitterConveyor:
+		target.update_arrow_color()
+	elif target is TriSplitterConveyor:
+		target.update_arrow_color()
 
 
 func toggle_mode() -> void:

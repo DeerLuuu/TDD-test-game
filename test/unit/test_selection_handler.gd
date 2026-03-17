@@ -1,7 +1,7 @@
 extends GutTest
 ## SelectionHandler 单元测试
 
-var SelectionHandlerScript = load('res://scripts/selection_handler.gd')
+var SelectionHandlerScript = load('res://scripts/autoload/selection_handler.gd')
 var _handler
 
 

@@ -85,3 +85,112 @@ func test_global_has_set_blueprint_mode_method():
 func test_global_has_is_blueprint_mode_method():
 	## 应有判断蓝图模式的方法
 	assert_true(Global.has_method("is_blueprint_mode"), "应有is_blueprint_mode方法")
+
+
+## === 面板蓝图保存测试 ===
+## 测试各种面板是否可以被正确保存到蓝图中
+
+func test_score_button_can_be_saved_to_blueprint():
+	## ScoreButton应可被保存到蓝图
+	var button = autofree(ScoreButton.new())
+	button.global_position = Vector2(100, 100)
+	var panel_data = BlueprintManager._capture_panel_data(button, Vector2.ZERO)
+	assert_eq(panel_data.get("scene_path"), "res://scenes/score_button.tscn", "ScoreButton应返回正确场景路径")
+
+
+func test_conveyor_belt_can_be_saved_to_blueprint():
+	## ConveyorBelt应可被保存到蓝图
+	var conveyor = autofree(ConveyorBelt.new())
+	conveyor.global_position = Vector2(100, 100)
+	conveyor.direction = Vector2.RIGHT
+	var panel_data = BlueprintManager._capture_panel_data(conveyor, Vector2.ZERO)
+	assert_eq(panel_data.get("scene_path"), "res://scenes/conveyor_belt.tscn", "ConveyorBelt应返回正确场景路径")
+	assert_eq(panel_data.get("direction"), Vector2.RIGHT, "应保存方向信息")
+
+
+func test_splitter_conveyor_can_be_saved_to_blueprint():
+	## SplitterConveyor应可被保存到蓝图
+	var splitter = autofree(SplitterConveyor.new())
+	splitter.global_position = Vector2(100, 100)
+	splitter.rotation_angle = 90
+	var panel_data = BlueprintManager._capture_panel_data(splitter, Vector2.ZERO)
+	assert_eq(panel_data.get("scene_path"), "res://scenes/splitter_conveyor.tscn", "SplitterConveyor应返回正确场景路径")
+	assert_eq(panel_data.get("rotation_angle"), 90, "应保存旋转角度")
+
+
+func test_tri_splitter_conveyor_can_be_saved_to_blueprint():
+	## TriSplitterConveyor应可被保存到蓝图
+	var tri_splitter = autofree(TriSplitterConveyor.new())
+	tri_splitter.global_position = Vector2(100, 100)
+	tri_splitter.debug_direction = Vector2.UP
+	var panel_data = BlueprintManager._capture_panel_data(tri_splitter, Vector2.ZERO)
+	assert_eq(panel_data.get("scene_path"), "res://scenes/tri_splitter_conveyor.tscn", "TriSplitterConveyor应返回正确场景路径")
+	assert_eq(panel_data.get("debug_direction"), Vector2.UP, "应保存调试方向")
+
+
+func test_process_panel_can_be_saved_to_blueprint():
+	## ProcessPanel应可被保存到蓝图
+	var panel = autofree(ProcessPanel.new())
+	panel.global_position = Vector2(100, 100)
+	var panel_data = BlueprintManager._capture_panel_data(panel, Vector2.ZERO)
+	assert_eq(panel_data.get("scene_path"), "res://scenes/process_panel.tscn", "ProcessPanel应返回正确场景路径")
+
+
+func test_addition_panel_can_be_saved_to_blueprint():
+	## AdditionPanel应可被保存到蓝图
+	var panel = autofree(AdditionPanel.new())
+	panel.global_position = Vector2(100, 100)
+	var panel_data = BlueprintManager._capture_panel_data(panel, Vector2.ZERO)
+	assert_eq(panel_data.get("scene_path"), "res://scenes/addition_panel.tscn", "AdditionPanel应返回正确场景路径")
+
+
+## === 附加模块跳过测试 ===
+
+func test_auto_clicker_is_skipped_in_blueprint():
+	## AutoClicker应被跳过
+	var clicker = autofree(AutoClicker.new())
+	var should_skip = BlueprintManager._should_skip_item(clicker)
+	assert_true(should_skip, "AutoClicker应被跳过")
+
+
+func test_speed_booster_is_skipped_in_blueprint():
+	## SpeedBooster应被跳过
+	var booster = autofree(SpeedBooster.new())
+	var should_skip = BlueprintManager._should_skip_item(booster)
+	assert_true(should_skip, "SpeedBooster应被跳过")
+
+
+func test_collect_panel_is_skipped_in_blueprint():
+	## CollectPanel应被跳过
+	var panel = autofree(CollectPanel.new())
+	var should_skip = BlueprintManager._should_skip_item(panel)
+	assert_true(should_skip, "CollectPanel应被跳过")
+
+
+func test_speed_boost_panel_is_skipped_in_blueprint():
+	## SpeedBoostPanel应被跳过
+	var panel = autofree(SpeedBoostPanel.new())
+	var should_skip = BlueprintManager._should_skip_item(panel)
+	assert_true(should_skip, "SpeedBoostPanel应被跳过")
+
+
+## === 面板价格测试 ===
+
+func test_tri_splitter_conveyor_has_cost():
+	## TriSplitterConveyor应有价格
+	var cost = BlueprintManager._panel_costs.get("res://scenes/tri_splitter_conveyor.tscn", 0)
+	assert_gt(cost, 0, "TriSplitterConveyor应有价格")
+
+
+func test_all_panels_have_costs():
+	## 所有可保存的面板都应有价格
+	var panel_paths = [
+		"res://scenes/score_button.tscn",
+		"res://scenes/conveyor_belt.tscn",
+		"res://scenes/splitter_conveyor.tscn",
+		"res://scenes/tri_splitter_conveyor.tscn",
+		"res://scenes/process_panel.tscn",
+		"res://scenes/addition_panel.tscn"
+	]
+	for path in panel_paths:
+		assert_true(BlueprintManager._panel_costs.has(path), "%s应有价格" % path)

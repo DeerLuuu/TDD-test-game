@@ -7,6 +7,9 @@ class_name ConveyorBelt
 ## 四个方向的箭头纹理
 @export var arrow_textures: Dictionary = {}
 
+## 金色箭头纹理（用于有SpeedBooster时）
+var _gold_arrow_textures: Dictionary = {}
+
 ## 移动速度（像素/秒）
 @export var speed: float = 100.0
 
@@ -55,6 +58,15 @@ func _ready() -> void:
 			Vector2.LEFT: preload("res://assets/arrows/arrow_left.svg"),
 			Vector2.UP: preload("res://assets/arrows/arrow_up.svg"),
 			Vector2.DOWN: preload("res://assets/arrows/arrow_down.svg")
+		}
+
+	# 初始化金色箭头纹理
+	if _gold_arrow_textures.is_empty():
+		_gold_arrow_textures = {
+			Vector2.RIGHT: preload("res://assets/arrows/arrow_right_gold.svg"),
+			Vector2.LEFT: preload("res://assets/arrows/arrow_left_gold.svg"),
+			Vector2.UP: preload("res://assets/arrows/arrow_up_gold.svg"),
+			Vector2.DOWN: preload("res://assets/arrows/arrow_down_gold.svg")
 		}
 	# 尝试获取箭头显示节点
 	_arrow_display = get_node_or_null("TextureRect")
@@ -262,8 +274,25 @@ func _align_to_center_line(number: NumberObject, delta: float) -> void:
 
 ## 更新箭头纹理显示
 func _update_arrow_texture() -> void:
-	if _arrow_display and arrow_textures.has(direction):
-		_arrow_display.texture = arrow_textures[direction]
+	if _arrow_display:
+		var use_gold = _has_speed_booster()
+		if use_gold and _gold_arrow_textures.has(direction):
+			_arrow_display.texture = _gold_arrow_textures[direction]
+		elif arrow_textures.has(direction):
+			_arrow_display.texture = arrow_textures[direction]
+
+
+func _has_speed_booster() -> bool:
+	## 检查是否有SpeedBooster子节点
+	for child in get_children():
+		if child is SpeedBooster:
+			return true
+	return false
+
+
+func update_arrow_color() -> void:
+	## 更新箭头颜色（外部调用）
+	_update_arrow_texture()
 
 
 func _sync_output_direction() -> void:

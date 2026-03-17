@@ -16,6 +16,9 @@ var _preview: Control = null
 ## AutoClicker专用：当前悬停的目标面板
 var _auto_clicker_target: Control = null
 
+## SpeedBooster专用：当前悬停的目标面板
+var _speed_booster_target: Control = null
+
 @onready var name_label: Label = $VBoxContainer/NameLabel
 @onready var cost_label: Label = $VBoxContainer/CostLabel
 
@@ -35,6 +38,9 @@ func _process(_delta: float) -> void:
 		# AutoClicker特殊处理
 		if _is_auto_clicker():
 			_update_auto_clicker_preview(global_mouse)
+		# SpeedBooster特殊处理
+		elif _is_speed_booster():
+			_update_speed_booster_preview(global_mouse)
 		else:
 			var target_pos = global_mouse - _preview.size / 2
 			@warning_ignore("static_called_on_instance")
@@ -45,6 +51,11 @@ func _process(_delta: float) -> void:
 func _is_auto_clicker() -> bool:
 	## 检查是否是自动点击器
 	return scene_path.find("auto_clicker") != -1
+
+
+func _is_speed_booster() -> bool:
+	## 检查是否是速度加速器
+	return scene_path.find("speed_booster") != -1
 
 
 func _update_auto_clicker_preview(global_mouse: Vector2) -> void:
@@ -59,6 +70,29 @@ func _update_auto_clicker_preview(global_mouse: Vector2) -> void:
 		_preview.size = target_size
 		# 对齐到目标位置
 		_preview.global_position = _auto_clicker_target.global_position - Vector2(4, 4)
+	else:
+		# 默认大小
+		var default_size = Vector2(50, 50)
+		_preview.custom_minimum_size = default_size
+		_preview.size = default_size
+		# 对齐到网格
+		@warning_ignore("static_called_on_instance")
+		var snapped_pos = Global.snap_position_to_grid(global_mouse - default_size / 2)
+		_preview.global_position = snapped_pos
+
+
+func _update_speed_booster_preview(global_mouse: Vector2) -> void:
+	## 更新SpeedBooster预览
+	# 查找悬停的目标传送带
+	_speed_booster_target = _find_speed_booster_target(global_mouse)
+
+	if _speed_booster_target:
+		# 匹配目标大小
+		var target_size = _speed_booster_target.size + Vector2(8, 8)  # 边距4*2
+		_preview.custom_minimum_size = target_size
+		_preview.size = target_size
+		# 对齐到目标位置
+		_preview.global_position = _speed_booster_target.global_position - Vector2(4, 4)
 	else:
 		# 默认大小
 		var default_size = Vector2(50, 50)
@@ -87,6 +121,26 @@ func _find_auto_clicker_target(global_mouse: Vector2) -> Control:
 
 		# 检查是否有ClickComponent
 		if not _has_click_component(item):
+			continue
+
+		var rect = Rect2(item.global_position, item.size)
+		if rect.has_point(global_mouse):
+			return item
+
+	return null
+
+
+func _find_speed_booster_target(global_mouse: Vector2) -> Control:
+	## 查找可以放置SpeedBooster的目标（必须是传送带类型）
+	var items = get_tree().get_nodes_in_group("placeable_items")
+
+	for item in items:
+		if not is_instance_valid(item):
+			continue
+		if not item is Control:
+			continue
+		# 只允许传送带类型
+		if not (item is ConveyorBelt or item is SplitterConveyor or item is TriSplitterConveyor):
 			continue
 
 		var rect = Rect2(item.global_position, item.size)
@@ -221,6 +275,27 @@ func _create_fallback_preview() -> Control:
 
 		return preview
 
+	# SpeedBooster特殊样式
+	if _is_speed_booster():
+		preview.custom_minimum_size = Vector2(50, 50)
+		var _style = StyleBoxFlat.new()
+		_style.bg_color = Color(0.0, 0.0, 0.0, 0.3)
+		_style.border_color = Color(0.3, 0.8, 1.0, 0.8)
+		_style.set_border_width_all(2)
+		_style.set_corner_radius_all(4)
+		preview.add_theme_stylebox_override("panel", _style)
+
+		# 添加图标
+		var icon = Label.new()
+		icon.text = "»"
+		icon.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		icon.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		icon.add_theme_font_size_override("font_size", 24)
+		icon.add_theme_color_override("font_color", Color(0.5, 0.9, 1.0, 0.9))
+		preview.add_child(icon)
+
+		return preview
+
 	var vbox = VBoxContainer.new()
 	preview.add_child(vbox)
 
@@ -280,6 +355,9 @@ func _check_drag_out() -> void:
 
 		# AutoClicker特殊处理：传递目标信息
 		if _is_auto_clicker() and _auto_clicker_target:
+			dragged_out.emit(self, global_mouse)
+		# SpeedBooster特殊处理：传递目标信息
+		elif _is_speed_booster() and _speed_booster_target:
 			dragged_out.emit(self, global_mouse)
 		else:
 			dragged_out.emit(self, global_mouse)

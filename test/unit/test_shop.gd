@@ -120,3 +120,36 @@ func test_default_level_is_2():
 	var result = _shop.try_purchase(0)
 	# 如果没有指定level，应该返回默认值2
 	assert_eq(result.get("level", 2), 2, "默认层级应为2")
+
+
+func test_default_items_have_category():
+	## 默认商品应有分类属性
+	_shop._setup_default_items()
+	var items = _shop.get_items()
+	assert_true(items.size() > 0, "应有默认商品")
+	for item in items:
+		assert_true(item.has("category"), "商品应有category属性: %s" % item.get("name", "unknown"))
+
+
+func test_category_enum_exists():
+	## Category枚举应存在
+	assert_true(Shop.Category.ALL == 0, "Category.ALL应为0")
+	assert_true(Shop.Category.PROCESS == 1, "Category.PROCESS应为1")
+	assert_true(Shop.Category.SKILL == 2, "Category.SKILL应为2")
+	assert_true(Shop.Category.MODULE == 3, "Category.MODULE应为3")
+	assert_true(Shop.Category.TRANSPORT == 4, "Category.TRANSPORT应为4")
+
+
+func test_set_category_method_exists():
+	## 应有设置分类的方法
+	assert_true(_shop.has_method("_set_category"), "应有_set_category方法")
+
+
+func test_category_names_constant_exists():
+	## CATEGORY_NAMES常量应存在
+	assert_not_null(Shop.CATEGORY_NAMES, "CATEGORY_NAMES应存在")
+	assert_eq(Shop.CATEGORY_NAMES[Shop.Category.ALL], "全部", "ALL分类名称应为'全部'")
+	assert_eq(Shop.CATEGORY_NAMES[Shop.Category.PROCESS], "加工", "PROCESS分类名称应为'加工'")
+	assert_eq(Shop.CATEGORY_NAMES[Shop.Category.SKILL], "技能", "SKILL分类名称应为'技能'")
+	assert_eq(Shop.CATEGORY_NAMES[Shop.Category.MODULE], "模块", "MODULE分类名称应为'模块'")
+	assert_eq(Shop.CATEGORY_NAMES[Shop.Category.TRANSPORT], "运输", "TRANSPORT分类名称应为'运输'")

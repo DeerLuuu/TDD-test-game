@@ -137,6 +137,12 @@ func apply_debug_direction_to_selected(direction: Vector2) -> void:
 			conveyor.direction = direction
 			continue
 
+		# 三相分流传送带特殊处理
+		var tri_splitter = _get_tri_splitter_conveyor(item)
+		if tri_splitter:
+			tri_splitter.set_debug_direction(direction)
+			continue
+
 		# 分流传送带特殊处理：根据方向旋转
 		var splitter = _get_splitter_conveyor(item)
 		if splitter:
@@ -295,5 +301,14 @@ func _get_splitter_conveyor(item: Control) -> SplitterConveyor:
 	if not is_instance_valid(item):
 		return null
 	if item is SplitterConveyor:
+		return item
+	return null
+
+
+func _get_tri_splitter_conveyor(item: Control) -> TriSplitterConveyor:
+	## 获取物品作为三相分流传送带
+	if not is_instance_valid(item):
+		return null
+	if item is TriSplitterConveyor:
 		return item
 	return null

@@ -68,7 +68,7 @@ func _create_drag_line() -> void:
 
 func _update_position() -> void:
 	## 更新位置跟随鼠标
-	var viewport = get_viewport()
+	var viewport = get_tree().root.get_viewport()
 	if not viewport:
 		return
 
@@ -91,7 +91,7 @@ func _update_position() -> void:
 
 func _update_size() -> void:
 	## 更新大小
-	var viewport = get_viewport()
+	var viewport = get_tree().root.get_viewport()
 	if not viewport:
 		return
 
@@ -109,15 +109,14 @@ func _update_size() -> void:
 
 func _update_hovered_item() -> void:
 	## 更新悬停物品检测
+	var viewport = get_tree().root.get_viewport()
 	@warning_ignore("static_called_on_instance")
-	var world_mouse = Global.get_scaled_global_mouse_position(get_viewport())
+	var world_mouse = Global.get_scaled_global_mouse_position(viewport)
 	var items = get_tree().get_nodes_in_group("placeable_items")
 
 	# 先隐藏所有物品的调试显示
 	for item in items:
-		var output_comp = _get_output_component(item)
-		if output_comp:
-			output_comp.end_debug()
+		_end_item_debug(item)
 
 	_hovered_item = null
 
@@ -129,24 +128,19 @@ func _update_hovered_item() -> void:
 
 		var rect = Rect2(item.global_position, item.size)
 		if rect.has_point(world_mouse):
-			# 检查是否有OutputComponent
-			var output_comp = _get_output_component(item)
-			if output_comp:
+			# 检查是否可调试（有OutputComponent或者是分流器）
+			if _can_debug_item(item):
 				_hovered_item = item
 			break
 
 	# 显示所有选中物品的调试箭头
 	for item in SelectionManager.selected_items:
 		if is_instance_valid(item):
-			var output_comp = _get_output_component(item)
-			if output_comp:
-				output_comp.start_debug()
+			_start_item_debug(item)
 
 	# 如果悬停物品未被选中，也显示其调试箭头
 	if _hovered_item and _hovered_item not in SelectionManager.selected_items:
-		var output_comp = _get_output_component(_hovered_item)
-		if output_comp:
-			output_comp.start_debug()
+		_start_item_debug(_hovered_item)
 
 
 func _get_output_component(item: Control) -> OutputComponent:
@@ -157,6 +151,39 @@ func _get_output_component(item: Control) -> OutputComponent:
 	return null
 
 
+func _can_debug_item(item: Control) -> bool:
+	## 检查物品是否可以被调试
+	# 分流器类型有特殊的调试方法
+	if item is SplitterConveyor or item is TriSplitterConveyor:
+		return true
+	# 普通物品检查是否有OutputComponent
+	return _get_output_component(item) != null
+
+
+func _start_item_debug(item: Control) -> void:
+	## 启动物品的调试显示
+	if item is SplitterConveyor or item is TriSplitterConveyor:
+		# 分流器有专门的start_debug方法
+		item.start_debug()
+	else:
+		# 普通物品使用OutputComponent
+		var output_comp = _get_output_component(item)
+		if output_comp:
+			output_comp.start_debug()
+
+
+func _end_item_debug(item: Control) -> void:
+	## 结束物品的调试显示
+	if item is SplitterConveyor or item is TriSplitterConveyor:
+		# 分流器有专门的end_debug方法
+		item.end_debug()
+	else:
+		# 普通物品使用OutputComponent
+		var output_comp = _get_output_component(item)
+		if output_comp:
+			output_comp.end_debug()
+
+
 func _update_drag_line() -> void:
 	## 更新拖动方向指示线
 	if not _dragging_item:
@@ -165,7 +192,7 @@ func _update_drag_line() -> void:
 
 	_drag_line.visible = true
 
-	var viewport = get_viewport()
+	var viewport = get_tree().root.get_viewport()
 	if not viewport:
 		return
 
@@ -190,14 +217,17 @@ func _input(event: InputEvent) -> void:
 		return
 
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
-		if event.pressed and _hovered_item:
-			# 开始拖动
-			_dragging_item = _hovered_item
-			_drag_start_pos = _dragging_item.global_position + _dragging_item.size / 2
+		if event.pressed:
+			# 开始拖动 - 直接检测鼠标位置下的物品
+			var item = _get_item_at_mouse()
+			if item and _can_debug_item(item):
+				_dragging_item = item
+				_drag_start_pos = _dragging_item.global_position + _dragging_item.size / 2
 		elif not event.pressed and _dragging_item:
 			# 结束拖动，应用方向
+			var viewport = get_tree().root.get_viewport()
 			@warning_ignore("static_called_on_instance")
-			var end_pos = Global.get_scaled_global_mouse_position(get_viewport())
+			var end_pos = Global.get_scaled_global_mouse_position(viewport)
 
 			# 计算方向
 			var parent_center = _dragging_item.global_position + _dragging_item.size / 2
@@ -216,6 +246,9 @@ func _input(event: InputEvent) -> void:
 				elif _dragging_item is SplitterConveyor:
 					# 分流器：根据方向旋转
 					_apply_splitter_rotation(_dragging_item, direction)
+				elif _dragging_item is TriSplitterConveyor:
+					# 三相分流器：根据方向旋转
+					_apply_tri_splitter_rotation(_dragging_item, direction)
 				else:
 					# 普通物品使用 OutputComponent
 					var output_comp = _get_output_component(_dragging_item)
@@ -225,26 +258,64 @@ func _input(event: InputEvent) -> void:
 			_dragging_item = null
 
 
+func _get_item_at_mouse() -> Control:
+	## 获取鼠标位置下的可调试物品
+	var viewport = get_tree().root.get_viewport()
+	if not viewport:
+		return null
+
+	@warning_ignore("static_called_on_instance")
+	var world_mouse = Global.get_scaled_global_mouse_position(viewport)
+	var items = get_tree().get_nodes_in_group("placeable_items")
+
+	for item in items:
+		if not is_instance_valid(item):
+			continue
+		if not item is Control:
+			continue
+
+		var rect = Rect2(item.global_position, item.size)
+		if rect.has_point(world_mouse):
+			return item
+
+	return null
+
+
 func _apply_splitter_rotation(splitter: SplitterConveyor, target_direction: Vector2) -> void:
 	## 根据目标方向旋转分流器
 	# 目标方向 = 分流后数字要去的方向之一
 	# 需要计算对应的旋转角度
-	match target_direction:
-		Vector2.LEFT:
-			splitter.rotation_angle = 0
-		Vector2.UP:
-			splitter.rotation_angle = 90
-		Vector2.RIGHT:
-			splitter.rotation_angle = 180
-		Vector2.DOWN:
-			splitter.rotation_angle = 270
-		_:
-			return
+	
+	# 使用 is_equal_approx 避免精度问题
+	var is_left = target_direction.is_equal_approx(Vector2.LEFT)
+	var is_up = target_direction.is_equal_approx(Vector2.UP)
+	var is_right = target_direction.is_equal_approx(Vector2.RIGHT)
+	var is_down = target_direction.is_equal_approx(Vector2.DOWN)
+	
+	if is_left:
+		splitter.rotation_angle = 0
+	elif is_up:
+		splitter.rotation_angle = 90
+	elif is_right:
+		splitter.rotation_angle = 180
+	elif is_down:
+		splitter.rotation_angle = 270
+	else:
+		return
 
 	# 更新方向和箭头
 	splitter._update_directions()
 	splitter._update_arrow_layout()
 	splitter._update_arrow_textures()
+	# 更新调试箭头显示
+	splitter.update_debug_arrows()
+
+
+func _apply_tri_splitter_rotation(tri_splitter: TriSplitterConveyor, target_direction: Vector2) -> void:
+	## 根据拖动方向设置三相分流器的调试方向
+	## 调试方向 = 出口1方向
+	## 入口方向 = 调试方向的反方向
+	tri_splitter.set_debug_direction(target_direction)
 
 
 func _calculate_direction(delta: Vector2) -> Vector2:
@@ -267,9 +338,7 @@ func _hide_all_items_debug() -> void:
 	## 隐藏所有物品的调试显示
 	var items = get_tree().get_nodes_in_group("placeable_items")
 	for item in items:
-		var output_comp = _get_output_component(item)
-		if output_comp:
-			output_comp.end_debug()
+		_end_item_debug(item)
 
 
 func _on_mode_changed(_old_mode: int, new_mode: int) -> void:
