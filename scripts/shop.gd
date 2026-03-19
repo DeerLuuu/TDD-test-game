@@ -124,6 +124,13 @@ func _setup_default_items() -> void:
 			"level": 2,
 			"category": Category.TRANSPORT
 		},
+		{
+			"name": "传送器",
+			"cost": 250,
+			"scene_path": "res://scenes/teleporter.tscn",
+			"level": 2,
+			"category": Category.TRANSPORT
+		},
 		# 加工类
 		{
 			"name": "加工面板",

@@ -240,8 +240,8 @@ func _create_preview_control() -> Control:
 				instance.set_meta("is_preview", true)
 				instance.set_process(false)
 				instance.set_physics_process(false)
-				# 设置传送带/分流器的拖拽状态，允许滚轮旋转
-				if instance is ConveyorBelt or instance is SplitterConveyor:
+				# 设置传送带/分流器/传送器的拖拽状态，允许滚轮旋转
+				if instance is ConveyorBelt or instance is SplitterConveyor or instance is Teleporter:
 					instance.set_being_dragged(true)
 				return instance
 

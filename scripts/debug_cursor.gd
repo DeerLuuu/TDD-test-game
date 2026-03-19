@@ -18,6 +18,9 @@ var _background: Panel = null
 ## 拖动方向指示线
 var _drag_line: Line2D = null
 
+## 传送器配对：第一个选中的传送器
+var _teleporter_pair_first: Teleporter = null
+
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -153,6 +156,9 @@ func _get_output_component(item: Control) -> OutputComponent:
 
 func _can_debug_item(item: Control) -> bool:
 	## 检查物品是否可以被调试
+	# 传送器类型有专门的调试方法
+	if item is Teleporter:
+		return true
 	# 分流器类型有特殊的调试方法
 	if item is SplitterConveyor or item is TriSplitterConveyor:
 		return true
@@ -162,7 +168,10 @@ func _can_debug_item(item: Control) -> bool:
 
 func _start_item_debug(item: Control) -> void:
 	## 启动物品的调试显示
-	if item is SplitterConveyor or item is TriSplitterConveyor:
+	if item is Teleporter:
+		# 传送器有专门的调试方法
+		item.start_debug()
+	elif item is SplitterConveyor or item is TriSplitterConveyor:
 		# 分流器有专门的start_debug方法
 		item.start_debug()
 	else:
@@ -174,7 +183,10 @@ func _start_item_debug(item: Control) -> void:
 
 func _end_item_debug(item: Control) -> void:
 	## 结束物品的调试显示
-	if item is SplitterConveyor or item is TriSplitterConveyor:
+	if item is Teleporter:
+		# 传送器有专门的调试方法
+		item.end_debug()
+	elif item is SplitterConveyor or item is TriSplitterConveyor:
 		# 分流器有专门的end_debug方法
 		item.end_debug()
 	else:
@@ -212,7 +224,7 @@ func _update_drag_line() -> void:
 
 
 func _input(event: InputEvent) -> void:
-	## 处理拖动设置输出方向
+	## 处理拖动设置输出方向和传送器配对
 	if not Global.is_debug_mode():
 		return
 
@@ -221,8 +233,12 @@ func _input(event: InputEvent) -> void:
 			# 开始拖动 - 直接检测鼠标位置下的物品
 			var item = _get_item_at_mouse()
 			if item and _can_debug_item(item):
-				_dragging_item = item
-				_drag_start_pos = _dragging_item.global_position + _dragging_item.size / 2
+				# 传送器特殊处理：点击配对
+				if item is Teleporter:
+					_handle_teleporter_click(item)
+				else:
+					_dragging_item = item
+					_drag_start_pos = _dragging_item.global_position + _dragging_item.size / 2
 		elif not event.pressed and _dragging_item:
 			# 结束拖动，应用方向
 			var viewport = get_tree().root.get_viewport()
@@ -256,6 +272,22 @@ func _input(event: InputEvent) -> void:
 						output_comp.set_output_direction(direction)
 
 			_dragging_item = null
+
+
+## 处理传送器点击（调试模式下配对）
+func _handle_teleporter_click(teleporter: Teleporter) -> void:
+	if _teleporter_pair_first == null:
+		# 第一次点击：选中第一个传送器
+		_teleporter_pair_first = teleporter
+		# 高亮显示（可以添加视觉效果）
+	elif _teleporter_pair_first == teleporter:
+		# 点击同一个传送器：取消配对
+		_teleporter_pair_first.clear_pair()
+		_teleporter_pair_first = null
+	else:
+		# 第二次点击：配对两个传送器
+		_teleporter_pair_first.set_pair_to(teleporter)
+		_teleporter_pair_first = null
 
 
 func _get_item_at_mouse() -> Control:
@@ -347,3 +379,4 @@ func _on_mode_changed(_old_mode: int, new_mode: int) -> void:
 	if new_mode != Global.OperationMode.DEBUG:
 		_hide_all_items_debug()
 		_dragging_item = null
+		_teleporter_pair_first = null  # 清理传送器配对状态
